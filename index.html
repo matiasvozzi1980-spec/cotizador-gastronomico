@@ -2,507 +2,418 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Cotizador Gastronómico</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,600;1,300&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-<!-- Firebase SDK -->
-<script type="module">
-  import { initializeApp }       from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getFirestore, doc, setDoc, getDoc, onSnapshot }
-                                  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-  // ══════════════════════════════════════════════════════
-  //  🔑 PEGÁ ACÁ TU CONFIGURACIÓN DE FIREBASE
-  // ══════════════════════════════════════════════════════
-  const firebaseConfig = {
-    apiKey:            "AIzaSyAClcC4icBmHH-hBhxdKjsozENHzFAliik",
-    authDomain:        "cotizador-gastronomico.firebaseapp.com",
-    projectId:         "cotizador-gastronomico",
-    storageBucket:     "cotizador-gastronomico.firebasestorage.app",
-    messagingSenderId: "1095447655528",
-    appId:             "1:1095447655528:web:16a866e1e1112814f237dd"
-  };
-  // ══════════════════════════════════════════════════════
-
-  const app = initializeApp(firebaseConfig);
-  const db  = getFirestore(app);
-
-  // ID fijo del documento — todos tus dispositivos comparten el mismo
-  const DOC_ID  = "mi-cotizador";
-  const COL     = "cotizador";
-  const docRef  = doc(db, COL, DOC_ID);
-
-  // Exponer funciones al scope global para que el resto del JS las use
-  window._fbSave = async (data) => {
-    try {
-      await setDoc(docRef, { payload: JSON.stringify(data) });
-      return true;
-    } catch(e) { console.error("Firebase save error:", e); return false; }
-  };
-
-  window._fbLoad = async () => {
-    try {
-      const snap = await getDoc(docRef);
-      if(snap.exists()) return JSON.parse(snap.data().payload);
-      return null;
-    } catch(e) { console.error("Firebase load error:", e); return null; }
-  };
-
-  // Listener en tiempo real — actualiza la app cuando otro dispositivo guarda
-  window._fbListen = (callback) => {
-    return onSnapshot(docRef, (snap) => {
-      if(snap.exists()){
-        try {
-          const data = JSON.parse(snap.data().payload);
-          callback(data);
-        } catch(e) { console.error("Firebase parse error:", e); }
-      }
+<!-- Firebase Compat -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script>
+(function(){
+  try {
+    firebase.initializeApp({
+      apiKey:"AIzaSyAClcC4icBmHH-hBhxdKjsozENHzFAliik",
+      authDomain:"cotizador-gastronomico.firebaseapp.com",
+      projectId:"cotizador-gastronomico",
+      storageBucket:"cotizador-gastronomico.firebasestorage.app",
+      messagingSenderId:"1095447655528",
+      appId:"1:1095447655528:web:16a866e1e1112814f237dd"
     });
-  };
-
-  window._fbReady = true;
-  // Disparar evento para que el JS principal sepa que Firebase está listo
-  window.dispatchEvent(new Event("firebase-ready"));
+    var db = firebase.firestore();
+    var ref = db.collection("cotizador").doc("mi-cotizador");
+    window._fb = {
+      save: function(d){ return ref.set({payload:JSON.stringify(d)}); },
+      load: function(){ return ref.get().then(function(s){ return s.exists ? JSON.parse(s.data().payload) : null; }); },
+      listen: function(cb){ return ref.onSnapshot(function(s){ if(s.exists) try{ cb(JSON.parse(s.data().payload)); }catch(e){} }); }
+    };
+  } catch(e){ window._fb = null; }
+})();
 </script>
 <style>
-:root{--bg:#0F0F0F;--surface:#1A1A1A;--surface2:#242424;--surface3:#2E2E2E;--gold:#C9A84C;--gold-dim:#8A6E2A;--text:#F0EDE8;--text2:#8A8580;--text3:#5A5550;--danger:#C04A3A;--border:#333333;}
+:root{--bg:#0F0F0F;--sf:#1A1A1A;--sf2:#242424;--sf3:#2E2E2E;--gold:#C9A84C;--gdim:#8A6E2A;--tx:#F0EDE8;--tx2:#8A8580;--tx3:#5A5550;--red:#C04A3A;--bd:#333;}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;min-height:100vh;}
-h1,h2{font-family:'Fraunces',serif;}
-.tab-btn{padding:10px 16px;border:none;background:transparent;color:var(--text2);font-family:'Inter',sans-serif;font-size:13px;font-weight:500;cursor:pointer;border-bottom:2px solid transparent;transition:color .2s,border-color .2s;white-space:nowrap;}
-.tab-btn:hover{color:var(--text);}
-.tab-btn.active{color:var(--gold);border-bottom-color:var(--gold);}
-.tab-panel{display:none;}
-.tab-panel.active{display:block;}
-.field{display:flex;flex-direction:column;gap:5px;}
-.field label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text2);}
-.field input,.field select,.std-select{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:9px 12px;color:var(--text);font-family:'Inter',sans-serif;font-size:14px;outline:none;transition:border-color .2s;width:100%;-webkit-appearance:none;}
-.field input:focus,.field select:focus,.std-select:focus{border-color:var(--gold-dim);}
-.field input::placeholder{color:var(--text3);}
-.field select option,.std-select option{background:var(--surface2);color:var(--text);}
-.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;}
-.card-title{font-family:'Fraunces',serif;font-size:15px;font-weight:400;color:var(--text);margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
-.result-ticker{background:var(--surface);border:1px solid var(--gold-dim);border-radius:10px;padding:20px;position:sticky;top:60px;}
-.ticker-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.12em;color:var(--text2);margin-bottom:3px;}
-.ticker-value{font-family:'Fraunces',serif;font-size:26px;font-weight:300;color:var(--gold);line-height:1;}
-.ticker-sub{font-size:12px;color:var(--text2);margin-top:3px;}
-.ticker-row{display:flex;justify-content:space-between;align-items:baseline;padding:7px 0;border-bottom:1px solid var(--border);}
-.ticker-row:last-child{border-bottom:none;}
-.ticker-row-label{font-size:12px;color:var(--text2);}
-.ticker-row-val{font-size:13px;font-weight:500;color:var(--text);font-variant-numeric:tabular-nums;}
-.btn-gold{background:var(--gold);color:#0F0F0F;border:none;border-radius:6px;padding:9px 18px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:opacity .2s;}
-.btn-gold:hover{opacity:.88;}
-.btn-ghost{background:transparent;color:var(--text2);border:1px solid var(--border);border-radius:6px;padding:8px 14px;font-family:'Inter',sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:color .2s,border-color .2s;}
-.btn-ghost:hover{color:var(--text);border-color:var(--text3);}
-.btn-danger{background:transparent;color:var(--danger);border:1px solid var(--danger);border-radius:6px;padding:4px 9px;font-size:11px;cursor:pointer;font-family:'Inter',sans-serif;transition:background .2s;}
-.btn-danger:hover{background:rgba(192,74,58,.12);}
-.btn-sm{background:transparent;color:var(--gold);border:1px solid var(--gold-dim);border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer;font-family:'Inter',sans-serif;transition:background .2s;}
-.btn-sm:hover{background:rgba(201,168,76,.1);}
-.menu-category{background:var(--surface2);border:1px solid var(--border);border-radius:8px;overflow:hidden;}
-.menu-cat-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;cursor:pointer;user-select:none;}
-.menu-cat-header:hover{background:var(--surface3);}
-.menu-cat-label{font-size:12px;font-weight:600;color:var(--text2);display:flex;align-items:center;gap:8px;}
-.menu-cat-count{background:var(--gold-dim);color:var(--gold);font-size:10px;font-weight:700;border-radius:100px;padding:1px 7px;display:none;}
-.menu-options{display:none;padding:6px 8px 10px;border-top:1px solid var(--border);}
-.menu-options.open{display:block;}
-.menu-option{display:flex;align-items:center;gap:10px;padding:7px 8px;border-radius:6px;cursor:pointer;transition:background .15s;}
-.menu-option:hover{background:var(--surface3);}
-.menu-option input[type=checkbox]{width:15px;height:15px;accent-color:var(--gold);cursor:pointer;flex-shrink:0;}
-.menu-option-name{font-size:13px;color:var(--text);flex:1;}
-.menu-option-cost{font-size:11px;color:var(--text3);}
-.recipe-card{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:16px;transition:border-color .2s;cursor:pointer;}
-.recipe-card:hover{border-color:var(--text3);}
-.quote-card{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:16px;}
-.badge{display:inline-block;padding:2px 8px;border-radius:100px;font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;}
-.badge-e{background:rgba(74,140,92,.18);color:#6BBD88;}
-.badge-p{background:rgba(201,168,76,.18);color:var(--gold);}
-.badge-d{background:rgba(160,100,180,.18);color:#C48DE0;}
-.badge-a{background:rgba(80,140,200,.18);color:#7BBCE8;}
+body{background:var(--bg);color:var(--tx);font-family:Inter,sans-serif;font-size:14px;min-height:100vh;}
+h1,h2{font-family:Fraunces,serif;}
+/* TABS */
+.tb{padding:10px 16px;border:none;background:transparent;color:var(--tx2);font-family:Inter,sans-serif;font-size:13px;font-weight:500;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;}
+.tb.on{color:var(--gold);border-bottom-color:var(--gold);}
+.tp{display:none;}.tp.on{display:block;}
+/* INPUTS */
+.fi{display:flex;flex-direction:column;gap:5px;}
+.fi label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--tx2);}
+.fi input,.fi select,.si{background:var(--sf2);border:1px solid var(--bd);border-radius:6px;padding:9px 12px;color:var(--tx);font-family:Inter,sans-serif;font-size:14px;outline:none;width:100%;-webkit-appearance:none;}
+.fi input:focus,.fi select:focus,.si:focus{border-color:var(--gdim);}
+.fi input::placeholder{color:var(--tx3);}
+/* CARD */
+.card{background:var(--sf);border:1px solid var(--bd);border-radius:10px;padding:20px;}
+.ctit{font-family:Fraunces,serif;font-size:15px;font-weight:400;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;}
+/* TICKER */
+.tick{background:var(--sf);border:1px solid var(--gdim);border-radius:10px;padding:20px;position:sticky;top:56px;}
+.tlb{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.12em;color:var(--tx2);margin-bottom:3px;}
+.tval{font-family:Fraunces,serif;font-size:24px;font-weight:300;color:var(--gold);line-height:1;}
+.tsub{font-size:12px;color:var(--tx2);margin-top:3px;}
+.trow{display:flex;justify-content:space-between;align-items:baseline;padding:7px 0;border-bottom:1px solid var(--bd);}
+.trow:last-child{border-bottom:none;}
+.trl{font-size:12px;color:var(--tx2);}
+.trv{font-size:13px;font-weight:500;color:var(--tx);}
+/* BTNS */
+.bg{background:var(--gold);color:#000;border:none;border-radius:6px;padding:9px 18px;font-family:Inter,sans-serif;font-size:13px;font-weight:600;cursor:pointer;}
+.bg:active{opacity:.8;}
+.bgh{background:transparent;color:var(--tx2);border:1px solid var(--bd);border-radius:6px;padding:8px 14px;font-family:Inter,sans-serif;font-size:12px;font-weight:500;cursor:pointer;}
+.bgh:active{color:var(--tx);}
+.bsm{background:transparent;color:var(--gold);border:1px solid var(--gdim);border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer;font-family:Inter,sans-serif;}
+.bdn{background:transparent;color:var(--red);border:1px solid var(--red);border-radius:6px;padding:4px 9px;font-size:11px;cursor:pointer;font-family:Inter,sans-serif;}
+/* MENU SELECTOR */
+.mc{background:var(--sf2);border:1px solid var(--bd);border-radius:8px;overflow:hidden;}
+.mch{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;cursor:pointer;user-select:none;}
+.mch:active{background:var(--sf3);}
+.mcl{font-size:12px;font-weight:600;color:var(--tx2);display:flex;align-items:center;gap:8px;}
+.mcc{background:var(--gdim);color:var(--gold);font-size:10px;font-weight:700;border-radius:100px;padding:1px 7px;display:none;}
+.mo{display:none;padding:6px 8px 10px;border-top:1px solid var(--bd);}
+.mo.on{display:block;}
+.mopt{display:flex;align-items:center;gap:10px;padding:7px 8px;border-radius:6px;cursor:pointer;}
+.mopt:active{background:var(--sf3);}
+.mopt input[type=checkbox]{width:15px;height:15px;accent-color:var(--gold);flex-shrink:0;}
+.mon{font-size:13px;color:var(--tx);flex:1;}
+.moc{font-size:11px;color:var(--tx3);}
+/* RECIPE / QUOTE CARDS */
+.rc{background:var(--sf2);border:1px solid var(--bd);border-radius:8px;padding:16px;cursor:pointer;}
+.rc:active{border-color:var(--tx3);}
+.qc{background:var(--sf2);border:1px solid var(--bd);border-radius:8px;padding:16px;}
+/* BADGES */
+.bdg{display:inline-block;padding:2px 8px;border-radius:100px;font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;}
+.be{background:rgba(74,140,92,.18);color:#6BBD88;}
+.bp{background:rgba(201,168,76,.18);color:var(--gold);}
+.bd{background:rgba(160,100,180,.18);color:#C48DE0;}
+.ba{background:rgba(80,140,200,.18);color:#7BBCE8;}
 /* ING TABLE */
-.ing-table{width:100%;border-collapse:collapse;}
-.ing-table th{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);text-align:left;padding:6px 6px;border-bottom:1px solid var(--border);}
-.ing-table td{padding:5px 6px;border-bottom:1px solid rgba(51,51,51,.4);vertical-align:middle;}
-.ing-table tr:last-child td{border-bottom:none;}
-.cell-input{background:var(--surface3);border:1px solid transparent;border-radius:4px;padding:5px 7px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;width:100%;outline:none;transition:border-color .15s;}
-.cell-input:focus{border-color:var(--gold-dim);}
-.cost-input{color:var(--gold) !important;}
+.it{width:100%;border-collapse:collapse;}
+.it th{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--tx3);text-align:left;padding:6px 6px;border-bottom:1px solid var(--bd);}
+.it td{padding:5px 6px;border-bottom:1px solid rgba(51,51,51,.4);vertical-align:middle;}
+.it tr:last-child td{border-bottom:none;}
+.ci{background:var(--sf3);border:1px solid transparent;border-radius:4px;padding:5px 7px;color:var(--tx);font-family:Inter,sans-serif;font-size:13px;width:100%;outline:none;}
+.ci:focus{border-color:var(--gdim);}
+.cig{color:var(--gold)!important;}
 /* MODAL */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.78);display:flex;align-items:center;justify-content:center;z-index:100;padding:16px;}
-.modal{background:var(--surface);border:1px solid var(--border);border-radius:12px;width:100%;max-width:720px;max-height:92vh;overflow-y:auto;padding:24px;}
-.section-h{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--text3);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
-.section-h::after{content:'';flex:1;height:1px;background:var(--border);}
-.empty{text-align:center;padding:40px 20px;color:var(--text3);font-size:13px;}
-.empty .ico{font-size:32px;margin-bottom:8px;}
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--surface3);border:1px solid var(--border);color:var(--text);padding:10px 20px;border-radius:100px;font-size:13px;z-index:999;pointer-events:none;white-space:nowrap;}
-::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
-@media(max-width:640px){.modal{padding:14px;}.ticker-value{font-size:20px;}}
-
-/* ALERTAS PRECIO */
-.price-ok{color:var(--gold);}
-.price-warn{color:#E8A040;}
-.price-old{color:var(--danger);}
-.price-age{font-size:10px;margin-left:4px;}
-.alert-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:100px;font-size:10px;font-weight:600;}
-.alert-ok{background:rgba(74,140,92,.15);color:#6BBD88;}
-.alert-warn{background:rgba(232,160,64,.15);color:#E8A040;}
-.alert-old{background:rgba(192,74,58,.15);color:var(--danger);}
-/* PAQUETES */
-.pkg-card{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:16px;transition:border-color .2s;cursor:pointer;}
-.pkg-card:hover{border-color:var(--gold-dim);}
-.pkg-card.selected{border-color:var(--gold);background:rgba(201,168,76,.06);}
-/* INFLACION SLIDER */
-.inf-slider{width:100%;accent-color:var(--gold);height:5px;cursor:pointer;}
-/* PRECIO ROW EN TABLA */
-.ing-price-row{display:flex;align-items:center;gap:6px;}
-
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.78);display:flex;align-items:center;justify-content:center;z-index:100;padding:16px;}
+.md{background:var(--sf);border:1px solid var(--bd);border-radius:12px;width:100%;max-width:680px;max-height:90vh;overflow-y:auto;padding:20px;}
+.mdt{font-family:Fraunces,serif;font-size:19px;font-weight:400;margin-bottom:16px;}
+/* MISC */
+.sh{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--tx3);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.sh::after{content:\'\';flex:1;height:1px;background:var(--bd);}
+.emp{text-align:center;padding:36px 20px;color:var(--tx3);font-size:13px;}
+.emp .ic{font-size:30px;margin-bottom:8px;}
+.tst{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--sf3);border:1px solid var(--bd);color:var(--tx);padding:10px 20px;border-radius:100px;font-size:13px;z-index:999;pointer-events:none;white-space:nowrap;}
+/* PRICE ALERTS */
+.aok{background:rgba(74,140,92,.15);color:#6BBD88;}
+.awk{background:rgba(232,160,64,.15);color:#E8A040;}
+.aol{background:rgba(192,74,58,.15);color:var(--red);}
+.pkg-card{background:var(--sf2);border:1px solid var(--bd);border-radius:8px;padding:16px;}
+::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-thumb{background:var(--bd);border-radius:3px;}
 </style>
 </head>
 <body>
 
-<header style="border-bottom:1px solid var(--border);background:var(--surface);position:sticky;top:0;z-index:50;">
+<header style="border-bottom:1px solid var(--bd);background:var(--sf);position:sticky;top:0;z-index:50;">
   <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
     <div>
       <h1 style="font-weight:300;font-size:20px;line-height:1;">Cotizador <span style="color:var(--gold);font-style:italic;">Gastronómico</span></h1>
-      <p style="font-size:10px;color:var(--text3);margin-top:1px;">Cocina cordobesa · Precios jun 2026</p>
+      <p style="font-size:10px;color:var(--tx3);margin-top:1px;">Córdoba · Precios jun 2026</p>
     </div>
     <div style="display:flex;gap:8px;">
-      <button class="btn-ghost" onclick="exportBackup()" style="padding:7px 10px;font-size:11px;">⬇ Backup</button>
-      <label class="btn-ghost" style="padding:7px 10px;font-size:11px;cursor:pointer;">⬆ Importar<input type="file" accept=".json" onchange="importBackup(event)" style="display:none;"></label>
+      <button class="bgh" onclick="exportBackup()" style="padding:7px 10px;font-size:11px;">⬇ Backup</button>
+      <label class="bgh" style="padding:7px 10px;font-size:11px;cursor:pointer;">⬆ Importar<input type="file" accept=".json" onchange="importBackup(event)" style="display:none;"></label>
     </div>
   </div>
   <div class="max-w-6xl mx-auto px-4" style="display:flex;overflow-x:auto;-webkit-overflow-scrolling:touch;">
-    <button class="tab-btn active" onclick="switchTab('cotizador',this)">⚡ Cotizador</button>
-    <button class="tab-btn" onclick="switchTab('guardadas',this)">📁 Cotizaciones</button>
-    <button class="tab-btn" onclick="switchTab('recetas',this)">📋 Recetas</button>
-    <button class="tab-btn" onclick="switchTab('paquetes',this)">📦 Paquetes</button>
-    <button class="tab-btn" onclick="switchTab('precios',this)">📈 Precios</button>
-    <button class="tab-btn" onclick="switchTab('sync',this)">☁️ iCloud</button>
+    <button class="tb on" onclick="showTab('cotizador',this)">⚡ Cotizador</button>
+    <button class="tb"    onclick="showTab('guardadas',this)">📁 Cotizaciones</button>
+    <button class="tb"    onclick="showTab('recetas',this)">📋 Recetas</button>
+    <button class="tb"    onclick="showTab('paquetes',this)">📦 Paquetes</button>
+    <button class="tb"    onclick="showTab('precios',this)">📈 Precios</button>
+    <button class="tb"    onclick="showTab('sync',this)">☁️ iCloud</button>
   </div>
 </header>
-<div id="sync-banner" style="display:none;background:rgba(201,168,76,.12);border-bottom:1px solid var(--gold-dim);padding:7px 16px;text-align:center;font-size:12px;color:var(--gold);">
-  🔄 Sincronizando con Firebase...
-</div>
-<div id="init-spinner" style="position:fixed;inset:0;background:var(--bg);z-index:200;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;">
-  <div style="font-family:'Fraunces',serif;font-size:26px;font-weight:300;color:var(--text);">Cotizador <span style="color:var(--gold);font-style:italic;">Gastronómico</span></div>
-  <div style="font-size:13px;color:var(--text2);">Conectando con la nube...</div>
-  <div style="width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite;"></div>
-  <style>@keyframes spin{to{transform:rotate(360deg);}}</style>
-</div>
 
-
-<!-- TAB COTIZADOR -->
-<div id="tab-cotizador" class="tab-panel active">
+<!-- ══ COTIZADOR ══ -->
+<div id="tab-cotizador" class="tp on">
 <div class="max-w-6xl mx-auto px-4 py-5">
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
     <div class="lg:col-span-2 flex flex-col gap-4">
       <div class="card">
-        <div class="card-title">Datos del evento</div>
+        <div class="ctit">Datos del evento</div>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div class="field"><label>Nombre del cliente</label><input type="text" id="c-cliente" placeholder="Ej: Familia Rodríguez" oninput="recalculate()"></div>
-          <div class="field"><label>Cantidad de personas</label><input type="number" id="c-personas" placeholder="0" min="1" inputmode="numeric" oninput="recalculate();refreshCosts()"></div>
+          <div class="fi"><label>Nombre del cliente</label><input type="text" id="c-cl" placeholder="Ej: Familia Rodríguez" oninput="calc()"></div>
+          <div class="fi"><label>Cantidad de personas</label><input type="number" id="c-pe" placeholder="0" min="1" inputmode="numeric" oninput="calc();refCosts()"></div>
         </div>
       </div>
       <div class="card">
-        <div class="card-title"><span>Selección de menú</span><span style="font-size:11px;color:var(--text3);font-family:'Inter',sans-serif;font-weight:400;">Elegí uno o varios por categoría</span></div>
-        <div id="menu-selector" style="display:flex;flex-direction:column;gap:8px;"></div>
-        <div id="menu-summary" style="margin-top:14px;display:none;">
-          <div class="section-h">Costo MP por ítem seleccionado</div>
-          <div id="menu-summary-items" style="display:flex;flex-direction:column;gap:4px;"></div>
+        <div class="ctit"><span>Selección de menú</span><span style="font-size:11px;color:var(--tx3);font-weight:400;font-family:Inter,sans-serif;">Elegí uno o varios por categoría</span></div>
+        <div id="menu-sel" style="display:flex;flex-direction:column;gap:8px;"></div>
+        <div id="menu-sum" style="margin-top:14px;display:none;">
+          <div class="sh">Costo MP por ítem</div>
+          <div id="menu-sum-items" style="display:flex;flex-direction:column;gap:4px;"></div>
         </div>
       </div>
       <div class="card">
-        <div class="card-title">Gastos de servicios</div>
+        <div class="ctit">Gastos de servicios</div>
         <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
-          <div class="field"><label>Personal ($)</label><input type="number" id="g-personal" placeholder="0" min="0" inputmode="decimal" oninput="recalculate()"></div>
-          <div class="field"><label>Limpieza ($)</label><input type="number" id="g-limpieza" placeholder="0" min="0" inputmode="decimal" oninput="recalculate()"></div>
-          <div class="field"><label>Salón ($)</label><input type="number" id="g-salon" placeholder="0" min="0" inputmode="decimal" oninput="recalculate()"></div>
-          <div class="field"><label>DJ ($)</label><input type="number" id="g-dj" placeholder="0" min="0" inputmode="decimal" oninput="recalculate()"></div>
-          <div class="field"><label>Bebidas ($)</label><input type="number" id="g-bebidas" placeholder="0" min="0" inputmode="decimal" oninput="recalculate()"></div>
-          <div class="field"><label>Varios ($)</label><input type="number" id="g-varios" placeholder="0" min="0" inputmode="decimal" oninput="recalculate()"></div>
+          <div class="fi"><label>Personal ($)</label><input type="number" id="g-pe" placeholder="0" inputmode="decimal" oninput="calc()"></div>
+          <div class="fi"><label>Limpieza ($)</label><input type="number" id="g-li" placeholder="0" inputmode="decimal" oninput="calc()"></div>
+          <div class="fi"><label>Salón ($)</label><input type="number" id="g-sa" placeholder="0" inputmode="decimal" oninput="calc()"></div>
+          <div class="fi"><label>DJ ($)</label><input type="number" id="g-dj" placeholder="0" inputmode="decimal" oninput="calc()"></div>
+          <div class="fi"><label>Bebidas ($)</label><input type="number" id="g-be" placeholder="0" inputmode="decimal" oninput="calc()"></div>
+          <div class="fi"><label>Varios ($)</label><input type="number" id="g-va" placeholder="0" inputmode="decimal" oninput="calc()"></div>
         </div>
       </div>
       <div class="card">
-        <div class="card-title">Margen de ganancia</div>
+        <div class="ctit">Margen de ganancia</div>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-end">
-          <div class="field"><label>Margen deseado (%)</label><input type="number" id="c-margen" placeholder="30" min="0" max="90" inputmode="decimal" oninput="recalculate()"></div>
-          <p style="font-size:11px;color:var(--text3);padding-bottom:4px;">Precio final = Costo total ÷ (1 − margen%) para mantener el margen real sobre venta.</p>
+          <div class="fi"><label>Margen (%)</label><input type="number" id="c-mg" placeholder="30" min="0" max="90" inputmode="decimal" oninput="calc()"></div>
+          <p style="font-size:11px;color:var(--tx3);padding-bottom:4px;">Precio = Costo ÷ (1 − margen%)</p>
         </div>
       </div>
     </div>
     <div class="lg:col-span-1">
-      <div class="result-ticker">
+      <div class="tick">
         <div style="margin-bottom:14px;">
-          <div class="ticker-label">Precio por persona</div>
-          <div class="ticker-value" id="r-pp">$0</div>
-          <div class="ticker-sub" id="r-cn">—</div>
+          <div class="tlb">Precio por persona</div>
+          <div class="tval" id="r-pp">$0</div>
+          <div class="tsub" id="r-cn">—</div>
         </div>
         <div>
-          <div class="ticker-row"><span class="ticker-row-label">Materia prima</span><span class="ticker-row-val" id="r-mp">$0</span></div>
-          <div class="ticker-row"><span class="ticker-row-label">MP / persona</span><span class="ticker-row-val" id="r-mpp">$0</span></div>
-          <div class="ticker-row"><span class="ticker-row-label">Servicios</span><span class="ticker-row-val" id="r-sv">$0</span></div>
-          <div class="ticker-row"><span class="ticker-row-label">Costo base total</span><span class="ticker-row-val" id="r-ct">$0</span></div>
-          <div class="ticker-row" style="border-top:1px solid var(--gold-dim);margin-top:4px;padding-top:10px;">
-            <span class="ticker-row-label" style="color:var(--text);font-weight:600;">Precio total evento</span>
-            <span class="ticker-row-val" id="r-pt" style="color:var(--gold);font-size:15px;">$0</span>
+          <div class="trow"><span class="trl">Materia prima</span><span class="trv" id="r-mp">$0</span></div>
+          <div class="trow"><span class="trl">MP / persona</span><span class="trv" id="r-mpp">$0</span></div>
+          <div class="trow"><span class="trl">Servicios</span><span class="trv" id="r-sv">$0</span></div>
+          <div class="trow"><span class="trl">Costo base</span><span class="trv" id="r-ct">$0</span></div>
+          <div class="trow" style="border-top:1px solid var(--gdim);margin-top:4px;padding-top:10px;">
+            <span class="trl" style="color:var(--tx);font-weight:600;">Precio total</span>
+            <span class="trv" id="r-pt" style="color:var(--gold);font-size:15px;">$0</span>
           </div>
-          <div class="ticker-row"><span class="ticker-row-label">Ganancia estimada</span><span class="ticker-row-val" id="r-gn" style="color:#6BBD88;">$0</span></div>
-          <div class="ticker-row"><span class="ticker-row-label">Margen aplicado</span><span class="ticker-row-val" id="r-mg">0%</span></div>
+          <div class="trow"><span class="trl">Ganancia</span><span class="trv" id="r-gn" style="color:#6BBD88;">$0</span></div>
+          <div class="trow"><span class="trl">Margen</span><span class="trv" id="r-mg">0%</span></div>
         </div>
-        <button class="btn-gold" style="width:100%;margin-top:14px;" onclick="saveQuote()">💾 Guardar cotización</button>
-        <button class="btn-ghost" style="width:100%;margin-top:8px;" onclick="exportTXT()">Exportar como texto</button>
-        <button class="btn-gold" style="width:100%;margin-top:8px;background:linear-gradient(135deg,#C9A84C,#A8873B);" onclick="exportPDF()">📄 Exportar cotización PDF</button>
+        <button class="bg" style="width:100%;margin-top:14px;" onclick="saveQuote()">💾 Guardar cotización</button>
+        <button class="bg" style="width:100%;margin-top:8px;background:linear-gradient(135deg,#C9A84C,#A8873B);" onclick="exportPDF()">📄 Exportar PDF</button>
+        <button class="bgh" style="width:100%;margin-top:8px;" onclick="exportTXT()">Exportar texto</button>
       </div>
     </div>
   </div>
 </div>
 </div>
 
-<!-- TAB COTIZACIONES -->
-<div id="tab-guardadas" class="tab-panel">
+<!-- ══ COTIZACIONES ══ -->
+<div id="tab-guardadas" class="tp">
 <div class="max-w-6xl mx-auto px-4 py-5">
-  <div class="flex items-center justify-between mb-5">
-    <div><h2 style="font-size:20px;font-weight:400;">Cotizaciones guardadas</h2><p style="font-size:12px;color:var(--text2);margin-top:2px;">Sincronizadas via Safari + iCloud entre tus dispositivos.</p></div>
-  </div>
+  <h2 style="font-size:20px;font-weight:400;margin-bottom:4px;">Cotizaciones guardadas</h2>
+  <p style="font-size:12px;color:var(--tx2);margin-bottom:20px;">Sincronizadas en tiempo real entre dispositivos via Firebase.</p>
   <div id="quotes-list" style="display:flex;flex-direction:column;gap:12px;"></div>
 </div>
 </div>
 
-<!-- TAB RECETAS -->
-<div id="tab-recetas" class="tab-panel">
+<!-- ══ RECETAS ══ -->
+<div id="tab-recetas" class="tp">
 <div class="max-w-6xl mx-auto px-4 py-5">
   <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
-    <div><h2 style="font-size:20px;font-weight:400;">Base de recetas</h2><p style="font-size:12px;color:var(--text2);margin-top:2px;">Clic en cualquier receta para ver y editar todos sus precios en tiempo real.</p></div>
+    <div>
+      <h2 style="font-size:20px;font-weight:400;">Base de recetas</h2>
+      <p style="font-size:12px;color:var(--tx2);margin-top:2px;">Tocá una receta para ver el paso a paso y editar precios.</p>
+    </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;">
-      <select id="filter-cat" onchange="renderRecipes()" class="std-select" style="min-width:150px;">
-        <option value="">Todas</option><option value="entrada">Entradas</option><option value="principal">Principales</option><option value="postre">Postres</option><option value="after">After</option>
+      <select id="filt-cat" onchange="renderRecipes()" class="si" style="min-width:140px;">
+        <option value="">Todas</option>
+        <option value="entrada">Entradas</option>
+        <option value="principal">Principales</option>
+        <option value="postre">Postres</option>
+        <option value="after">After</option>
       </select>
-      <button class="btn-gold" onclick="openNewModal()">+ Nueva receta</button>
+      <button class="bg" onclick="openNewModal()">+ Nueva receta</button>
     </div>
   </div>
-  <div id="recipes-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+  <div id="rec-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
 </div>
 </div>
 
-<!-- TAB ICLOUD -->
-<div id="tab-sync" class="tab-panel">
-<div class="max-w-2xl mx-auto px-4 py-5">
-  <h2 style="font-size:20px;font-weight:400;margin-bottom:6px;">Sincronización ☁️</h2>
-  <p style="font-size:13px;color:var(--text2);margin-bottom:20px;">Tus datos en Firebase se sincronizan en tiempo real entre iPhone y Mac.</p>
-  <div style="display:flex;flex-direction:column;gap:14px;">
-    <div class="card"><div style="display:flex;gap:14px;align-items:flex-start;"><div style="font-size:26px;flex-shrink:0;">📂</div><div><div style="font-family:'Fraunces',serif;font-size:15px;margin-bottom:6px;">Paso 1 — Guardá en iCloud Drive</div><p style="font-size:13px;color:var(--text2);line-height:1.6;">Descargá <code style="background:var(--surface3);padding:1px 5px;border-radius:3px;font-size:12px;">cotizador-gastronomico.html</code> y movelo a tu carpeta de <strong>iCloud Drive</strong>.</p></div></div></div>
-    <div class="card"><div style="display:flex;gap:14px;align-items:flex-start;"><div style="font-size:26px;flex-shrink:0;">🧭</div><div><div style="font-family:'Fraunces',serif;font-size:15px;margin-bottom:6px;">Paso 2 — Abrilo siempre desde Safari</div><p style="font-size:13px;color:var(--text2);line-height:1.6;"><strong>Mac:</strong> Safari → Archivo → Abrir archivo → elegí el HTML desde iCloud Drive.<br><br><strong>iPhone:</strong> App Archivos → iCloud Drive → tocá el archivo (se abre en Safari).<br><br>⚠️ <strong>Solo Safari</strong> sincroniza los datos entre dispositivos Apple vía iCloud. Para que funcione la sincronización, el archivo debe estar en iCloud Drive y abrirse desde ahí (no desde Descargas).</p></div></div></div>
-    <div class="card"><div style="display:flex;gap:14px;align-items:flex-start;"><div style="font-size:26px;flex-shrink:0;">☁️</div><div><div style="font-family:'Fraunces',serif;font-size:15px;margin-bottom:6px;">Paso 3 — Activá Safari en iCloud</div><p style="font-size:13px;color:var(--text2);line-height:1.6;"><strong>iPhone:</strong> Ajustes → [tu nombre] → iCloud → activá "Safari".<br><br><strong>Mac:</strong> Preferencias del Sistema → ID de Apple → iCloud → activá "Safari".</p></div></div></div>
-    <div class="card" style="border-color:var(--gold-dim);"><div style="display:flex;gap:14px;align-items:flex-start;"><div style="font-size:26px;flex-shrink:0;">🔐</div><div><div style="font-family:'Fraunces',serif;font-size:15px;margin-bottom:6px;">Backup manual (recomendado)</div><p style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:12px;">Exportá un JSON periódicamente como respaldo adicional.</p><div style="display:flex;gap:8px;flex-wrap:wrap;"><button class="btn-gold" onclick="exportBackup()">⬇ Exportar backup</button><label class="btn-ghost" style="cursor:pointer;">⬆ Importar<input type="file" accept=".json" onchange="importBackup(event)" style="display:none;"></label></div></div></div></div>
-    <div class="card"><div style="display:flex;gap:14px;align-items:flex-start;"><div style="font-size:26px;flex-shrink:0;">ℹ️</div><div><div style="font-family:'Fraunces',serif;font-size:15px;margin-bottom:6px;">Estado</div><div id="storage-status" style="font-size:13px;color:var(--text2);line-height:1.8;"></div></div></div></div>
-  </div>
-</div>
-</div>
-
-
-<!-- TAB PAQUETES -->
-<div id="tab-paquetes" class="tab-panel">
+<!-- ══ PAQUETES ══ -->
+<div id="tab-paquetes" class="tp">
 <div class="max-w-5xl mx-auto px-4 py-5">
   <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
     <div>
       <h2 style="font-size:20px;font-weight:400;">Paquetes de menú</h2>
-      <p style="font-size:12px;color:var(--text2);margin-top:2px;">Guardá combinaciones completas de platos y cargarlas con un clic en el cotizador.</p>
+      <p style="font-size:12px;color:var(--tx2);margin-top:2px;">Guardá combinaciones completas y cargalas con un clic.</p>
     </div>
-    <button class="btn-gold" onclick="openNewPkg()">+ Nuevo paquete</button>
+    <button class="bg" onclick="openNewPkg()">+ Nuevo paquete</button>
   </div>
   <div id="pkg-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
 </div>
 </div>
 
-<!-- TAB PRECIOS -->
-<div id="tab-precios" class="tab-panel">
+<!-- ══ PRECIOS ══ -->
+<div id="tab-precios" class="tp">
 <div class="max-w-5xl mx-auto px-4 py-5">
   <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
-    <div>
-      <h2 style="font-size:20px;font-weight:400;">Control de precios</h2>
-      <p style="font-size:12px;color:var(--text2);margin-top:2px;">Alertas de precios desactualizados y ajuste masivo por inflación.</p>
-    </div>
-    <div id="price-summary-badges" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
+    <div><h2 style="font-size:20px;font-weight:400;">Control de precios</h2>
+    <p style="font-size:12px;color:var(--tx2);margin-top:2px;">Alertas de desactualización y ajuste masivo por inflación.</p></div>
+    <div id="price-badges" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
   </div>
-
-  <!-- PANEL INFLACION -->
-  <div class="card" style="margin-bottom:20px;border-color:var(--gold-dim);">
-    <div class="card-title">📈 Ajuste masivo por inflación</div>
-    <p style="font-size:13px;color:var(--text2);margin-bottom:16px;">Aplicá un porcentaje de aumento a todos los ingredientes de una categoría o a toda la base de recetas de una vez.</p>
+  <div class="card" style="margin-bottom:20px;border-color:var(--gdim);">
+    <div class="ctit">📈 Ajuste masivo por inflación</div>
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
-      <div class="field">
-        <label>Categoría a ajustar</label>
-        <select id="inf-cat" class="std-select" style="-webkit-appearance:none;">
+      <div class="fi"><label>Categoría</label>
+        <select id="inf-cat" class="si" style="-webkit-appearance:none;">
           <option value="all">Todas las recetas</option>
           <option value="entrada">Solo Entradas</option>
-          <option value="principal">Solo Platos principales</option>
+          <option value="principal">Solo Principales</option>
           <option value="postre">Solo Postres</option>
           <option value="after">Solo After</option>
         </select>
       </div>
-      <div class="field">
-        <label>% de aumento <span id="inf-pct-label" style="color:var(--gold);font-weight:700;">10%</span></label>
-        <input type="range" id="inf-slider" class="inf-slider" min="1" max="100" value="10" oninput="document.getElementById('inf-pct-label').textContent=this.value+'%'">
+      <div class="fi">
+        <label>Aumento: <span id="inf-pct" style="color:var(--gold);font-weight:700;">10%</span></label>
+        <input type="range" id="inf-sl" min="1" max="100" value="10" style="width:100%;accent-color:var(--gold);cursor:pointer;" oninput="document.getElementById('inf-pct').textContent=this.value+'%';infPreview()">
       </div>
-      <button class="btn-gold" onclick="applyInflation()" style="margin-bottom:2px;">Aplicar aumento</button>
+      <button class="bg" onclick="applyInflation()">Aplicar aumento</button>
     </div>
-    <div id="inf-preview" style="margin-top:14px;display:none;background:var(--surface2);border-radius:8px;padding:12px;font-size:12px;color:var(--text2);"></div>
+    <div id="inf-prev" style="display:none;margin-top:12px;background:var(--sf2);border-radius:8px;padding:12px;font-size:12px;color:var(--tx2);"></div>
   </div>
-
-  <!-- TABLA ALERTAS -->
   <div class="card">
-    <div class="card-title">
-      <span>Estado de precios por ingrediente</span>
-      <div style="display:flex;gap:8px;align-items:center;">
-        <span style="font-size:11px;color:var(--text3);">
-          <span style="color:#6BBD88;">●</span> OK (&lt;7d) &nbsp;
-          <span style="color:#E8A040;">●</span> Revisar (&lt;30d) &nbsp;
-          <span style="color:var(--danger);">●</span> Desact. (+30d)
-        </span>
+    <div class="ctit"><span>Estado de precios</span>
+      <span style="font-size:11px;color:var(--tx3);font-family:Inter,sans-serif;font-weight:400;">
+        <span style="color:#6BBD88;">●</span> &lt;7d &nbsp;<span style="color:#E8A040;">●</span> &lt;30d &nbsp;<span style="color:var(--red);">●</span> +30d
+      </span>
+    </div>
+    <div style="overflow-x:auto;"><table class="it" id="price-tbl">
+      <thead><tr><th>Receta</th><th>Ingrediente</th><th>Precio actual</th><th>Estado</th><th>Nuevo precio</th></tr></thead>
+      <tbody id="price-body"></tbody>
+    </table></div>
+  </div>
+</div>
+</div>
+
+<!-- ══ ICLOUD ══ -->
+<div id="tab-sync" class="tp">
+<div class="max-w-2xl mx-auto px-4 py-5">
+  <h2 style="font-size:20px;font-weight:400;margin-bottom:6px;">Sincronización ☁️</h2>
+  <p style="font-size:13px;color:var(--tx2);margin-bottom:20px;">Tus datos en Firebase se sincronizan en tiempo real entre iPhone y Mac.</p>
+  <div style="display:flex;flex-direction:column;gap:14px;">
+    <div class="card" style="border-color:var(--gdim);">
+      <div style="font-family:Fraunces,serif;font-size:15px;margin-bottom:8px;">🔐 Backup manual</div>
+      <p style="font-size:13px;color:var(--tx2);margin-bottom:12px;">Exportá un JSON periódicamente como respaldo adicional.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="bg" onclick="exportBackup()">⬇ Exportar backup</button>
+        <label class="bgh" style="cursor:pointer;">⬆ Importar<input type="file" accept=".json" onchange="importBackup(event)" style="display:none;"></label>
       </div>
     </div>
-    <div style="overflow-x:auto;">
-      <table class="ing-table" id="price-alert-table">
-        <thead>
-          <tr>
-            <th>Receta</th>
-            <th>Ingrediente</th>
-            <th>Precio actual</th>
-            <th>Última actualización</th>
-            <th>Estado</th>
-            <th>Nuevo precio</th>
-          </tr>
-        </thead>
-        <tbody id="price-alert-body"></tbody>
-      </table>
+    <div class="card">
+      <div style="font-family:Fraunces,serif;font-size:15px;margin-bottom:8px;">ℹ️ Estado</div>
+      <div id="sync-status" style="font-size:13px;color:var(--tx2);line-height:1.8;"></div>
     </div>
   </div>
 </div>
 </div>
 
+<!-- MODAL EDITAR RECETA -->
+<div id="mod-edit" class="ov" style="display:none;" onclick="if(event.target===this)this.style.display='none'">
+<div class="md">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+    <div class="mdt" id="mod-edit-tit">Nueva receta</div>
+    <button onclick="document.getElementById('mod-edit').style.display='none'" style="background:transparent;border:none;color:var(--tx2);font-size:22px;cursor:pointer;">✕</button>
+  </div>
+  <input type="hidden" id="edit-id">
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">
+    <div class="fi sm:col-span-1"><label>Nombre</label><input type="text" id="r-nom" placeholder="Nombre de la receta"></div>
+    <div class="fi"><label>Categoría</label><select id="r-cat"><option value="entrada">Entrada</option><option value="principal">Plato principal</option><option value="postre">Postre</option><option value="after">After</option></select></div>
+    <div class="fi"><label>Rinde (personas)</label><input type="number" id="r-rin" placeholder="10" min="1" inputmode="numeric"></div>
+  </div>
+  <div class="fi mb-3"><label>Descripción breve</label><input type="text" id="r-dsc" placeholder="Descripción corta..."></div>
+  <div class="fi mb-4"><label>Preparación paso a paso</label>
+    <textarea id="r-stp" placeholder="Paso 1: ... Paso 2: ..." style="background:var(--sf2);border:1px solid var(--bd);border-radius:6px;padding:9px 12px;color:var(--tx);font-family:Inter,sans-serif;font-size:13px;outline:none;width:100%;min-height:90px;resize:vertical;-webkit-appearance:none;"></textarea>
+  </div>
+  <div class="sh">Ingredientes</div>
+  <div style="overflow-x:auto;margin-bottom:10px;">
+    <table class="it"><thead><tr><th style="min-width:130px;">Ingrediente</th><th style="min-width:70px;">Cant.</th><th style="min-width:80px;">Unidad</th><th style="min-width:100px;">$ / unidad</th><th style="min-width:80px;">Subtotal</th><th></th></tr></thead>
+    <tbody id="ing-body"></tbody>
+    <tfoot><tr><td colspan="3"></td><td style="padding:8px 6px;font-size:12px;color:var(--tx2);">Total:</td><td id="edit-tot" style="padding:8px 6px;font-weight:600;color:var(--gold);font-size:13px;">$0</td><td></td></tr></tfoot>
+    </table>
+  </div>
+  <button class="bgh" onclick="addRow()" style="width:100%;margin-bottom:16px;">+ Ingrediente</button>
+  <div style="display:flex;justify-content:flex-end;gap:10px;">
+    <button class="bgh" onclick="document.getElementById('mod-edit').style.display='none'">Cancelar</button>
+    <button class="bg" onclick="saveRecipe()">Guardar</button>
+  </div>
+</div>
+</div>
+
+<!-- MODAL VER RECETA -->
+<div id="mod-view" class="ov" style="display:none;" onclick="if(event.target===this)this.style.display='none'">
+<div class="md" style="max-width:720px;">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;">
+    <div>
+      <div id="vw-bdg" class="bdg" style="margin-bottom:6px;"></div>
+      <div id="vw-nom" style="font-family:Fraunces,serif;font-size:20px;font-weight:400;"></div>
+      <div id="vw-inf" style="font-size:12px;color:var(--tx2);margin-top:4px;"></div>
+    </div>
+    <button onclick="document.getElementById('mod-view').style.display='none'" style="background:transparent;border:none;color:var(--tx2);font-size:22px;cursor:pointer;flex-shrink:0;margin-left:10px;">✕</button>
+  </div>
+  <p style="font-size:11px;color:var(--tx3);margin-bottom:10px;">✏️ Tocá el campo dorado para actualizar el precio al instante.</p>
+  <div style="overflow-x:auto;">
+    <table class="it"><thead><tr><th>Ingrediente</th><th>Cant.</th><th>Unidad</th><th>$ / unidad ✏️</th><th>Subtotal</th></tr></thead>
+    <tbody id="vw-body"></tbody>
+    <tfoot>
+      <tr style="border-top:1px solid var(--bd);"><td colspan="3"></td><td style="padding:8px 6px;font-size:12px;color:var(--tx2);">Costo base:</td><td id="vw-tot" style="padding:8px 6px;font-weight:600;color:var(--gold);font-size:14px;">$0</td></tr>
+      <tr><td colspan="3"></td><td style="padding:4px 6px;font-size:12px;color:var(--tx2);">Por persona:</td><td id="vw-pp" style="padding:4px 6px;font-weight:600;color:var(--tx);font-size:13px;">$0</td></tr>
+    </tfoot>
+    </table>
+  </div>
+  <div id="vw-steps" style="margin-top:16px;display:none;">
+    <div class="sh" style="margin-bottom:8px;">📋 Preparación</div>
+    <div id="vw-steps-body" style="font-size:13px;color:var(--tx2);line-height:1.8;background:var(--sf2);border-radius:8px;padding:14px;"></div>
+  </div>
+  <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:14px;">
+    <button class="bsm" id="vw-edit-btn">Editar receta</button>
+    <button class="bgh" onclick="document.getElementById('mod-view').style.display='none'">Cerrar</button>
+  </div>
+</div>
+</div>
+
+<!-- MODAL VER COTIZACION -->
+<div id="mod-quote" class="ov" style="display:none;" onclick="if(event.target===this)this.style.display='none'">
+<div class="md" style="max-width:540px;">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+    <div class="mdt" id="mq-tit" style="margin-bottom:0;"></div>
+    <button onclick="document.getElementById('mod-quote').style.display='none'" style="background:transparent;border:none;color:var(--tx2);font-size:22px;cursor:pointer;">✕</button>
+  </div>
+  <div id="mq-body" style="font-size:13px;color:var(--tx2);line-height:1.8;"></div>
+  <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;">
+    <button class="bg" id="mq-load">Cargar en cotizador</button>
+    <button class="bgh" onclick="document.getElementById('mod-quote').style.display='none'">Cerrar</button>
+  </div>
+</div>
+</div>
 
 <!-- MODAL PAQUETE -->
-<div id="modal-pkg" class="modal-overlay" style="display:none;" onclick="if(event.target===this)this.style.display='none'">
-  <div class="modal" style="max-width:600px;">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-      <div id="pkg-modal-title" style="font-family:'Fraunces',serif;font-size:20px;font-weight:400;">Nuevo paquete</div>
-      <button onclick="document.getElementById('modal-pkg').style.display='none'" style="background:transparent;border:none;color:var(--text2);font-size:22px;cursor:pointer;">✕</button>
-    </div>
-    <input type="hidden" id="pkg-edit-id">
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
-      <div class="field sm:col-span-2">
-        <label>Nombre del paquete</label>
-        <input type="text" id="pkg-name" placeholder="Ej: Menú bodas clásico, Corporativo ejecutivo...">
-      </div>
-      <div class="field sm:col-span-2">
-        <label>Descripción (opcional)</label>
-        <input type="text" id="pkg-desc" placeholder="Ej: Ideal para 50-100 personas, incluye entrada fría y caliente">
-      </div>
-    </div>
-    <div class="section-h">Seleccioná las recetas del paquete</div>
-    <div id="pkg-recipe-selector" style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px;max-height:320px;overflow-y:auto;"></div>
-    <div style="display:flex;justify-content:flex-end;gap:10px;">
-      <button class="btn-ghost" onclick="document.getElementById('modal-pkg').style.display='none'">Cancelar</button>
-      <button class="btn-gold" onclick="savePkg()">Guardar paquete</button>
-    </div>
+<div id="mod-pkg" class="ov" style="display:none;" onclick="if(event.target===this)this.style.display='none'">
+<div class="md" style="max-width:560px;">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+    <div class="mdt" id="pkg-tit">Nuevo paquete</div>
+    <button onclick="document.getElementById('mod-pkg').style.display='none'" style="background:transparent;border:none;color:var(--tx2);font-size:22px;cursor:pointer;">✕</button>
+  </div>
+  <input type="hidden" id="pkg-id">
+  <div class="fi mb-3"><label>Nombre del paquete</label><input type="text" id="pkg-nom" placeholder="Ej: Menú bodas clásico"></div>
+  <div class="fi mb-4"><label>Descripción (opcional)</label><input type="text" id="pkg-dsc" placeholder="Ej: Ideal para 50-100 personas"></div>
+  <div class="sh">Seleccioná las recetas</div>
+  <div id="pkg-sel" style="max-height:300px;overflow-y:auto;margin-bottom:16px;"></div>
+  <div style="display:flex;justify-content:flex-end;gap:10px;">
+    <button class="bgh" onclick="document.getElementById('mod-pkg').style.display='none'">Cancelar</button>
+    <button class="bg" onclick="savePkg()">Guardar paquete</button>
   </div>
 </div>
-
-<!-- MODAL EDITAR/NUEVA RECETA -->
-<div id="modal-edit" class="modal-overlay" style="display:none;" onclick="if(event.target===this)this.style.display='none'">
-  <div class="modal">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-      <div id="modal-edit-title" style="font-family:'Fraunces',serif;font-size:20px;font-weight:400;"></div>
-      <button onclick="document.getElementById('modal-edit').style.display='none'" style="background:transparent;border:none;color:var(--text2);font-size:22px;cursor:pointer;">✕</button>
-    </div>
-    <input type="hidden" id="edit-id">
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-3">
-      <div class="field sm:col-span-1"><label>Nombre</label><input type="text" id="r-nombre" placeholder="Nombre de la receta"></div>
-      <div class="field"><label>Categoría</label><select id="r-cat"><option value="entrada">Entrada</option><option value="principal">Plato principal</option><option value="postre">Postre</option><option value="after">After</option></select></div>
-      <div class="field"><label>Rinde (personas)</label><input type="number" id="r-rinde" placeholder="10" min="1" inputmode="numeric"></div>
-    </div>
-    <div class="field mb-3">
-      <label>Descripción breve (opcional)</label>
-      <input type="text" id="r-desc" placeholder="Ej: Clásico cordobés con masa casera y relleno jugoso...">
-    </div>
-    <div class="field mb-5">
-      <label>Preparación / Paso a paso (opcional)</label>
-      <textarea id="r-steps" placeholder="Ej: Masa: Mezclá la harina... Relleno: Sofreí la cebolla..." style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:9px 12px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;outline:none;width:100%;min-height:100px;resize:vertical;-webkit-appearance:none;" onfocus="this.style.borderColor='var(--gold-dim)'" onblur="this.style.borderColor='var(--border)'"></textarea>
-    </div>
-    <div class="section-h">Ingredientes — todos los campos son editables</div>
-    <div style="overflow-x:auto;margin-bottom:12px;">
-      <table class="ing-table" id="ing-table-edit">
-        <thead><tr><th style="min-width:140px;">Ingrediente</th><th style="min-width:80px;">Cantidad</th><th style="min-width:90px;">Unidad</th><th style="min-width:110px;">$ / unidad</th><th style="min-width:90px;">Subtotal</th><th></th></tr></thead>
-        <tbody id="ing-tbody-edit"></tbody>
-        <tfoot><tr><td colspan="3"></td><td style="padding:8px 6px;font-size:12px;color:var(--text2);">Total base:</td><td id="edit-total" style="padding:8px 6px;font-weight:600;color:var(--gold);font-size:13px;">$0</td><td></td></tr></tfoot>
-      </table>
-    </div>
-    <button class="btn-ghost" onclick="addEditRow()" style="margin-bottom:20px;width:100%;">+ Agregar ingrediente</button>
-    <div style="display:flex;justify-content:flex-end;gap:10px;">
-      <button class="btn-ghost" onclick="document.getElementById('modal-edit').style.display='none'">Cancelar</button>
-      <button class="btn-gold" onclick="saveRecipe()">Guardar receta</button>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL VER RECETA (precios editables inline) -->
-<div id="modal-view" class="modal-overlay" style="display:none;" onclick="if(event.target===this)this.style.display='none'">
-  <div class="modal" style="max-width:740px;">
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
-      <div>
-        <div id="vw-badge" class="badge" style="margin-bottom:6px;"></div>
-        <div id="vw-name" style="font-family:'Fraunces',serif;font-size:20px;font-weight:400;"></div>
-        <div id="vw-rinde" style="font-size:12px;color:var(--text2);margin-top:2px;"></div>
-      </div>
-      <button onclick="document.getElementById('modal-view').style.display='none'" style="background:transparent;border:none;color:var(--text2);font-size:22px;cursor:pointer;flex-shrink:0;margin-left:12px;">✕</button>
-    </div>
-    <p style="font-size:11px;color:var(--text3);margin-bottom:10px;">✏️ Hacé clic en cualquier campo dorado para actualizar el precio. El cambio se guarda automáticamente y actualiza el cotizador.</p>
-    <div style="overflow-x:auto;">
-      <table class="ing-table" id="ing-table-view">
-        <thead><tr><th style="min-width:140px;">Ingrediente</th><th style="min-width:80px;">Cantidad</th><th style="min-width:90px;">Unidad</th><th style="min-width:120px;">$ / unidad ✏️</th><th style="min-width:100px;">Subtotal</th></tr></thead>
-        <tbody id="ing-tbody-view"></tbody>
-        <tfoot>
-          <tr style="border-top:1px solid var(--border);">
-            <td colspan="3" style="padding:10px 6px;"></td>
-            <td style="padding:10px 6px;font-size:12px;color:var(--text2);">Costo base:</td>
-            <td id="vw-total" style="padding:10px 6px;font-weight:600;color:var(--gold);font-size:14px;">$0</td>
-          </tr>
-          <tr>
-            <td colspan="3"></td>
-            <td style="padding:4px 6px;font-size:12px;color:var(--text2);">Por persona:</td>
-            <td id="vw-pp" style="padding:4px 6px;font-weight:600;color:var(--text);font-size:13px;">$0</td>
-          </tr>
-        </tfoot>
-      </table>
-    </div>
-    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:16px;">
-      <button class="btn-sm" id="vw-edit-btn">Editar receta completa</button>
-      <button class="btn-ghost" onclick="document.getElementById('modal-view').style.display='none'">Cerrar</button>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL VER COTIZACIÓN -->
-<div id="modal-quote" class="modal-overlay" style="display:none;" onclick="if(event.target===this)this.style.display='none'">
-  <div class="modal" style="max-width:560px;">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-      <div id="mq-title" style="font-family:'Fraunces',serif;font-size:20px;font-weight:400;"></div>
-      <button onclick="document.getElementById('modal-quote').style.display='none'" style="background:transparent;border:none;color:var(--text2);font-size:22px;cursor:pointer;">✕</button>
-    </div>
-    <div id="mq-body" style="font-size:13px;color:var(--text2);line-height:1.8;"></div>
-    <div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap;">
-      <button class="btn-gold" id="mq-load">Cargar en cotizador</button>
-      <button class="btn-ghost" onclick="document.getElementById('modal-quote').style.display='none'">Cerrar</button>
-    </div>
-  </div>
 </div>
 
 <script>
-// ═══════════════════════════════════════════
-// RECETAS PRECARGADAS · Chef Cordobés
-// Precios mercado Córdoba, junio 2026
-// ═══════════════════════════════════════════
+// ══ DATA ══════════════════════════════════════════════════════
 const DEFAULTS = [
   // ── ENTRADAS (6) ──────────────────────────────────────────────────────
   {id:'e001',category:'entrada',name:'Empanadas criollas al horno',rendimiento:10,desc:"Clásico de la cocina cordobesa. Masa casera dorada al horno, rellenas con carne jugosa, huevo duro, aceitunas y las especias de siempre. Imprescindibles en cualquier evento.",steps:"<strong>Masa:</strong> Mezclá la harina con sal y grasa hasta formar una masa tierna. Dejá descansar 30 min tapada.<br>
@@ -890,173 +801,157 @@ const DEFAULTS = [
   ]},
 ];
 
-// ═══════════════════════════════════════════
-// STATE
-// ═══════════════════════════════════════════
-const SK = 'cotizador_cba_v3';
-let S = { recipes:[], quotes:[], packages:[], priceLog:{} };
-let _ignoreNextSnapshot = false; // evita loop al recibir el propio save
+const SK = 'cotizador_cba_v4';
+let S = {recipes:[], quotes:[], packages:[], priceLog:{}};
 
-// ── STORAGE HÍBRIDO: Firebase (primario) + localStorage (fallback) ───────────
-function storeGet(k){
-  try{ return localStorage.getItem(k); }catch(e){ return null; }
-}
-function storeSet(k,v){
-  try{ localStorage.setItem(k,v); }catch(e){}
-}
-function storeLabel(){
-  if(window._fbReady) return '🔥 Firebase (sincronización en tiempo real entre dispositivos)';
-  try{ localStorage.setItem('__t__','1'); localStorage.removeItem('__t__'); return '💾 localStorage (solo este dispositivo)'; }catch(e){}
-  return '⚠️ Sin persistencia — exportá backup frecuentemente';
-}
+// ══ STORAGE ═══════════════════════════════════════════════════
+function lsGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
+function lsSet(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
 
-// Carga inicial: Firebase primero, localStorage como fallback
-async function load(){
-  // Intentar Firebase
-  if(window._fbReady){
-    try{
-      const data = await window._fbLoad();
-      if(data){
-        S.recipes  = data.recipes  || [];
-        S.quotes   = data.quotes   || [];
-        S.packages = data.packages || [];
-        S.priceLog = data.priceLog || {};
-        storeSet(SK, JSON.stringify(S)); // cache local
-        return;
-      }
-    }catch(e){ console.warn("Firebase load failed, using localStorage", e); }
-  }
-  // Fallback localStorage
+function loadLocal(){
   try{
-    const r = storeGet(SK);
-    if(r){ const p=JSON.parse(r); S.recipes=p.recipes||[]; S.quotes=p.quotes||[]; S.packages=p.packages||[]; S.priceLog=p.priceLog||{}; }
-  }catch(e){ console.warn("localStorage load error", e); }
+    var r = lsGet(SK);
+    if(r){ var p=JSON.parse(r); S.recipes=p.recipes||[]; S.quotes=p.quotes||[]; S.packages=p.packages||[]; S.priceLog=p.priceLog||{}; }
+  }catch(e){}
 }
 
-// Guardar: Firebase + localStorage simultáneamente
-async function save(){
-  // Cache local inmediato
-  storeSet(SK, JSON.stringify(S));
-
-  if(window._fbReady){
-    _ignoreNextSnapshot = true;
-    const ok = await window._fbSave(S);
-    if(ok){
-      toast('☁️ Guardado y sincronizado ✓');
-    } else {
-      toast('💾 Guardado local (Firebase no disponible)');
-    }
-  } else {
-    toast('💾 Guardado localmente ✓');
-  }
-  statUpdate();
+function persist(){
+  lsSet(SK, JSON.stringify(S));
+  if(window._fb) window._fb.save(S).catch(function(){});
+  toast('Guardado ✓');
+  syncStatus();
 }
 
 function initDefaults(){
-  if(S.recipes.length === 0){
-    S.recipes = DEFAULTS.map(r => ({...r, createdAt: new Date().toISOString()}));
-    save();
+  if(S.recipes.length===0){
+    S.recipes = DEFAULTS.map(function(r){ return Object.assign({},r,{createdAt:new Date().toISOString()}); });
+    lsSet(SK, JSON.stringify(S));
   }
 }
 
-// Listener en tiempo real — cuando otro dispositivo guarda, actualiza esta app
-function startRealtimeSync(){
-  if(!window._fbReady || !window._fbListen) return;
-  window._fbListen((data) => {
-    if(_ignoreNextSnapshot){ _ignoreNextSnapshot = false; return; }
-    // Datos llegaron de otro dispositivo
-    S.recipes  = data.recipes  || [];
-    S.quotes   = data.quotes   || [];
-    S.packages = data.packages || [];
-    S.priceLog = data.priceLog || {};
-    storeSet(SK, JSON.stringify(S));
-    // Refrescar UI
-    buildMenu();
-    renderRecipes();
-    renderQuotes();
-    renderPkgGrid();
-    recalculate();
-    statUpdate();
-    toast('🔄 Datos sincronizados desde otro dispositivo');
-  });
+function fbSync(){
+  if(!window._fb) return;
+  window._fb.load().then(function(data){
+    if(data && data.recipes && data.recipes.length > 0){
+      S.recipes=data.recipes; S.quotes=data.quotes||[]; S.packages=data.packages||[]; S.priceLog=data.priceLog||{};
+      lsSet(SK, JSON.stringify(S));
+      buildMenu(); renderRecipes(); renderQuotes(); renderPkgGrid(); calc(); syncStatus();
+      toast('☁️ Sincronizado con Firebase');
+    }
+    // live updates
+    window._fb.listen(function(data){
+      if(!data||!data.recipes) return;
+      S.recipes=data.recipes; S.quotes=data.quotes||[]; S.packages=data.packages||[]; S.priceLog=data.priceLog||{};
+      lsSet(SK, JSON.stringify(S));
+      buildMenu(); renderRecipes(); renderQuotes(); renderPkgGrid(); calc();
+      toast('🔄 Datos actualizados');
+    });
+  }).catch(function(){});
 }
 
-// ═══════════════════════════════════════════
-// TOAST
-// ═══════════════════════════════════════════
-let TT;
-function toast(m){clearTimeout(TT);let t=document.querySelector('.toast');if(!t){t=document.createElement('div');t.className='toast';document.body.appendChild(t);}t.textContent=m;t.style.display='block';TT=setTimeout(()=>{t.style.display='none';},2000);}
+function syncStatus(){
+  var el = document.getElementById('sync-status'); if(!el) return;
+  el.innerHTML = 'Firebase: <strong style="color:var(--gold)">' + (window._fb ? '🟢 Conectado' : '🔴 Sin conexión') + '</strong><br>' +
+    'Recetas: <strong style="color:var(--tx)">' + S.recipes.length + '</strong><br>' +
+    'Cotizaciones: <strong style="color:var(--tx)">' + S.quotes.length + '</strong><br>' +
+    'Paquetes: <strong style="color:var(--tx)">' + (S.packages||[]).length + '</strong>';
+}
 
-// ═══════════════════════════════════════════
-// TABS
-// ═══════════════════════════════════════════
-function switchTab(n,b){
-  document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active'));
-  document.querySelectorAll('.tab-panel').forEach(x=>x.classList.remove('active'));
-  document.getElementById('tab-'+n).classList.add('active');
-  if(b)b.classList.add('active');
+// ══ TOAST ══════════════════════════════════════════════════════
+var _tt;
+function toast(m){
+  clearTimeout(_tt);
+  var t=document.querySelector('.tst');
+  if(!t){t=document.createElement('div');t.className='tst';document.body.appendChild(t);}
+  t.textContent=m; t.style.display='block';
+  _tt=setTimeout(function(){t.style.display='none';},2000);
+}
+
+// ══ TABS ═══════════════════════════════════════════════════════
+function showTab(n, btn){
+  document.querySelectorAll('.tp').forEach(function(p){ p.classList.remove('on'); });
+  document.querySelectorAll('.tb').forEach(function(b){ b.classList.remove('on'); });
+  var panel = document.getElementById('tab-'+n);
+  if(panel) panel.classList.add('on');
+  if(btn)   btn.classList.add('on');
   if(n==='recetas')   renderRecipes();
   if(n==='guardadas') renderQuotes();
-  if(n==='sync')      statUpdate();
   if(n==='paquetes')  renderPkgGrid();
   if(n==='precios')   renderPricePanel();
+  if(n==='sync')      syncStatus();
 }
 
-// ═══════════════════════════════════════════
-// HELPERS
-// ═══════════════════════════════════════════
-function fmt(n){return'$'+Number(n||0).toLocaleString('es-AR',{minimumFractionDigits:2,maximumFractionDigits:2});}
-function gn(id){return parseFloat(document.getElementById(id)?.value)||0;}
-function baseCost(r){return(r.ingredients||[]).reduce((s,i)=>s+(+i.qty||0)*(+i.cost||0),0);}
-function costFor(r,p){return(baseCost(r)/(+r.rendimiento||1))*p;}
-const CAT={entrada:{label:'Entrada',badge:'badge-e',icon:'🥗'},principal:{label:'Principal',badge:'badge-p',icon:'🍽️'},postre:{label:'Postre',badge:'badge-d',icon:'🍮'},after:{label:'After',badge:'badge-a',icon:'🥂'}};
+// ══ HELPERS ════════════════════════════════════════════════════
+function fmt(n){ return '$'+Number(n||0).toLocaleString('es-AR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function gn(id){ return parseFloat(document.getElementById(id)&&document.getElementById(id).value)||0; }
+function bCost(r){ return (r.ingredients||[]).reduce(function(s,i){ return s+(+i.qty||0)*(+i.cost||0); },0); }
+function cFor(r,p){ return (bCost(r)/(+r.rendimiento||1))*p; }
 
-// ═══════════════════════════════════════════
-// MENU SELECTOR
-// ═══════════════════════════════════════════
+var CAT = {
+  entrada:   {label:'Entrada',   cls:'be', icon:'🥗'},
+  principal: {label:'Principal', cls:'bp', icon:'🍽️'},
+  postre:    {label:'Postre',    cls:'bd', icon:'🍮'},
+  after:     {label:'After',     cls:'ba', icon:'🥂'}
+};
+var CATS = ['entrada','principal','postre','after'];
+
+// ══ MENU SELECTOR ══════════════════════════════════════════════
 function buildMenu(){
-  const c=document.getElementById('menu-selector');c.innerHTML='';
-  Object.entries(CAT).forEach(([k,m])=>{
-    const recs=S.recipes.filter(r=>r.category===k);
-    const d=document.createElement('div');d.className='menu-category';d.id='mcat-'+k;
-    d.innerHTML=`<div class="menu-cat-header" onclick="toggleCat('${k}')">
-      <span class="menu-cat-label">${m.icon} ${m.label}s<span class="menu-cat-count" id="cnt-${k}">0</span></span>
-      <span style="color:var(--text3);font-size:12px;" id="arr-${k}">▾</span></div>
-      <div class="menu-options" id="opts-${k}">
-      ${recs.length===0
-        ?`<div style="font-size:12px;color:var(--text3);padding:8px;">Sin recetas · <button class="btn-sm" style="margin-left:4px;" onclick="switchTab('recetas',null)">Agregar</button></div>`
-        :recs.map(r=>{const pp=r.rendimiento>0?baseCost(r)/r.rendimiento:0;
-          return`<label class="menu-option"><input type="checkbox" class="mcb" data-id="${r.id}" data-cat="${k}" onchange="onMenu()">
-          <span class="menu-option-name">${r.name}</span>
-          <span class="menu-option-cost" id="oc-${r.id}">${fmt(pp)}/p.</span></label>`;
-        }).join('')
-      }</div>`;
+  var c = document.getElementById('menu-sel'); if(!c) return;
+  c.innerHTML = '';
+  CATS.forEach(function(k){
+    var cat = CAT[k];
+    var recs = S.recipes.filter(function(r){ return r.category===k; });
+    var d = document.createElement('div');
+    d.className = 'mc'; d.id = 'mc-'+k;
+    var opts = recs.length===0
+      ? '<div style="font-size:12px;color:var(--tx3);padding:8px;">Sin recetas · <button class="bsm" style="margin-left:4px;" onclick="showTab('recetas',null)">Agregar</button></div>'
+      : recs.map(function(r){
+          var pp = r.rendimiento>0 ? bCost(r)/r.rendimiento : 0;
+          return '<label class="mopt"><input type="checkbox" class="mcb" data-id="'+r.id+'" data-cat="'+k+'" onchange="onMenu()"><span class="mon">'+r.name+'</span><span class="moc" id="oc-'+r.id+'">'+fmt(pp)+'/p.</span></label>';
+        }).join('');
+    d.innerHTML = '<div class="mch" onclick="toggleCat(''+k+'')"><span class="mcl">'+cat.icon+' '+cat.label+'s<span class="mcc" id="cc-'+k+'">0</span></span><span style="color:var(--tx3);font-size:12px;" id="arr-'+k+'">▾</span></div><div class="mo" id="mo-'+k+'">'+opts+'</div>';
     c.appendChild(d);
   });
   updCnt();
 }
-function toggleCat(k){const o=document.getElementById('opts-'+k);const a=document.getElementById('arr-'+k);o.classList.toggle('open');a.textContent=o.classList.contains('open')?'▴':'▾';}
-function selIds(){return[...document.querySelectorAll('.mcb:checked')].map(c=>c.dataset.id);}
-function updCnt(){Object.keys(CAT).forEach(k=>{const n=document.querySelectorAll(`.mcb[data-cat="${k}"]:checked`).length;const b=document.getElementById('cnt-'+k);if(b){b.textContent=n;b.style.display=n>0?'inline-block':'none';}});}
-function onMenu(){updCnt();recalculate();refreshCosts();}
-function refreshCosts(){
-  const p=gn('c-personas');
-  document.querySelectorAll('.mcb').forEach(cb=>{
-    const r=S.recipes.find(x=>x.id===cb.dataset.id);if(!r)return;
-    const el=document.getElementById('oc-'+r.id);if(!el)return;
-    el.textContent=p>0?fmt(costFor(r,p))+' tot.':fmt(r.rendimiento>0?baseCost(r)/r.rendimiento:0)+'/p.';
+
+function toggleCat(k){
+  var o=document.getElementById('mo-'+k), a=document.getElementById('arr-'+k);
+  o.classList.toggle('on'); a.textContent=o.classList.contains('on')?'▴':'▾';
+}
+
+function selIds(){ return Array.from(document.querySelectorAll('.mcb:checked')).map(function(c){ return c.dataset.id; }); }
+
+function updCnt(){
+  CATS.forEach(function(k){
+    var n=document.querySelectorAll('.mcb[data-cat="'+k+'"]:checked').length;
+    var b=document.getElementById('cc-'+k);
+    if(b){ b.textContent=n; b.style.display=n>0?'inline-block':'none'; }
   });
 }
 
-// ═══════════════════════════════════════════
-// RECALCULATE
-// ═══════════════════════════════════════════
-function recalculate(){
-  const p=gn('c-personas'),mg=gn('c-margen')/100,ids=selIds();
-  let mp=0;const items=[];
-  ids.forEach(id=>{const r=S.recipes.find(x=>x.id===id);if(!r)return;const c=p>0?costFor(r,p):0;mp+=c;items.push({name:r.name,c});});
-  const sv=['personal','limpieza','salon','dj','bebidas','varios'].reduce((s,k)=>s+gn('g-'+k),0);
-  const ct=mp+sv,f=mg>=1?1:(1-mg),pt=f>0?ct/f:ct,pp=p>0?pt/p:0,gn2=pt-ct;
+function onMenu(){ updCnt(); calc(); refCosts(); }
+
+function refCosts(){
+  var p=gn('c-pe');
+  document.querySelectorAll('.mcb').forEach(function(cb){
+    var r=S.recipes.find(function(x){ return x.id===cb.dataset.id; }); if(!r) return;
+    var el=document.getElementById('oc-'+r.id); if(!el) return;
+    el.textContent = p>0 ? fmt(cFor(r,p))+' tot.' : fmt(r.rendimiento>0?bCost(r)/r.rendimiento:0)+'/p.';
+  });
+}
+
+// ══ CALCULATE ══════════════════════════════════════════════════
+function calc(){
+  var p=gn('c-pe'), mg=gn('c-mg')/100, ids=selIds();
+  var mp=0, items=[];
+  ids.forEach(function(id){
+    var r=S.recipes.find(function(x){ return x.id===id; }); if(!r) return;
+    var cost=p>0?cFor(r,p):0; mp+=cost; items.push({name:r.name,c:cost});
+  });
+  var sv=['pe','li','sa','dj','be','va'].reduce(function(s,k){ return s+gn('g-'+k); },0);
+  var ct=mp+sv, f=mg>=1?1:(1-mg), pt=f>0?ct/f:ct, pp=p>0?pt/p:0, gn2=pt-ct;
   document.getElementById('r-mp').textContent=fmt(mp);
   document.getElementById('r-mpp').textContent=fmt(p>0?mp/p:0);
   document.getElementById('r-sv').textContent=fmt(sv);
@@ -1064,788 +959,480 @@ function recalculate(){
   document.getElementById('r-pt').textContent=fmt(pt);
   document.getElementById('r-pp').textContent=fmt(pp);
   document.getElementById('r-gn').textContent=fmt(gn2);
-  document.getElementById('r-mg').textContent=(gn('c-margen')||0)+'%';
-  const cl=document.getElementById('c-cliente')?.value;
-  document.getElementById('r-cn').textContent=cl?`${cl} · ${p||0} personas`:p>0?`${p} personas`:'—';
-  const sd=document.getElementById('menu-summary'),si=document.getElementById('menu-summary-items');
-  if(items.length>0&&p>0){sd.style.display='block';si.innerHTML=items.map(it=>`<div style="display:flex;justify-content:space-between;padding:6px 10px;background:var(--surface3);border-radius:5px;"><span style="font-size:12px;color:var(--text2);">${it.name}</span><span style="font-size:12px;font-weight:500;color:var(--text);">${fmt(it.c)}</span></div>`).join('');}
-  else{sd.style.display='none';}
+  document.getElementById('r-mg').textContent=(gn('c-mg')||0)+'%';
+  var cl=document.getElementById('c-cl').value;
+  document.getElementById('r-cn').textContent=cl?cl+' · '+(p||0)+' personas':p>0?p+' personas':'—';
+  var sd=document.getElementById('menu-sum'), si=document.getElementById('menu-sum-items');
+  if(items.length>0&&p>0){
+    sd.style.display='block';
+    si.innerHTML=items.map(function(it){ return '<div style="display:flex;justify-content:space-between;padding:6px 10px;background:var(--sf3);border-radius:5px;"><span style="font-size:12px;color:var(--tx2);">'+it.name+'</span><span style="font-size:12px;font-weight:500;color:var(--tx);">'+fmt(it.c)+'</span></div>'; }).join('');
+  } else { sd.style.display='none'; }
 }
 
-// ═══════════════════════════════════════════
-// QUOTES
-// ═══════════════════════════════════════════
+// ══ QUOTES ══════════════════════════════════════════════════════
 function saveQuote(){
-  const cl=document.getElementById('c-cliente')?.value.trim(),p=gn('c-personas');
-  if(!cl){toast('⚠️ Ingresá el nombre del cliente');return;}
-  if(!p){toast('⚠️ Ingresá la cantidad de personas');return;}
-  const mi=selIds().map(id=>{const r=S.recipes.find(x=>x.id===id);return r?{id:r.id,name:r.name,category:r.category}:null;}).filter(Boolean);
-  const sv={};['personal','limpieza','salon','dj','bebidas','varios'].forEach(k=>{sv[k]=gn('g-'+k);});
-  S.quotes.unshift({id:'q'+Date.now(),createdAt:new Date().toISOString(),cliente:cl,personas:p,menuItems:mi,servicios:sv,margen:gn('c-margen'),
+  var cl=document.getElementById('c-cl').value.trim(), p=gn('c-pe');
+  if(!cl){ toast('⚠️ Ingresá el nombre del cliente'); return; }
+  if(!p){  toast('⚠️ Ingresá la cantidad de personas'); return; }
+  var mi=selIds().map(function(id){ var r=S.recipes.find(function(x){ return x.id===id; }); return r?{id:r.id,name:r.name,category:r.category}:null; }).filter(Boolean);
+  var sv={}; ['pe','li','sa','dj','be','va'].forEach(function(k){ sv[k]=gn('g-'+k); });
+  S.quotes.unshift({id:'q'+Date.now(),createdAt:new Date().toISOString(),cliente:cl,personas:p,menuItems:mi,servicios:sv,margen:gn('c-mg'),
     results:{mp:document.getElementById('r-mp').textContent,sv:document.getElementById('r-sv').textContent,ct:document.getElementById('r-ct').textContent,pt:document.getElementById('r-pt').textContent,pp:document.getElementById('r-pp').textContent,gn:document.getElementById('r-gn').textContent}});
-  save();toast('Cotización guardada ✓');
+  persist(); toast('Cotización guardada ✓');
 }
 
 function renderQuotes(){
-  const l=document.getElementById('quotes-list');
-  if(!S.quotes.length){l.innerHTML=`<div class="empty"><div class="ico">📄</div><p>No hay cotizaciones guardadas.<br>Completá el cotizador y guardá.</p></div>`;return;}
-  l.innerHTML=S.quotes.map(q=>{
-    const d=new Date(q.createdAt).toLocaleDateString('es-AR',{day:'2-digit',month:'short',year:'numeric'});
-    const mn=q.menuItems.map(m=>m.name).join(', ')||'—';
-    return`<div class="quote-card"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;">
-      <div><div style="font-family:'Fraunces',serif;font-size:16px;font-weight:400;">${q.cliente}</div>
-      <div style="font-size:12px;color:var(--text3);margin-top:2px;">${d} · ${q.personas} personas</div>
-      <div style="font-size:12px;color:var(--text2);margin-top:5px;">${mn}</div></div>
-      <div style="text-align:right;flex-shrink:0;"><div style="font-family:'Fraunces',serif;font-size:18px;color:var(--gold);">${q.results.pt}</div>
-      <div style="font-size:11px;color:var(--text3);">${q.results.pp}/persona</div></div></div>
-      <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
-        <button class="btn-sm" onclick="viewQuote('${q.id}')">Ver detalle</button>
-        <button class="btn-ghost" style="font-size:11px;" onclick="loadQuote('${q.id}')">Cargar en cotizador</button>
-        <button class="btn-danger" onclick="delQuote('${q.id}')">Eliminar</button>
-      </div></div>`;
+  var l=document.getElementById('quotes-list'); if(!l) return;
+  if(!S.quotes.length){ l.innerHTML='<div class="emp"><div class="ic">📄</div><p>Sin cotizaciones guardadas.</p></div>'; return; }
+  l.innerHTML=S.quotes.map(function(q){
+    var d=new Date(q.createdAt).toLocaleDateString('es-AR',{day:'2-digit',month:'short',year:'numeric'});
+    return '<div class="qc"><div style="display:flex;justify-content:space-between;gap:10px;"><div><div style="font-family:Fraunces,serif;font-size:16px;font-weight:400;">'+q.cliente+'</div><div style="font-size:12px;color:var(--tx3);margin-top:2px;">'+d+' · '+q.personas+' personas</div><div style="font-size:12px;color:var(--tx2);margin-top:5px;">'+q.menuItems.map(function(m){ return m.name; }).join(' · ')+'</div></div><div style="text-align:right;flex-shrink:0;"><div style="font-family:Fraunces,serif;font-size:18px;color:var(--gold);">'+q.results.pt+'</div><div style="font-size:11px;color:var(--tx3);">'+q.results.pp+'/persona</div></div></div><div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;"><button class="bsm" onclick="viewQuote(''+q.id+'')">Ver detalle</button><button class="bgh" style="font-size:11px;" onclick="loadQuote(''+q.id+'')">Cargar</button><button class="bdn" onclick="delQuote(''+q.id+'')">Eliminar</button></div></div>';
   }).join('');
 }
 
 function viewQuote(id){
-  const q=S.quotes.find(x=>x.id===id);if(!q)return;
-  const d=new Date(q.createdAt).toLocaleDateString('es-AR',{day:'2-digit',month:'long',year:'numeric'});
-  document.getElementById('mq-title').textContent=q.cliente;
-  document.getElementById('mq-body').innerHTML=`
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;margin-bottom:14px;">
-      <div><span style="color:var(--text3);">Fecha:</span> ${d}</div>
-      <div><span style="color:var(--text3);">Personas:</span> ${q.personas}</div>
-      <div><span style="color:var(--text3);">Margen:</span> ${q.margen}%</div>
-    </div>
-    <div class="section-h" style="margin-bottom:8px;">Menú</div>
-    <div style="margin-bottom:14px;">${q.menuItems.map(m=>`<span class="badge ${CAT[m.category]?.badge||''}" style="margin-right:5px;margin-bottom:4px;">${m.name}</span>`).join('')||'—'}</div>
-    <div class="section-h" style="margin-bottom:8px;">Resumen financiero</div>
-    <div style="background:var(--surface2);border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:7px;">
-      <div style="display:flex;justify-content:space-between;"><span>Materia prima</span><span>${q.results.mp}</span></div>
-      <div style="display:flex;justify-content:space-between;"><span>Servicios</span><span>${q.results.sv}</span></div>
-      <div style="display:flex;justify-content:space-between;border-top:1px solid var(--border);padding-top:7px;margin-top:2px;">
-        <span style="color:var(--text);font-weight:600;">Precio total</span><span style="color:var(--gold);font-weight:600;">${q.results.pt}</span></div>
-      <div style="display:flex;justify-content:space-between;"><span>Por persona</span><span>${q.results.pp}</span></div>
-      <div style="display:flex;justify-content:space-between;"><span style="color:#6BBD88;">Ganancia</span><span style="color:#6BBD88;">${q.results.gn}</span></div>
-    </div>`;
-  document.getElementById('mq-load').onclick=()=>{loadQuote(id);document.getElementById('modal-quote').style.display='none';};
-  document.getElementById('modal-quote').style.display='flex';
+  var q=S.quotes.find(function(x){ return x.id===id; }); if(!q) return;
+  var d=new Date(q.createdAt).toLocaleDateString('es-AR',{day:'2-digit',month:'long',year:'numeric'});
+  document.getElementById('mq-tit').textContent=q.cliente;
+  document.getElementById('mq-body').innerHTML='<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;margin-bottom:14px;"><div><span style="color:var(--tx3);">Fecha:</span> '+d+'</div><div><span style="color:var(--tx3);">Personas:</span> '+q.personas+'</div><div><span style="color:var(--tx3);">Margen:</span> '+q.margen+'%</div></div><div class="sh" style="margin-bottom:8px;">Menú</div><div style="margin-bottom:12px;">'+q.menuItems.map(function(m){ return '<span class="bdg '+(CAT[m.category]&&CAT[m.category].cls||'')+'" style="margin-right:4px;margin-bottom:4px;">'+m.name+'</span>'; }).join('')+'</div><div class="sh" style="margin-bottom:8px;">Financiero</div><div style="background:var(--sf2);border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:6px;"><div style="display:flex;justify-content:space-between;"><span>Materia prima</span><span>'+q.results.mp+'</span></div><div style="display:flex;justify-content:space-between;"><span>Servicios</span><span>'+q.results.sv+'</span></div><div style="display:flex;justify-content:space-between;border-top:1px solid var(--bd);padding-top:6px;margin-top:2px;"><span style="color:var(--tx);font-weight:600;">Precio total</span><span style="color:var(--gold);font-weight:600;">'+q.results.pt+'</span></div><div style="display:flex;justify-content:space-between;"><span>Por persona</span><span>'+q.results.pp+'</span></div><div style="display:flex;justify-content:space-between;"><span style="color:#6BBD88;">Ganancia</span><span style="color:#6BBD88;">'+q.results.gn+'</span></div></div>';
+  document.getElementById('mq-load').onclick=function(){ loadQuote(id); document.getElementById('mod-quote').style.display='none'; };
+  document.getElementById('mod-quote').style.display='flex';
 }
 
 function loadQuote(id){
-  const q=S.quotes.find(x=>x.id===id);if(!q)return;
-  document.getElementById('c-cliente').value=q.cliente;
-  document.getElementById('c-personas').value=q.personas;
-  document.getElementById('c-margen').value=q.margen;
-  ['personal','limpieza','salon','dj','bebidas','varios'].forEach(k=>{document.getElementById('g-'+k).value=q.servicios[k]||'';});
-  document.querySelectorAll('.mcb').forEach(cb=>{cb.checked=false;});
-  q.menuItems.forEach(m=>{const cb=document.querySelector(`.mcb[data-id="${m.id}"]`);if(cb){cb.checked=true;const o=document.getElementById('opts-'+m.category);if(o)o.classList.add('open');}});
+  var q=S.quotes.find(function(x){ return x.id===id; }); if(!q) return;
+  document.getElementById('c-cl').value=q.cliente;
+  document.getElementById('c-pe').value=q.personas;
+  document.getElementById('c-mg').value=q.margen;
+  ['pe','li','sa','dj','be','va'].forEach(function(k,i){
+    var keys=['pe','li','sa','dj','be','va'];
+    var old=['pe','li','sa','dj','be','va'];
+    document.getElementById('g-'+keys[i]).value=q.servicios[old[i]]||'';
+  });
+  document.querySelectorAll('.mcb').forEach(function(cb){ cb.checked=false; });
+  q.menuItems.forEach(function(m){
+    var cb=document.querySelector('.mcb[data-id="'+m.id+'"]');
+    if(cb){ cb.checked=true; var o=document.getElementById('mo-'+m.category); if(o) o.classList.add('on'); }
+  });
   onMenu();
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
-  document.getElementById('tab-cotizador').classList.add('active');
-  document.querySelector('.tab-btn').classList.add('active');
+  showTab('cotizador', document.querySelector('.tb'));
   toast('Cotización cargada ✓');
 }
 
-function delQuote(id){if(!confirm('¿Eliminar esta cotización?'))return;S.quotes=S.quotes.filter(q=>q.id!==id);save();renderQuotes();}
+function delQuote(id){
+  if(!confirm('¿Eliminar?')) return;
+  S.quotes=S.quotes.filter(function(q){ return q.id!==id; });
+  persist(); renderQuotes();
+}
 
-// ═══════════════════════════════════════════
-// RECIPE GRID
-// ═══════════════════════════════════════════
+// ══ RECIPES ════════════════════════════════════════════════════
 function renderRecipes(){
-  const f=document.getElementById('filter-cat')?.value||'';
-  const g=document.getElementById('recipes-grid');
-  const order={entrada:0,principal:1,postre:2,after:3};
-  const list=[...S.recipes].filter(r=>!f||r.category===f).sort((a,b)=>(order[a.category]??9)-(order[b.category]??9));
-  if(!list.length){g.innerHTML=`<div class="empty" style="grid-column:1/-1;"><div class="ico">🍽️</div><p>${S.recipes.length===0?'Sin recetas aún.':'Sin recetas en esta categoría.'}</p></div>`;return;}
-  g.innerHTML=list.map(r=>{
-    const t=baseCost(r),pp=r.rendimiento>0?t/r.rendimiento:0,cat=CAT[r.category]||{label:r.category,badge:'',icon:''};
-    return`<div class="recipe-card" onclick="openView('${r.id}')">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
-        <span class="badge ${cat.badge}">${cat.icon} ${cat.label}</span>
-        <button class="btn-danger" style="padding:3px 8px;" onclick="event.stopPropagation();delRecipe('${r.id}')">✕</button>
-      </div>
-      <div style="font-family:'Fraunces',serif;font-size:16px;font-weight:400;margin-bottom:6px;">${r.name}</div>
-      ${r.desc ? `<div style="font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:10px;font-style:italic;">${r.desc}</div>` : ''}
-      <div style="font-size:11px;color:var(--text3);margin-bottom:12px;">Rinde ${r.rendimiento} pers. · ${(r.ingredients||[]).length} ingredientes</div>
-      <div style="display:flex;justify-content:space-between;padding-top:10px;border-top:1px solid var(--border);">
-        <div><div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;">Costo base</div><div style="font-weight:600;">${fmt(t)}</div></div>
-        <div style="text-align:right;"><div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;">Por persona</div><div style="font-weight:600;color:var(--gold);">${fmt(pp)}</div></div>
-      </div>
-    </div>`;
+  var f=document.getElementById('filt-cat')&&document.getElementById('filt-cat').value||'';
+  var g=document.getElementById('rec-grid'); if(!g) return;
+  var order={entrada:0,principal:1,postre:2,after:3};
+  var list=S.recipes.filter(function(r){ return !f||r.category===f; }).slice().sort(function(a,b){ return (order[a.category]||0)-(order[b.category]||0); });
+  if(!list.length){ g.innerHTML='<div class="emp" style="grid-column:1/-1"><div class="ic">🍽️</div><p>Sin recetas.</p></div>'; return; }
+  g.innerHTML=list.map(function(r){
+    var t=bCost(r),pp=r.rendimiento>0?t/r.rendimiento:0,cat=CAT[r.category]||{label:r.category,cls:'',icon:''};
+    return '<div class="rc" onclick="openView(''+r.id+'')">' +
+      '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">' +
+        '<span class="bdg '+cat.cls+'">'+cat.icon+' '+cat.label+'</span>' +
+        '<button class="bdn" style="padding:3px 8px;" onclick="event.stopPropagation();delRec(''+r.id+'')">✕</button>' +
+      '</div>' +
+      '<div style="font-family:Fraunces,serif;font-size:16px;font-weight:400;margin-bottom:5px;">'+r.name+'</div>' +
+      (r.desc?'<div style="font-size:12px;color:var(--tx2);line-height:1.5;margin-bottom:8px;font-style:italic;">'+r.desc+'</div>':'')+
+      '<div style="font-size:11px;color:var(--tx3);margin-bottom:12px;">Rinde '+r.rendimiento+' pers. · '+(r.ingredients||[]).length+' ingredientes</div>' +
+      '<div style="display:flex;justify-content:space-between;padding-top:10px;border-top:1px solid var(--bd);">' +
+        '<div><div style="font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;">Costo base</div><div style="font-weight:600;">'+fmt(t)+'</div></div>' +
+        '<div style="text-align:right;"><div style="font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;">Por persona</div><div style="font-weight:600;color:var(--gold);">'+fmt(pp)+'</div></div>' +
+      '</div></div>';
   }).join('');
 }
 
-function delRecipe(id){if(!confirm('¿Eliminar esta receta?'))return;S.recipes=S.recipes.filter(r=>r.id!==id);save();buildMenu();renderRecipes();}
+function delRec(id){
+  if(!confirm('¿Eliminar esta receta?')) return;
+  S.recipes=S.recipes.filter(function(r){ return r.id!==id; });
+  persist(); buildMenu(); renderRecipes();
+}
 
-// ═══════════════════════════════════════════
-// VIEW MODAL (precios editables inline)
-// ═══════════════════════════════════════════
+// ══ VIEW MODAL ══════════════════════════════════════════════════
 function openView(id){
-  const r=S.recipes.find(x=>x.id===id);if(!r)return;
-  const cat=CAT[r.category]||{label:r.category,badge:'',icon:''};
-  document.getElementById('vw-badge').textContent=cat.icon+' '+cat.label;
-  document.getElementById('vw-badge').className='badge '+cat.badge;
-  document.getElementById('vw-name').textContent=r.name;
-  document.getElementById('vw-rinde').innerHTML=
-    `<span>Rendimiento base: ${r.rendimiento} personas</span>`+
-    (r.desc ? `<div style="margin-top:6px;font-size:12px;color:var(--text2);font-style:italic;line-height:1.5;">${r.desc}</div>` : '')+
-    (r.steps ? `<div style="margin-top:14px;">
-      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:8px;">📋 Preparación paso a paso</div>
-      <div style="font-size:13px;color:var(--text2);line-height:1.8;background:var(--surface2);border-radius:8px;padding:14px;">${r.steps}</div>
-    </div>` : '');
+  var r=S.recipes.find(function(x){ return x.id===id; }); if(!r) return;
+  var cat=CAT[r.category]||{label:r.category,cls:'',icon:''};
+  document.getElementById('vw-bdg').textContent=cat.icon+' '+cat.label;
+  document.getElementById('vw-bdg').className='bdg '+cat.cls;
+  document.getElementById('vw-nom').textContent=r.name;
+  document.getElementById('vw-inf').textContent='Rendimiento base: '+r.rendimiento+' personas';
   renderViewTable(id);
-  document.getElementById('vw-edit-btn').onclick=()=>openEdit(id);
-  document.getElementById('modal-view').style.display='flex';
+  var sd=document.getElementById('vw-steps'), sb=document.getElementById('vw-steps-body');
+  if(r.steps){ sd.style.display='block'; sb.innerHTML=r.steps; } else { sd.style.display='none'; }
+  document.getElementById('vw-edit-btn').onclick=function(){ openEdit(id); };
+  document.getElementById('mod-view').style.display='flex';
 }
 
 function renderViewTable(id){
-  const r=S.recipes.find(x=>x.id===id);if(!r)return;
-  let total=0;
-  document.getElementById('ing-tbody-view').innerHTML=(r.ingredients||[]).map((ing,i)=>{
-    const sub=(+ing.qty||0)*(+ing.cost||0);total+=sub;
-    return`<tr>
-      <td><input class="cell-input" value="${ing.name}" onchange="updateField('${id}',${i},'name',this.value)"></td>
-      <td><input class="cell-input" type="number" value="${ing.qty}" min="0" step="any" inputmode="decimal" style="width:70px;" onchange="updateField('${id}',${i},'qty',this.value)"></td>
-      <td><select class="cell-input" onchange="updateField('${id}',${i},'unit',this.value)">
-        ${['Kg','Litro','Unidad','g','ml','Porción'].map(u=>`<option ${ing.unit===u?'selected':''}>${u}</option>`).join('')}
-      </select></td>
-      <td><input class="cell-input cost-input" type="number" value="${ing.cost}" min="0" step="any" inputmode="decimal" style="width:110px;" onchange="updateField('${id}',${i},'cost',this.value)" title="Editá el precio por unidad"></td>
-      <td style="color:var(--text);font-weight:500;" id="sub-${id}-${i}">${fmt(sub)}</td>
-    </tr>`;
+  var r=S.recipes.find(function(x){ return x.id===id; }); if(!r) return;
+  var total=0;
+  document.getElementById('vw-body').innerHTML=(r.ingredients||[]).map(function(ing,i){
+    var sub=(+ing.qty||0)*(+ing.cost||0); total+=sub;
+    return '<tr><td><input class="ci" value="'+ing.name+'" onchange="updField(''+id+'','+i+','name',this.value)"></td>' +
+      '<td><input class="ci" type="number" value="'+ing.qty+'" min="0" step="any" inputmode="decimal" style="width:65px;" onchange="updField(''+id+'','+i+','qty',this.value)"></td>' +
+      '<td><select class="ci" onchange="updField(''+id+'','+i+','unit',this.value)">'+['Kg','Litro','Unidad','g','ml','Porción'].map(function(u){ return '<option'+(ing.unit===u?' selected':'')+'>'+u+'</option>'; }).join('')+'</select></td>' +
+      '<td><input class="ci cig" type="number" value="'+ing.cost+'" min="0" step="any" inputmode="decimal" style="width:100px;" onchange="updField(''+id+'','+i+','cost',this.value)" title="Editar precio"></td>' +
+      '<td style="color:var(--tx);font-weight:500;">'+fmt(sub)+'</td></tr>';
   }).join('');
-  document.getElementById('vw-total').textContent=fmt(total);
-  const pp=r.rendimiento>0?total/r.rendimiento:0;
-  document.getElementById('vw-pp').textContent=fmt(pp);
+  document.getElementById('vw-tot').textContent=fmt(total);
+  document.getElementById('vw-pp').textContent=fmt(r.rendimiento>0?total/r.rendimiento:0);
 }
 
-function updateField(id,idx,field,val){
-  const r=S.recipes.find(x=>x.id===id);if(!r||!r.ingredients[idx])return;
-  r.ingredients[idx][field]=field==='name'||field==='unit'?val:(parseFloat(val)||0);
-  save();
-  renderViewTable(id); // re-render subtotales
-  recalculate();
-  refreshCosts();
-  renderRecipes();
+function updField(id,idx,field,val){
+  var r=S.recipes.find(function(x){ return x.id===id; }); if(!r||!r.ingredients[idx]) return;
+  r.ingredients[idx][field]=(field==='name'||field==='unit')?val:(parseFloat(val)||0);
+  if(field==='cost'){ if(!S.priceLog)S.priceLog={}; S.priceLog[id+'__'+r.ingredients[idx].name]=new Date().toISOString(); }
+  persist(); renderViewTable(id); calc(); refCosts(); renderRecipes();
 }
 
-// ═══════════════════════════════════════════
-// EDIT MODAL (receta completa)
-// ═══════════════════════════════════════════
+// ══ EDIT MODAL ══════════════════════════════════════════════════
 function openNewModal(){
-  document.getElementById('modal-edit-title').textContent='Nueva receta';
+  document.getElementById('mod-edit-tit').textContent='Nueva receta';
   document.getElementById('edit-id').value='';
-  document.getElementById('r-nombre').value='';
+  document.getElementById('r-nom').value='';
   document.getElementById('r-cat').value='entrada';
-  document.getElementById('r-rinde').value='';
-  document.getElementById('r-desc').value='';
-  document.getElementById('r-steps').value='';
-  document.getElementById('ing-tbody-edit').innerHTML='';
-  addEditRow();addEditRow();
-  document.getElementById('modal-edit').style.display='flex';
+  document.getElementById('r-rin').value='';
+  document.getElementById('r-dsc').value='';
+  document.getElementById('r-stp').value='';
+  document.getElementById('ing-body').innerHTML='';
+  document.getElementById('edit-tot').textContent='$0';
+  addRow(); addRow();
+  document.getElementById('mod-edit').style.display='flex';
 }
 
 function openEdit(id){
-  const r=S.recipes.find(x=>x.id===id);if(!r)return;
-  document.getElementById('modal-view').style.display='none';
-  document.getElementById('modal-edit-title').textContent='Editar receta';
+  var r=S.recipes.find(function(x){ return x.id===id; }); if(!r) return;
+  document.getElementById('mod-view').style.display='none';
+  document.getElementById('mod-edit-tit').textContent='Editar receta';
   document.getElementById('edit-id').value=id;
-  document.getElementById('r-nombre').value=r.name;
+  document.getElementById('r-nom').value=r.name;
   document.getElementById('r-cat').value=r.category;
-  document.getElementById('r-rinde').value=r.rendimiento;
-  document.getElementById('r-desc').value=r.desc||'';
-  document.getElementById('r-steps').value=r.steps||'';
-  document.getElementById('ing-tbody-edit').innerHTML='';
-  (r.ingredients||[]).forEach(ing=>addEditRow(ing));
-  calcEditTotal();
-  document.getElementById('modal-edit').style.display='flex';
+  document.getElementById('r-rin').value=r.rendimiento;
+  document.getElementById('r-dsc').value=r.desc||'';
+  document.getElementById('r-stp').value=r.steps||'';
+  document.getElementById('ing-body').innerHTML='';
+  (r.ingredients||[]).forEach(function(ing){ addRow(ing); });
+  calcEditTot();
+  document.getElementById('mod-edit').style.display='flex';
 }
 
-function addEditRow(ing={}){
-  const tb=document.getElementById('ing-tbody-edit');
-  const tr=document.createElement('tr');
-  tr.innerHTML=`
-    <td><input class="cell-input ing-name" placeholder="Ingrediente" value="${ing.name||''}" oninput="calcEditTotal()"></td>
-    <td><input class="cell-input ing-qty" type="number" placeholder="0" value="${ing.qty||''}" min="0" step="any" inputmode="decimal" style="width:70px;" oninput="calcEditTotal()"></td>
-    <td><select class="cell-input ing-unit" onchange="calcEditTotal()">
-      ${['Kg','Litro','Unidad','g','ml','Porción'].map(u=>`<option ${ing.unit===u?'selected':''}>${u}</option>`).join('')}
-    </select></td>
-    <td><input class="cell-input cost-input ing-cost" type="number" placeholder="0.00" value="${ing.cost||''}" min="0" step="any" inputmode="decimal" style="width:110px;" oninput="calcEditTotal()"></td>
-    <td class="edit-sub" style="color:var(--text);font-size:13px;">${fmt((+ing.qty||0)*(+ing.cost||0))}</td>
-    <td><button onclick="this.closest('tr').remove();calcEditTotal()" class="btn-danger" style="padding:3px 8px;">✕</button></td>`;
+function addRow(ing){
+  ing=ing||{};
+  var tb=document.getElementById('ing-body'), tr=document.createElement('tr');
+  tr.innerHTML='<td><input class="ci ing-n" placeholder="Ingrediente" value="'+(ing.name||'')+'" oninput="calcEditTot()"></td>' +
+    '<td><input class="ci ing-q" type="number" placeholder="0" value="'+(ing.qty||'')+'" min="0" step="any" inputmode="decimal" style="width:65px;" oninput="calcEditTot()"></td>' +
+    '<td><select class="ci ing-u" onchange="calcEditTot()">'+['Kg','Litro','Unidad','g','ml','Porción'].map(function(u){ return '<option'+(ing.unit===u?' selected':'')+'>'+u+'</option>'; }).join('')+'</select></td>' +
+    '<td><input class="ci cig ing-c" type="number" placeholder="0.00" value="'+(ing.cost||'')+'" min="0" step="any" inputmode="decimal" style="width:100px;" oninput="calcEditTot()"></td>' +
+    '<td class="ing-s" style="color:var(--tx);font-size:13px;">'+fmt((+ing.qty||0)*(+ing.cost||0))+'</td>' +
+    '<td><button onclick="this.closest('tr').remove();calcEditTot()" class="bdn" style="padding:3px 8px;">✕</button></td>';
   tb.appendChild(tr);
 }
 
-function calcEditTotal(){
-  let t=0;
-  document.querySelectorAll('#ing-tbody-edit tr').forEach(row=>{
-    const q=parseFloat(row.querySelector('.ing-qty')?.value)||0;
-    const c=parseFloat(row.querySelector('.ing-cost')?.value)||0;
-    const s=q*c;t+=s;
-    const sub=row.querySelector('.edit-sub');if(sub)sub.textContent=fmt(s);
+function calcEditTot(){
+  var t=0;
+  document.querySelectorAll('#ing-body tr').forEach(function(row){
+    var q=parseFloat(row.querySelector('.ing-q').value)||0;
+    var c=parseFloat(row.querySelector('.ing-c').value)||0;
+    var s=q*c; t+=s;
+    var sub=row.querySelector('.ing-s'); if(sub) sub.textContent=fmt(s);
   });
-  document.getElementById('edit-total').textContent=fmt(t);
+  document.getElementById('edit-tot').textContent=fmt(t);
 }
 
 function saveRecipe(){
-  const name=document.getElementById('r-nombre').value.trim();
-  if(!name){toast('⚠️ El nombre es obligatorio');return;}
-  const category=document.getElementById('r-cat').value;
-  const rendimiento=parseFloat(document.getElementById('r-rinde').value)||1;
-  const desc=document.getElementById('r-desc').value.trim();
-  const steps=document.getElementById('r-steps').value.trim();
-  const ingredients=[...document.querySelectorAll('#ing-tbody-edit tr')].map(row=>{
-    const n=row.querySelector('.ing-name').value.trim();
-    const q=parseFloat(row.querySelector('.ing-qty').value)||0;
-    const u=row.querySelector('.ing-unit').value;
-    const c=parseFloat(row.querySelector('.ing-cost').value)||0;
-    return n?{name:n,qty:q,unit:u,cost:c}:null;
+  var name=document.getElementById('r-nom').value.trim();
+  if(!name){ toast('⚠️ El nombre es obligatorio'); return; }
+  var category=document.getElementById('r-cat').value;
+  var rendimiento=parseFloat(document.getElementById('r-rin').value)||1;
+  var desc=document.getElementById('r-dsc').value.trim();
+  var steps=document.getElementById('r-stp').value.trim();
+  var ingredients=Array.from(document.querySelectorAll('#ing-body tr')).map(function(row){
+    var n=row.querySelector('.ing-n').value.trim();
+    return n?{name:n,qty:parseFloat(row.querySelector('.ing-q').value)||0,unit:row.querySelector('.ing-u').value,cost:parseFloat(row.querySelector('.ing-c').value)||0}:null;
   }).filter(Boolean);
-  const eid=document.getElementById('edit-id').value;
-  if(eid){const i=S.recipes.findIndex(r=>r.id===eid);if(i>=0)S.recipes[i]={...S.recipes[i],name,category,rendimiento,desc,steps,ingredients};}
-  else{S.recipes.push({id:'r'+Date.now(),name,category,rendimiento,desc,steps,ingredients,createdAt:new Date().toISOString()});}
-  save();buildMenu();renderRecipes();
-  document.getElementById('modal-edit').style.display='none';
+  var eid=document.getElementById('edit-id').value;
+  if(eid){ var i=S.recipes.findIndex(function(r){ return r.id===eid; }); if(i>=0) S.recipes[i]=Object.assign({},S.recipes[i],{name,category,rendimiento,desc,steps,ingredients}); }
+  else{ S.recipes.push({id:'r'+Date.now(),name,category,rendimiento,desc,steps,ingredients,createdAt:new Date().toISOString()}); }
+  persist(); buildMenu(); renderRecipes();
+  document.getElementById('mod-edit').style.display='none';
 }
 
-// ═══════════════════════════════════════════
-// BACKUP
-// ═══════════════════════════════════════════
-function exportPDF(){
-  const { jsPDF } = window.jspdf;
-  if(!jsPDF){ toast('⚠️ Cargando librería PDF, intentá de nuevo'); return; }
-
-  const cliente   = document.getElementById('c-cliente')?.value || 'Sin nombre';
-  const personas  = gn('c-personas');
-  const margen    = gn('c-margen');
-  const fecha     = new Date().toLocaleDateString('es-AR',{day:'2-digit',month:'long',year:'numeric'});
-  const ids       = selIds();
-
-  // Agrupar recetas seleccionadas por categoría
-  const catOrder  = ['entrada','principal','postre','after'];
-  const catNames  = {entrada:'Entradas',principal:'Platos principales',postre:'Postres',after:'After'};
-  const bycat     = {};
-  ids.forEach(id => {
-    const r = S.recipes.find(x=>x.id===id); if(!r) return;
-    if(!bycat[r.category]) bycat[r.category] = [];
-    bycat[r.category].push(r.name);
-  });
-
-  const doc = new jsPDF({ unit:'mm', format:'a4' });
-  const W = 210, margin = 18, contentW = W - margin*2;
-  let y = 0;
-
-  // ── PALETA ───────────────────────────────────────────────────
-  const GOLD   = [180, 140, 60];
-  const DARK   = [20,  20,  20];
-  const GRAY   = [90,  90,  90];
-  const LGRAY  = [200, 200, 200];
-  const BG     = [15,  15,  15];
-  const BGCARD = [30,  30,  30];
-
-  // ── HEADER NEGRO ─────────────────────────────────────────────
-  doc.setFillColor(...BG);
-  doc.rect(0, 0, W, 52, 'F');
-
-  // Logo / título
-  doc.setTextColor(...GOLD);
-  doc.setFont('helvetica','bolditalic');
-  doc.setFontSize(26);
-  doc.text('Cotización', margin, 22);
-  doc.setFont('helvetica','normal');
-  doc.setFontSize(12);
-  doc.setTextColor(...LGRAY);
-  doc.text('Gastronómica · Córdoba', margin, 31);
-
-  // Línea dorada decorativa
-  doc.setDrawColor(...GOLD);
-  doc.setLineWidth(0.8);
-  doc.line(margin, 36, W - margin, 36);
-
-  // Fecha
-  doc.setFont('helvetica','normal');
-  doc.setFontSize(9);
-  doc.setTextColor(...LGRAY);
-  doc.text(fecha, W - margin, 43, { align:'right' });
-
-  y = 62;
-
-  // ── BLOQUE CLIENTE ────────────────────────────────────────────
-  doc.setFillColor(...BGCARD);
-  doc.roundedRect(margin, y, contentW, 24, 3, 3, 'F');
-  doc.setTextColor(...GOLD);
-  doc.setFont('helvetica','bold');
-  doc.setFontSize(9);
-  doc.text('CLIENTE', margin + 6, y + 8);
-  doc.setTextColor(240, 237, 232);
-  doc.setFont('helvetica','bold');
-  doc.setFontSize(14);
-  doc.text(cliente, margin + 6, y + 17);
-  // Personas
-  doc.setTextColor(...GOLD);
-  doc.setFont('helvetica','bold');
-  doc.setFontSize(9);
-  doc.text('PERSONAS', W - margin - 6, y + 8, { align:'right' });
-  doc.setTextColor(240, 237, 232);
-  doc.setFont('helvetica','bold');
-  doc.setFontSize(20);
-  doc.text(String(personas||0), W - margin - 6, y + 18, { align:'right' });
-
-  y += 34;
-
-  // ── MENÚ SELECCIONADO ─────────────────────────────────────────
-  if(ids.length > 0){
-    doc.setTextColor(...GOLD);
-    doc.setFont('helvetica','bold');
-    doc.setFontSize(9);
-    doc.text('MENÚ', margin, y);
-    doc.setDrawColor(...GOLD);
-    doc.setLineWidth(0.3);
-    doc.line(margin + 13, y - 1, W - margin, y - 1);
-    y += 7;
-
-    catOrder.forEach(cat => {
-      if(!bycat[cat]) return;
-      // Categoría label
-      doc.setFillColor(...GOLD);
-      doc.roundedRect(margin, y, 32, 5.5, 1.5, 1.5, 'F');
-      doc.setTextColor(...DARK);
-      doc.setFont('helvetica','bold');
-      doc.setFontSize(7);
-      doc.text(catNames[cat].toUpperCase(), margin + 16, y + 3.8, { align:'center' });
-
-      // Platos
-      doc.setTextColor(60, 60, 60);
-      doc.setFont('helvetica','normal');
-      doc.setFontSize(10);
-      const platosText = bycat[cat].join('  ·  ');
-      const lines = doc.splitTextToSize(platosText, contentW - 38);
-      doc.setTextColor(50, 50, 50);
-      doc.text(lines, margin + 36, y + 3.8);
-      y += Math.max(8, lines.length * 5.5) + 2;
-    });
-    y += 4;
-  }
-
-  // ── RESUMEN FINANCIERO ────────────────────────────────────────
-  doc.setTextColor(...GOLD);
-  doc.setFont('helvetica','bold');
-  doc.setFontSize(9);
-  doc.text('RESUMEN', margin, y);
-  doc.setDrawColor(...GOLD);
-  doc.setLineWidth(0.3);
-  doc.line(margin + 19, y - 1, W - margin, y - 1);
-  y += 7;
-
-  const filas = [
-    { label:'Materia prima', val: document.getElementById('r-mp').textContent },
-    { label:'Servicios',     val: document.getElementById('r-sv').textContent },
-    { label:'Costo base',    val: document.getElementById('r-ct').textContent },
-  ];
-
-  filas.forEach(f => {
-    doc.setFillColor(245, 244, 242);
-    doc.rect(margin, y - 4, contentW, 8, 'F');
-    doc.setTextColor(...GRAY);
-    doc.setFont('helvetica','normal');
-    doc.setFontSize(10);
-    doc.text(f.label, margin + 4, y + 0.5);
-    doc.setTextColor(...DARK);
-    doc.setFont('helvetica','bold');
-    doc.text(f.val, W - margin - 4, y + 0.5, { align:'right' });
-    y += 9;
-  });
-
-  // ── PRECIO FINAL (destacado) ──────────────────────────────────
-  y += 4;
-  doc.setFillColor(...BG);
-  doc.roundedRect(margin, y, contentW, 26, 3, 3, 'F');
-  doc.setDrawColor(...GOLD);
-  doc.setLineWidth(0.5);
-  doc.roundedRect(margin, y, contentW, 26, 3, 3, 'S');
-
-  doc.setTextColor(...LGRAY);
-  doc.setFont('helvetica','normal');
-  doc.setFontSize(9);
-  doc.text('VALOR POR TARJETA', margin + 6, y + 8);
-
-  doc.setTextColor(...GOLD);
-  doc.setFont('helvetica','bold');
-  doc.setFontSize(22);
-  doc.text(document.getElementById('r-pt').textContent, margin + 6, y + 20);
-
-  // Por persona
-  doc.setTextColor(...LGRAY);
-  doc.setFont('helvetica','normal');
-  doc.setFontSize(9);
-  doc.text('por persona:', W - margin - 40, y + 10);
-  doc.setTextColor(240,237,232);
-  doc.setFont('helvetica','bold');
-  doc.setFontSize(13);
-  doc.text(document.getElementById('r-pp').textContent, W - margin - 6, y + 20, { align:'right' });
-
-  y += 34;
-
-  // Ganancia y margen (discreto, para uso interno)
-  doc.setTextColor(...LGRAY);
-  doc.setFont('helvetica','normal');
-  doc.setFontSize(8);
-  doc.text(`Margen aplicado: ${margen}%   ·   Ganancia estimada: ${document.getElementById('r-gn').textContent}`, margin, y);
-
-  y += 14;
-
-  // ── FOOTER ────────────────────────────────────────────────────
-  doc.setFillColor(...BG);
-  doc.rect(0, 277, W, 20, 'F');
-  doc.setTextColor(...GOLD);
-  doc.setFont('helvetica','bolditalic');
-  doc.setFontSize(9);
-  doc.text('Cocina cordobesa con alma', W/2, 285, { align:'center' });
-  doc.setTextColor(...GRAY);
-  doc.setFont('helvetica','normal');
-  doc.setFontSize(7);
-  doc.text('Esta cotización tiene validez de 48 horas. Precios sujetos a variación de materia prima.', W/2, 290, { align:'center' });
-
-  // ── GUARDAR ───────────────────────────────────────────────────
-  const filename = `cotizacion-${cliente.replace(/\s+/g,'-').toLowerCase()}-${new Date().toISOString().slice(0,10)}.pdf`;
-  doc.save(filename);
-  toast('📄 PDF generado ✓');
-}
-
-function exportTXT(){
-  const cl=document.getElementById('c-cliente')?.value||'Sin nombre',p=gn('c-personas'),mg=gn('c-margen');
-  const d=new Date().toLocaleDateString('es-AR',{day:'2-digit',month:'long',year:'numeric'});
-  const ml=selIds().map(id=>{const r=S.recipes.find(x=>x.id===id);return r?'  • '+r.name:'';}).filter(Boolean).join('\n');
-  const txt=`COTIZACION GASTRONOMICA\n${'='.repeat(40)}\nCliente:  ${cl}\nFecha:    ${d}\nPersonas: ${p}\n\nMENU:\n${ml||'  (ninguno)'}\n\nFINANCIERO:\n  Materia prima:  ${document.getElementById('r-mp').textContent}\n  Servicios:      ${document.getElementById('r-sv').textContent}\n  Costo base:     ${document.getElementById('r-ct').textContent}\n  Margen:         ${mg}%\n  ${'─'.repeat(30)}\n  PRECIO TOTAL:   ${document.getElementById('r-pt').textContent}\n  Por persona:    ${document.getElementById('r-pp').textContent}\n  Ganancia:       ${document.getElementById('r-gn').textContent}\n${'='.repeat(40)}\nCotizador Gastronomico · Cordoba`;
-  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type:'text/plain;charset=utf-8'}));
-  a.download=`cotizacion-${cl.replace(/\s+/g,'-').toLowerCase()}.txt`;a.click();
-}
-function exportBackup(){
-  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(S,null,2)],{type:'application/json'}));
-  a.download=`backup-${new Date().toISOString().slice(0,10)}.json`;a.click();toast('Backup exportado ✓');
-}
-function importBackup(e){
-  const f=e.target.files[0];if(!f)return;
-  const rd=new FileReader();
-  rd.onload=ev=>{
-    try{
-      const p=JSON.parse(ev.target.result);if(!p.recipes){toast('⚠️ Archivo inválido');return;}
-      const merge=confirm('¿Combinar con datos actuales?\nOK = combinar  ·  Cancelar = reemplazar todo');
-      if(merge){const ei=new Set(S.recipes.map(r=>r.id));p.recipes.forEach(r=>{if(!ei.has(r.id))S.recipes.push(r);});const eq=new Set(S.quotes.map(q=>q.id));(p.quotes||[]).forEach(q=>{if(!eq.has(q.id))S.quotes.unshift(q);});}
-      else{S.recipes=p.recipes||[];S.quotes=p.quotes||[];}
-      save();buildMenu();renderRecipes();renderQuotes();toast('Datos importados ✓');
-    }catch{toast('⚠️ Error al leer el archivo');}
-  };
-  rd.readAsText(f);e.target.value='';
-}
-function statUpdate(){
-  const el=document.getElementById('storage-status');if(!el)return;
-  try{
-    const raw=storeGet(SK)||'';
-    const kb=(raw.length*2/1024).toFixed(1);
-    el.innerHTML=`
-      Modo de almacenamiento: <strong style="color:var(--gold)">${storeLabel()}</strong><br><br>
-      Recetas: <strong style="color:var(--text)">${S.recipes.length}</strong><br>
-      Cotizaciones: <strong style="color:var(--text)">${S.quotes.length}</strong><br>
-      Paquetes: <strong style="color:var(--text)">${(S.packages||[]).length}</strong><br>
-      Tamaño: <strong style="color:var(--text)">${kb} KB</strong><br>
-      Verificado: <strong style="color:var(--text)">${new Date().toLocaleTimeString('es-AR')}</strong>`;
-  }catch(e){ if(el) el.textContent='No se pudo leer el almacenamiento.'; }}
-
-// ═══════════════════════════════════════════
-// INIT
-// ═══════════════════════════════════════════
-
-// ═══════════════════════════════════════════
-// PRICE TIMESTAMPS
-// Cada ingrediente tiene updatedAt en S.priceLog
-// S.priceLog = { 'recipeId_ingName': ISO_date }
-// ═══════════════════════════════════════════
-function priceKey(recipeId, ingName){ return recipeId + '__' + ingName; }
-
-function touchPrice(recipeId, ingName){
-  if(!S.priceLog) S.priceLog = {};
-  S.priceLog[priceKey(recipeId, ingName)] = new Date().toISOString();
-}
-
-function priceAge(recipeId, ingName){
-  if(!S.priceLog) return 9999;
-  const k = priceKey(recipeId, ingName);
-  if(!S.priceLog[k]) return 9999;
-  return Math.floor((Date.now() - new Date(S.priceLog[k]).getTime()) / 86400000);
-}
-
-function ageBadge(days){
-  if(days < 7)  return {cls:'alert-ok',   dot:'🟢', label: days===9999?'Sin registro': days===0?'Hoy':`${days}d`};
-  if(days < 30) return {cls:'alert-warn',  dot:'🟡', label:`${days}d`};
-  return             {cls:'alert-old',   dot:'🔴', label: days===9999?'Sin registro':`${days}d`};
-}
-
-// ── PANEL PRECIOS ─────────────────────────────────────────────────────────
-function renderPricePanel(){
-  if(!S.priceLog) S.priceLog = {};
-  let ok=0, warn=0, old=0;
-  const rows = [];
-
-  S.recipes.forEach(r => {
-    (r.ingredients||[]).forEach(ing => {
-      const days = priceAge(r.id, ing.name);
-      const b = ageBadge(days);
-      if(days < 7) ok++; else if(days < 30) warn++; else old++;
-      rows.push({r, ing, days, b});
-    });
-  });
-
-  // Badges resumen
-  document.getElementById('price-summary-badges').innerHTML = `
-    <span class="alert-badge alert-ok">✓ ${ok} al día</span>
-    <span class="alert-badge alert-warn">⚠ ${warn} a revisar</span>
-    <span class="alert-badge alert-old">✕ ${old} desact.</span>
-  `;
-
-  // Ordenar: más viejos primero
-  rows.sort((a,b) => b.days - a.days);
-
-  document.getElementById('price-alert-body').innerHTML = rows.map(({r, ing, days, b}) => `
-    <tr>
-      <td style="color:var(--text2);font-size:12px;max-width:120px;">${r.name}</td>
-      <td style="color:var(--text);">${ing.name}</td>
-      <td style="color:var(--gold);font-weight:500;">${fmt(ing.cost)}<span style="font-size:10px;color:var(--text3);">/${ing.unit}</span></td>
-      <td><span class="alert-badge ${b.cls}">${b.dot} ${b.label}</span></td>
-      <td style="font-size:11px;color:var(--text3);">${days===9999?'Nunca':'hace '+days+' días'}</td>
-      <td>
-        <div class="ing-price-row">
-          <input type="number" value="${ing.cost}" min="0" step="any" inputmode="decimal"
-            style="background:var(--surface3);border:1px solid transparent;border-radius:4px;padding:5px 8px;color:var(--gold);font-family:'Inter',sans-serif;font-size:13px;outline:none;width:110px;"
-            onchange="updatePriceFromPanel('${r.id}','${ing.name}',this.value)"
-            onfocus="this.style.borderColor='var(--gold-dim)'"
-            onblur="this.style.borderColor='transparent'">
-          <span style="font-size:10px;color:var(--text3);">/${ing.unit}</span>
-        </div>
-      </td>
-    </tr>
-  `).join('');
-}
-
-function updatePriceFromPanel(recipeId, ingName, newCost){
-  const r = S.recipes.find(x => x.id === recipeId); if(!r) return;
-  const ing = r.ingredients.find(i => i.name === ingName); if(!ing) return;
-  ing.cost = parseFloat(newCost) || 0;
-  touchPrice(recipeId, ingName);
-  save();
-  recalculate();
-  refreshCosts();
-  renderPricePanel();
-  renderRecipes();
-  toast('Precio actualizado ✓');
-}
-
-// Wrappear updateField para registrar timestamp
-const _origUpdateField = updateField;
-function updateField(id, idx, field, val){
-  _origUpdateField(id, idx, field, val);
-  if(field === 'cost'){
-    const r = S.recipes.find(x => x.id === id);
-    if(r && r.ingredients[idx]) touchPrice(id, r.ingredients[idx].name);
-    save();
-  }
-}
-
-// ── INFLACIÓN ─────────────────────────────────────────────────────────────
-function applyInflation(){
-  const cat = document.getElementById('inf-cat').value;
-  const pct = parseFloat(document.getElementById('inf-slider').value) / 100;
-  const label = cat === 'all' ? 'todas las recetas' : 'recetas de categoría ' + cat;
-
-  if(!confirm(`¿Aplicar +${Math.round(pct*100)}% a los precios de ${label}?\n\nEsta acción no se puede deshacer.`)) return;
-
-  let count = 0;
-  S.recipes.forEach(r => {
-    if(cat !== 'all' && r.category !== cat) return;
-    (r.ingredients||[]).forEach(ing => {
-      ing.cost = Math.round(ing.cost * (1 + pct));
-      touchPrice(r.id, ing.name);
-      count++;
-    });
-  });
-
-  save();
-  recalculate();
-  refreshCosts();
-  renderPricePanel();
-  renderRecipes();
-  toast(`✓ ${count} precios actualizados (+${Math.round(pct*100)}%)`);
-}
-
-// Preview inflación al cambiar slider
-document.getElementById('inf-slider').addEventListener('input', function(){
-  const pct = parseFloat(this.value)/100;
-  const cat = document.getElementById('inf-cat').value;
-  let examples = [];
-  S.recipes.slice(0,3).forEach(r => {
-    if(cat !== 'all' && r.category !== cat) return;
-    const antes = baseCost(r);
-    const despues = Math.round(antes * (1+pct));
-    examples.push(`<span style="color:var(--text)">${r.name}</span>: ${fmt(antes)} → <span style="color:var(--gold)">${fmt(despues)}</span>`);
-  });
-  if(examples.length){
-    document.getElementById('inf-preview').style.display='block';
-    document.getElementById('inf-preview').innerHTML = '<strong style="color:var(--text2);font-size:11px;">PREVIEW (costo base):</strong><br>' + examples.join('<br>');
-  }
-});
-document.getElementById('inf-cat').addEventListener('change', function(){
-  document.getElementById('inf-slider').dispatchEvent(new Event('input'));
-});
-
-// ═══════════════════════════════════════════
-// PAQUETES
-// ═══════════════════════════════════════════
+// ══ PACKAGES ════════════════════════════════════════════════════
 function renderPkgGrid(){
-  const g = document.getElementById('pkg-grid'); if(!g) return;
-  const pkgs = S.packages || [];
-  if(!pkgs.length){
-    g.innerHTML = `<div class="empty" style="grid-column:1/-1;"><div class="ico">📦</div><p>No hay paquetes guardados.<br>Creá uno con el botón de arriba.</p></div>`;
-    return;
-  }
-  g.innerHTML = pkgs.map(pkg => {
-    const items = (pkg.recipeIds||[]).map(id => {
-      const r = S.recipes.find(x=>x.id===id); return r ? r : null;
-    }).filter(Boolean);
-    const cats = {};
-    items.forEach(r => { cats[r.category] = (cats[r.category]||0)+1; });
-    const catBadges = Object.entries(cats).map(([c,n])=>`<span class="badge ${CAT[c]?.badge||''}" style="margin-right:4px;">${CAT[c]?.icon||''} ${n}</span>`).join('');
-    return `<div class="pkg-card">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
-        <div style="font-family:'Fraunces',serif;font-size:16px;font-weight:400;">${pkg.name}</div>
-        <button class="btn-danger" style="padding:3px 8px;flex-shrink:0;" onclick="delPkg('${pkg.id}')">✕</button>
-      </div>
-      ${pkg.desc ? `<div style="font-size:12px;color:var(--text3);margin-bottom:10px;">${pkg.desc}</div>` : ''}
-      <div style="margin-bottom:12px;">${catBadges}</div>
-      <div style="font-size:12px;color:var(--text2);margin-bottom:12px;">${items.map(r=>r.name).join(' · ')||'Sin recetas'}</div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;padding-top:10px;border-top:1px solid var(--border);">
-        <button class="btn-gold" style="flex:1;" onclick="loadPkg('${pkg.id}')">⚡ Cargar en cotizador</button>
-        <button class="btn-sm" onclick="editPkg('${pkg.id}')">Editar</button>
-      </div>
-    </div>`;
+  var g=document.getElementById('pkg-grid'); if(!g) return;
+  var pkgs=S.packages||[];
+  if(!pkgs.length){ g.innerHTML='<div class="emp" style="grid-column:1/-1"><div class="ic">📦</div><p>Sin paquetes.</p></div>'; return; }
+  g.innerHTML=pkgs.map(function(pkg){
+    var items=(pkg.recipeIds||[]).map(function(id){ return S.recipes.find(function(x){ return x.id===id; }); }).filter(Boolean);
+    return '<div class="pkg-card"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;"><div style="font-family:Fraunces,serif;font-size:16px;font-weight:400;">'+pkg.name+'</div><button class="bdn" style="padding:3px 8px;" onclick="delPkg(''+pkg.id+'')">✕</button></div>'+(pkg.desc?'<div style="font-size:12px;color:var(--tx3);margin-bottom:8px;">'+pkg.desc+'</div>':'')+'<div style="font-size:12px;color:var(--tx2);margin-bottom:12px;">'+items.map(function(r){ return r.name; }).join(' · ')+'</div><div style="display:flex;gap:8px;flex-wrap:wrap;padding-top:10px;border-top:1px solid var(--bd);"><button class="bg" style="flex:1;" onclick="loadPkg(''+pkg.id+'')">⚡ Cargar</button><button class="bsm" onclick="editPkg(''+pkg.id+'')">Editar</button></div></div>';
   }).join('');
 }
 
 function openNewPkg(){
-  document.getElementById('pkg-modal-title').textContent = 'Nuevo paquete';
-  document.getElementById('pkg-edit-id').value = '';
-  document.getElementById('pkg-name').value = '';
-  document.getElementById('pkg-desc').value = '';
-  buildPkgSelector([]);
-  document.getElementById('modal-pkg').style.display = 'flex';
+  document.getElementById('pkg-tit').textContent='Nuevo paquete';
+  document.getElementById('pkg-id').value='';
+  document.getElementById('pkg-nom').value='';
+  document.getElementById('pkg-dsc').value='';
+  buildPkgSel([]);
+  document.getElementById('mod-pkg').style.display='flex';
 }
 
 function editPkg(id){
-  const pkg = (S.packages||[]).find(p=>p.id===id); if(!pkg) return;
-  document.getElementById('pkg-modal-title').textContent = 'Editar paquete';
-  document.getElementById('pkg-edit-id').value = id;
-  document.getElementById('pkg-name').value = pkg.name;
-  document.getElementById('pkg-desc').value = pkg.desc||'';
-  buildPkgSelector(pkg.recipeIds||[]);
-  document.getElementById('modal-pkg').style.display = 'flex';
+  var pkg=(S.packages||[]).find(function(p){ return p.id===id; }); if(!pkg) return;
+  document.getElementById('pkg-tit').textContent='Editar paquete';
+  document.getElementById('pkg-id').value=id;
+  document.getElementById('pkg-nom').value=pkg.name;
+  document.getElementById('pkg-dsc').value=pkg.desc||'';
+  buildPkgSel(pkg.recipeIds||[]);
+  document.getElementById('mod-pkg').style.display='flex';
 }
 
-function buildPkgSelector(selectedIds){
-  const c = document.getElementById('pkg-recipe-selector'); c.innerHTML = '';
-  Object.entries(CAT).forEach(([k,m]) => {
-    const recs = S.recipes.filter(r => r.category === k);
-    if(!recs.length) return;
-    const sec = document.createElement('div');
-    sec.innerHTML = `<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);padding:8px 0 4px;">${m.icon} ${m.label}s</div>
-    ${recs.map(r => `<label class="menu-option">
-      <input type="checkbox" class="pkg-cb" data-id="${r.id}" ${selectedIds.includes(r.id)?'checked':''}>
-      <span class="menu-option-name">${r.name}</span>
-      <span class="menu-option-cost">${fmt(r.rendimiento>0?baseCost(r)/r.rendimiento:0)}/pers.</span>
-    </label>`).join('')}`;
+function buildPkgSel(sel){
+  var c=document.getElementById('pkg-sel'); c.innerHTML='';
+  CATS.forEach(function(k){
+    var recs=S.recipes.filter(function(r){ return r.category===k; }); if(!recs.length) return;
+    var cat=CAT[k];
+    var sec=document.createElement('div');
+    sec.innerHTML='<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--tx3);padding:8px 0 4px;">'+cat.icon+' '+cat.label+'s</div>'+
+      recs.map(function(r){ return '<label class="mopt"><input type="checkbox" class="pcb" data-id="'+r.id+'" '+(sel.indexOf(r.id)>=0?'checked':'')+'>'+r.name+'</label>'; }).join('');
     c.appendChild(sec);
   });
 }
 
 function savePkg(){
-  const name = document.getElementById('pkg-name').value.trim();
-  if(!name){ toast('⚠️ El nombre es obligatorio'); return; }
-  const desc = document.getElementById('pkg-desc').value.trim();
-  const recipeIds = [...document.querySelectorAll('.pkg-cb:checked')].map(cb=>cb.dataset.id);
+  var name=document.getElementById('pkg-nom').value.trim();
+  if(!name){ toast('⚠️ Nombre obligatorio'); return; }
+  var desc=document.getElementById('pkg-dsc').value.trim();
+  var recipeIds=Array.from(document.querySelectorAll('.pcb:checked')).map(function(c){ return c.dataset.id; });
   if(!recipeIds.length){ toast('⚠️ Seleccioná al menos una receta'); return; }
-  if(!S.packages) S.packages = [];
-  const eid = document.getElementById('pkg-edit-id').value;
-  if(eid){ const i = S.packages.findIndex(p=>p.id===eid); if(i>=0) S.packages[i] = {...S.packages[i], name, desc, recipeIds}; }
-  else { S.packages.push({id:'pk'+Date.now(), name, desc, recipeIds, createdAt:new Date().toISOString()}); }
-  save(); renderPkgGrid();
-  document.getElementById('modal-pkg').style.display = 'none';
+  if(!S.packages) S.packages=[];
+  var eid=document.getElementById('pkg-id').value;
+  if(eid){ var i=S.packages.findIndex(function(p){ return p.id===eid; }); if(i>=0) S.packages[i]=Object.assign({},S.packages[i],{name,desc,recipeIds}); }
+  else{ S.packages.push({id:'pk'+Date.now(),name,desc,recipeIds,createdAt:new Date().toISOString()}); }
+  persist(); renderPkgGrid();
+  document.getElementById('mod-pkg').style.display='none';
   toast('Paquete guardado ✓');
 }
 
 function loadPkg(id){
-  const pkg = (S.packages||[]).find(p=>p.id===id); if(!pkg) return;
-  // Desmarcar todo primero
-  document.querySelectorAll('.mcb').forEach(cb=>{ cb.checked=false; });
-  // Marcar las recetas del paquete y abrir sus categorías
-  (pkg.recipeIds||[]).forEach(rid => {
-    const cb = document.querySelector(`.mcb[data-id="${rid}"]`);
-    if(cb){
-      cb.checked = true;
-      const cat = cb.dataset.cat;
-      const opts = document.getElementById('opts-'+cat);
-      if(opts) opts.classList.add('open');
-      const arr = document.getElementById('arr-'+cat);
-      if(arr) arr.textContent = '▴';
-    }
+  var pkg=(S.packages||[]).find(function(p){ return p.id===id; }); if(!pkg) return;
+  document.querySelectorAll('.mcb').forEach(function(cb){ cb.checked=false; });
+  (pkg.recipeIds||[]).forEach(function(rid){
+    var cb=document.querySelector('.mcb[data-id="'+rid+'"]');
+    if(cb){ cb.checked=true; var o=document.getElementById('mo-'+cb.dataset.cat); if(o) o.classList.add('on'); }
   });
   onMenu();
-  // Ir al cotizador
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
-  document.getElementById('tab-cotizador').classList.add('active');
-  document.querySelector('.tab-btn').classList.add('active');
-  toast(`📦 Paquete "${pkg.name}" cargado ✓`);
+  showTab('cotizador', document.querySelector('.tb'));
+  toast('📦 "'+pkg.name+'" cargado ✓');
 }
 
 function delPkg(id){
-  if(!confirm('¿Eliminar este paquete?')) return;
-  S.packages = (S.packages||[]).filter(p=>p.id!==id);
-  save(); renderPkgGrid();
+  if(!confirm('¿Eliminar?')) return;
+  S.packages=S.packages.filter(function(p){ return p.id!==id; });
+  persist(); renderPkgGrid();
 }
 
-// switchTab ya incluye paquetes y precios
-
-// ── INIT extra ──────────────────────────────────────────────────────────────
-if(!S.packages) S.packages = [];
-if(!S.priceLog) S.priceLog = {};
-
-// ── ARRANQUE ASYNC ──────────────────────────────────────────────────────────
-async function initApp(){
-  await load();
-  if(!S.packages) S.packages = [];
-  if(!S.priceLog) S.priceLog = {};
-  initDefaults();
-  buildMenu();
-  renderRecipes();
-  renderQuotes();
-  renderPkgGrid();
-  recalculate();
-  statUpdate();
-  startRealtimeSync();
-  // Ocultar spinner si existe
-  const sp = document.getElementById('init-spinner');
-  if(sp) sp.style.display = 'none';
+// ══ PRICE PANEL ═════════════════════════════════════════════════
+function priceAge(rid,name){
+  if(!S.priceLog) return 9999;
+  var k=rid+'__'+name, v=S.priceLog[k];
+  return v?Math.floor((Date.now()-new Date(v).getTime())/86400000):9999;
 }
 
-// Si Firebase ya cargó, arrancar directo; si no, esperar el evento
-if(window._fbReady){
-  initApp();
-} else {
-  // Timeout: si Firebase no responde en 3s, arrancar igual con localStorage
-  const fbTimer = setTimeout(() => { initApp(); }, 3000);
-  window.addEventListener('firebase-ready', () => {
-    clearTimeout(fbTimer);
-    initApp();
+function ageBadge(d){
+  if(d<7)   return {cls:'aok',dot:'🟢',lbl:d===9999?'Nunca':d===0?'Hoy':d+'d'};
+  if(d<30)  return {cls:'awk',dot:'🟡',lbl:d+'d'};
+  return            {cls:'aol',dot:'🔴',lbl:d===9999?'Nunca':d+'d'};
+}
+
+function renderPricePanel(){
+  var ok=0,aw=0,ol=0, rows=[];
+  S.recipes.forEach(function(r){
+    (r.ingredients||[]).forEach(function(ing){
+      var d=priceAge(r.id,ing.name), b=ageBadge(d);
+      if(d<7) ok++; else if(d<30) aw++; else ol++;
+      rows.push({r,ing,d,b});
+    });
   });
+  var pb=document.getElementById('price-badges');
+  if(pb) pb.innerHTML='<span class="bdg aok">✓ '+ok+' al día</span><span class="bdg awk" style="margin-left:6px;">⚠ '+aw+' a revisar</span><span class="bdg aol" style="margin-left:6px;">✕ '+ol+' desact.</span>';
+  rows.sort(function(a,b){ return b.d-a.d; });
+  var body=document.getElementById('price-body'); if(!body) return;
+  body.innerHTML=rows.map(function(row){
+    return '<tr><td style="font-size:12px;color:var(--tx2);max-width:100px;">'+row.r.name+'</td>' +
+      '<td style="color:var(--tx);">'+row.ing.name+'</td>' +
+      '<td style="color:var(--gold);font-weight:500;">'+fmt(row.ing.cost)+'<span style="font-size:10px;color:var(--tx3);">/'+row.ing.unit+'</span></td>' +
+      '<td><span class="bdg '+row.b.cls+'">'+row.b.dot+' '+row.b.lbl+'</span></td>' +
+      '<td><div style="display:flex;align-items:center;gap:4px;"><input type="number" value="'+row.ing.cost+'" min="0" step="any" inputmode="decimal" style="background:var(--sf3);border:1px solid transparent;border-radius:4px;padding:5px 8px;color:var(--gold);font-family:Inter,sans-serif;font-size:13px;outline:none;width:100px;" onchange="updPricePanel(''+row.r.id+'',''+row.ing.name+'',this.value)" onfocus="this.style.borderColor='var(--gdim)'" onblur="this.style.borderColor='transparent'"><span style="font-size:10px;color:var(--tx3);">/'+row.ing.unit+'</span></div></td></tr>';
+  }).join('');
 }
+
+function updPricePanel(rid,name,val){
+  var r=S.recipes.find(function(x){ return x.id===rid; }); if(!r) return;
+  var ing=r.ingredients.find(function(i){ return i.name===name; }); if(!ing) return;
+  ing.cost=parseFloat(val)||0;
+  if(!S.priceLog) S.priceLog={};
+  S.priceLog[rid+'__'+name]=new Date().toISOString();
+  persist(); calc(); refCosts(); renderPricePanel(); renderRecipes();
+  toast('Precio actualizado ✓');
+}
+
+function infPreview(){
+  var pct=parseFloat(document.getElementById('inf-sl').value)/100;
+  var cat=document.getElementById('inf-cat').value;
+  var prev=document.getElementById('inf-prev');
+  var ex=S.recipes.filter(function(r){ return cat==='all'||r.category===cat; }).slice(0,3).map(function(r){
+    return '<span style="color:var(--tx)">'+r.name+'</span>: '+fmt(bCost(r))+' → <span style="color:var(--gold)">'+fmt(Math.round(bCost(r)*(1+pct)))+'</span>';
+  });
+  if(ex.length){ prev.style.display='block'; prev.innerHTML='<strong style="color:var(--tx2);font-size:11px;">PREVIEW:</strong><br>'+ex.join('<br>'); }
+}
+
+function applyInflation(){
+  var cat=document.getElementById('inf-cat').value;
+  var pct=parseFloat(document.getElementById('inf-sl').value)/100;
+  if(!confirm('¿Aplicar +'+Math.round(pct*100)+'% a '+(cat==='all'?'todas las recetas':'recetas de '+cat)+'?')) return;
+  var n=0;
+  S.recipes.forEach(function(r){
+    if(cat!=='all'&&r.category!==cat) return;
+    (r.ingredients||[]).forEach(function(ing){
+      ing.cost=Math.round(ing.cost*(1+pct));
+      if(!S.priceLog) S.priceLog={};
+      S.priceLog[r.id+'__'+ing.name]=new Date().toISOString();
+      n++;
+    });
+  });
+  persist(); calc(); refCosts(); renderPricePanel(); renderRecipes();
+  toast('✓ '+n+' precios actualizados (+'+Math.round(pct*100)+'%)');
+}
+
+// ══ EXPORT ══════════════════════════════════════════════════════
+function exportPDF(){
+  if(!window.jspdf){ toast('⚠️ Cargando PDF, reintentá'); return; }
+  var jsPDF=window.jspdf.jsPDF;
+  var cl=document.getElementById('c-cl').value||'Sin nombre';
+  var p=gn('c-pe'), mg=gn('c-mg');
+  var fecha=new Date().toLocaleDateString('es-AR',{day:'2-digit',month:'long',year:'numeric'});
+  var ids=selIds();
+  var bycat={};
+  ids.forEach(function(id){
+    var r=S.recipes.find(function(x){ return x.id===id; }); if(!r) return;
+    if(!bycat[r.category]) bycat[r.category]=[];
+    bycat[r.category].push(r.name);
+  });
+  var doc=new jsPDF({unit:'mm',format:'a4'});
+  var W=210,M=18,CW=W-M*2;
+  var GOLD=[180,140,60],DARK=[20,20,20],GRAY=[90,90,90],LGRAY=[200,200,200],BG=[15,15,15],BG2=[30,30,30];
+  // Header
+  doc.setFillColor.apply(doc,BG); doc.rect(0,0,W,52,'F');
+  doc.setTextColor.apply(doc,GOLD); doc.setFont('helvetica','bolditalic'); doc.setFontSize(26); doc.text('Cotización',M,22);
+  doc.setFont('helvetica','normal'); doc.setFontSize(12); doc.setTextColor.apply(doc,LGRAY); doc.text('Gastronómica · Córdoba',M,31);
+  doc.setDrawColor.apply(doc,GOLD); doc.setLineWidth(0.8); doc.line(M,36,W-M,36);
+  doc.setFontSize(9); doc.text(fecha,W-M,43,{align:'right'});
+  var y=62;
+  // Cliente
+  doc.setFillColor.apply(doc,BG2); doc.roundedRect(M,y,CW,24,3,3,'F');
+  doc.setTextColor.apply(doc,GOLD); doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.text('CLIENTE',M+6,y+8);
+  doc.setTextColor(240,237,232); doc.setFontSize(14); doc.text(cl,M+6,y+17);
+  doc.setTextColor.apply(doc,GOLD); doc.setFontSize(9); doc.text('PERSONAS',W-M-6,y+8,{align:'right'});
+  doc.setTextColor(240,237,232); doc.setFont('helvetica','bold'); doc.setFontSize(20); doc.text(String(p||0),W-M-6,y+18,{align:'right'});
+  y+=34;
+  // Menu
+  if(ids.length>0){
+    doc.setTextColor.apply(doc,GOLD); doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.text('MENÚ',M,y);
+    doc.setDrawColor.apply(doc,GOLD); doc.setLineWidth(0.3); doc.line(M+13,y-1,W-M,y-1);
+    y+=7;
+    var catNames={entrada:'Entradas',principal:'Principales',postre:'Postres',after:'After'};
+    ['entrada','principal','postre','after'].forEach(function(cat){
+      if(!bycat[cat]) return;
+      doc.setFillColor.apply(doc,GOLD); doc.roundedRect(M,y,32,5.5,1.5,1.5,'F');
+      doc.setTextColor.apply(doc,DARK); doc.setFont('helvetica','bold'); doc.setFontSize(7); doc.text(catNames[cat].toUpperCase(),M+16,y+3.8,{align:'center'});
+      doc.setTextColor(50,50,50); doc.setFont('helvetica','normal'); doc.setFontSize(10);
+      var lines=doc.splitTextToSize(bycat[cat].join('  ·  '),CW-38); doc.text(lines,M+36,y+3.8);
+      y+=Math.max(8,lines.length*5.5)+2;
+    });
+    y+=4;
+  }
+  // Financiero
+  doc.setTextColor.apply(doc,GOLD); doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.text('RESUMEN',M,y);
+  doc.setDrawColor.apply(doc,GOLD); doc.setLineWidth(0.3); doc.line(M+19,y-1,W-M,y-1); y+=7;
+  [{l:'Materia prima',v:'r-mp'},{l:'Servicios',v:'r-sv'},{l:'Costo base',v:'r-ct'}].forEach(function(f){
+    doc.setFillColor(245,244,242); doc.rect(M,y-4,CW,8,'F');
+    doc.setTextColor.apply(doc,GRAY); doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.text(f.l,M+4,y+0.5);
+    doc.setTextColor.apply(doc,DARK); doc.setFont('helvetica','bold'); doc.text(document.getElementById(f.v).textContent,W-M-4,y+0.5,{align:'right'});
+    y+=9;
+  });
+  // Precio final
+  y+=4;
+  doc.setFillColor.apply(doc,BG); doc.roundedRect(M,y,CW,26,3,3,'F');
+  doc.setDrawColor.apply(doc,GOLD); doc.setLineWidth(0.5); doc.roundedRect(M,y,CW,26,3,3,'S');
+  doc.setTextColor.apply(doc,LGRAY); doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.text('VALOR POR TARJETA',M+6,y+8);
+  doc.setTextColor.apply(doc,GOLD); doc.setFont('helvetica','bold'); doc.setFontSize(22); doc.text(document.getElementById('r-pt').textContent,M+6,y+20);
+  doc.setTextColor.apply(doc,LGRAY); doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.text('por persona:',W-M-40,y+10);
+  doc.setTextColor(240,237,232); doc.setFont('helvetica','bold'); doc.setFontSize(13); doc.text(document.getElementById('r-pp').textContent,W-M-6,y+20,{align:'right'});
+  y+=34;
+  doc.setTextColor.apply(doc,LGRAY); doc.setFont('helvetica','normal'); doc.setFontSize(8);
+  doc.text('Margen: '+mg+'%   ·   Ganancia: '+document.getElementById('r-gn').textContent,M,y);
+  // Footer
+  doc.setFillColor.apply(doc,BG); doc.rect(0,277,W,20,'F');
+  doc.setTextColor.apply(doc,GOLD); doc.setFont('helvetica','bolditalic'); doc.setFontSize(9); doc.text('Cocina cordobesa con alma',W/2,285,{align:'center'});
+  doc.setTextColor.apply(doc,GRAY); doc.setFont('helvetica','normal'); doc.setFontSize(7); doc.text('Cotización válida por 48 horas. Precios sujetos a variación de materia prima.',W/2,290,{align:'center'});
+  doc.save('cotizacion-'+cl.replace(/\s+/g,'-').toLowerCase()+'-'+new Date().toISOString().slice(0,10)+'.pdf');
+  toast('📄 PDF generado ✓');
+}
+
+function exportTXT(){
+  var cl=document.getElementById('c-cl').value||'Sin nombre', p=gn('c-pe'), mg=gn('c-mg');
+  var d=new Date().toLocaleDateString('es-AR',{day:'2-digit',month:'long',year:'numeric'});
+  var ml=selIds().map(function(id){ var r=S.recipes.find(function(x){ return x.id===id; }); return r?'  · '+r.name:''; }).filter(Boolean).join('\n');
+  var txt='COTIZACION GASTRONOMICA\n'+'='.repeat(38)+'\nCliente:  '+cl+'\nFecha:    '+d+'\nPersonas: '+p+'\n\nMENU:\n'+(ml||'  (ninguno)')+'\n\nFINANCIERO:\n  Materia prima:  '+document.getElementById('r-mp').textContent+'\n  Servicios:      '+document.getElementById('r-sv').textContent+'\n  Costo base:     '+document.getElementById('r-ct').textContent+'\n  Margen:         '+mg+'%\n  '+'-'.repeat(28)+'\n  PRECIO TOTAL:   '+document.getElementById('r-pt').textContent+'\n  Por persona:    '+document.getElementById('r-pp').textContent+'\n  Ganancia:       '+document.getElementById('r-gn').textContent+'\n'+'='.repeat(38);
+  var a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([txt],{type:'text/plain;charset=utf-8'}));
+  a.download='cotizacion-'+cl.replace(/\s+/g,'-').toLowerCase()+'.txt'; a.click();
+}
+
+function exportBackup(){
+  var a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(S,null,2)],{type:'application/json'}));
+  a.download='backup-'+new Date().toISOString().slice(0,10)+'.json'; a.click(); toast('Backup exportado ✓');
+}
+
+function importBackup(e){
+  var f=e.target.files[0]; if(!f) return;
+  var rd=new FileReader();
+  rd.onload=function(ev){
+    try{
+      var p=JSON.parse(ev.target.result); if(!p.recipes){ toast('⚠️ Archivo inválido'); return; }
+      var merge=confirm('¿Combinar?
+OK = combinar  ·  Cancelar = reemplazar');
+      if(merge){
+        var ei=new Set(S.recipes.map(function(r){ return r.id; }));
+        p.recipes.forEach(function(r){ if(!ei.has(r.id)) S.recipes.push(r); });
+        var eq=new Set(S.quotes.map(function(q){ return q.id; }));
+        (p.quotes||[]).forEach(function(q){ if(!eq.has(q.id)) S.quotes.unshift(q); });
+      } else { S.recipes=p.recipes||[]; S.quotes=p.quotes||[]; S.packages=p.packages||[]; S.priceLog=p.priceLog||{}; }
+      persist(); buildMenu(); renderRecipes(); renderQuotes(); renderPkgGrid();
+      toast('Importado ✓');
+    }catch(err){ toast('⚠️ Error al leer'); }
+  };
+  rd.readAsText(f); e.target.value='';
+}
+
+// ══ INIT ════════════════════════════════════════════════════════
+loadLocal();
+initDefaults();
+buildMenu();
+renderRecipes();
+renderQuotes();
+renderPkgGrid();
+calc();
+syncStatus();
+// Firebase en segundo plano
+setTimeout(fbSync, 500);
 </script>
 </body>
 </html>
