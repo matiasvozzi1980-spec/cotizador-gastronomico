@@ -1,40 +1,35 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+
+<style>
+/* Grid */
+.grid{display:grid;}.grid-cols-1{grid-template-columns:repeat(1,minmax(0,1fr));}.grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr));}.grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr));}.gap-3{gap:12px;}.gap-4{gap:16px;}.gap-5{gap:20px;}.gap-6{gap:24px;}
+@media(min-width:640px){.sm\:col-span-1{grid-column:span 1}.sm\:grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr));}.sm\:grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr));}}
+@media(min-width:768px){.md\:grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media(min-width:1024px){.lg\:col-span-1{grid-column:span 1}.lg\:col-span-2{grid-column:span 2}.lg\:grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr));}}
+@media(min-width:1280px){.xl\:grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr));}}
+/* Flex */
+.flex{display:flex;}.flex-col{flex-direction:column;}.flex-1{flex:1;}.flex-wrap{flex-wrap:wrap;}.flex-shrink-0{flex-shrink:0;}
+.items-center{align-items:center;}.items-end{align-items:flex-end;}.items-start{align-items:flex-start;}
+.justify-between{justify-content:space-between;}.justify-end{justify-content:flex-end;}.justify-center{justify-content:center;}
+/* Spacing */
+.mx-auto{margin-left:auto;margin-right:auto;}.max-w-6xl{max-width:72rem;}.max-w-5xl{max-width:64rem;}.max-w-2xl{max-width:42rem;}
+.px-4{padding-left:1rem;padding-right:1rem;}.py-5{padding-top:1.25rem;padding-bottom:1.25rem;}.py-3{padding-top:.75rem;padding-bottom:.75rem;}
+.mb-5{margin-bottom:1.25rem;}.mb-4{margin-bottom:1rem;}.mb-3{margin-bottom:.75rem;}.mt-4{margin-top:1rem;}.mt-2{margin-top:.5rem;}
+/* Hidden for responsive */
+.hidden{display:none;}
+</style>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Cotizador Gastronómico</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,600;1,300&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-<!-- Firebase Compat -->
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-<script>
-(function(){
-  try {
-    firebase.initializeApp({
-      apiKey:"AIzaSyAClcC4icBmHH-hBhxdKjsozENHzFAliik",
-      authDomain:"cotizador-gastronomico.firebaseapp.com",
-      projectId:"cotizador-gastronomico",
-      storageBucket:"cotizador-gastronomico.firebasestorage.app",
-      messagingSenderId:"1095447655528",
-      appId:"1:1095447655528:web:16a866e1e1112814f237dd"
-    });
-    var db = firebase.firestore();
-    var ref = db.collection("cotizador").doc("mi-cotizador");
-    window._fb = {
-      save: function(d){ return ref.set({payload:JSON.stringify(d)}); },
-      load: function(){ return ref.get().then(function(s){ return s.exists ? JSON.parse(s.data().payload) : null; }); },
-      listen: function(cb){ return ref.onSnapshot(function(s){ if(s.exists) try{ cb(JSON.parse(s.data().payload)); }catch(e){} }); }
-    };
-  } catch(e){ window._fb = null; }
-})();
-</script>
+
 <style>
 :root{--bg:#0F0F0F;--sf:#1A1A1A;--sf2:#242424;--sf3:#2E2E2E;--gold:#C9A84C;--gdim:#8A6E2A;--tx:#F0EDE8;--tx2:#8A8580;--tx3:#5A5550;--red:#C04A3A;--bd:#333;}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-body{background:var(--bg);color:var(--tx);font-family:Inter,sans-serif;font-size:14px;min-height:100vh;}
+body{background:var(--bg);color:var(--tx);font-family:Inter,sans-serif;font-size:14px;min-height:100vh;padding-bottom:72px;}
 h1,h2{font-family:Fraunces,serif;}
 /* TABS */
 .tb{padding:10px 16px;border:none;background:transparent;color:var(--tx2);font-family:Inter,sans-serif;font-size:13px;font-weight:500;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;}
@@ -105,13 +100,18 @@ h1,h2{font-family:Fraunces,serif;}
 .sh::after{content:\'\';flex:1;height:1px;background:var(--bd);}
 .emp{text-align:center;padding:36px 20px;color:var(--tx3);font-size:13px;}
 .emp .ic{font-size:30px;margin-bottom:8px;}
-.tst{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--sf3);border:1px solid var(--bd);color:var(--tx);padding:10px 20px;border-radius:100px;font-size:13px;z-index:999;pointer-events:none;white-space:nowrap;}
+.tst{position:fixed;bottom:76px;left:50%;transform:translateX(-50%);background:var(--sf3);border:1px solid var(--bd);color:var(--tx);padding:10px 20px;border-radius:100px;font-size:13px;z-index:999;pointer-events:none;white-space:nowrap;}
 /* PRICE ALERTS */
 .aok{background:rgba(74,140,92,.15);color:#6BBD88;}
 .awk{background:rgba(232,160,64,.15);color:#E8A040;}
 .aol{background:rgba(192,74,58,.15);color:var(--red);}
 .pkg-card{background:var(--sf2);border:1px solid var(--bd);border-radius:8px;padding:16px;}
 ::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-thumb{background:var(--bd);border-radius:3px;}
+
+.bnav{position:fixed;bottom:0;left:0;right:0;background:#1A1A1A;border-top:1px solid #333;display:flex;z-index:9999;padding-bottom:env(safe-area-inset-bottom,0px);}
+.nb{flex:1;background:transparent;border:none;border-top:2px solid transparent;color:#8A8580;font-family:Inter,sans-serif;font-size:10px;font-weight:500;padding:8px 2px 6px;display:flex;flex-direction:column;align-items:center;gap:2px;min-height:52px;cursor:pointer;}
+.nb .ni{font-size:20px;line-height:1.2;}
+.nb.on{color:#C9A84C;border-top-color:#C9A84C;}
 </style>
 </head>
 <body>
@@ -126,14 +126,6 @@ h1,h2{font-family:Fraunces,serif;}
       <button class="bgh" onclick="exportBackup()" style="padding:7px 10px;font-size:11px;">⬇ Backup</button>
       <label class="bgh" style="padding:7px 10px;font-size:11px;cursor:pointer;">⬆ Importar<input type="file" accept=".json" onchange="importBackup(event)" style="display:none;"></label>
     </div>
-  </div>
-  <div class="max-w-6xl mx-auto px-4" style="display:flex;overflow-x:auto;-webkit-overflow-scrolling:touch;">
-    <button class="tb on" onclick="showTab('cotizador',this)">⚡ Cotizador</button>
-    <button class="tb"    onclick="showTab('guardadas',this)">📁 Cotizaciones</button>
-    <button class="tb"    onclick="showTab('recetas',this)">📋 Recetas</button>
-    <button class="tb"    onclick="showTab('paquetes',this)">📦 Paquetes</button>
-    <button class="tb"    onclick="showTab('precios',this)">📈 Precios</button>
-    <button class="tb"    onclick="showTab('sync',this)">☁️ iCloud</button>
   </div>
 </header>
 
@@ -413,13 +405,28 @@ h1,h2{font-family:Fraunces,serif;}
 </div>
 
 <script>
+
+function go(n, btn){
+  var panels = document.querySelectorAll('.tp');
+  for(var i=0;i<panels.length;i++) panels[i].classList.remove('on');
+  var nbs = document.querySelectorAll('.nb');
+  for(var i=0;i<nbs.length;i++) nbs[i].classList.remove('on');
+  var p = document.getElementById('tab-'+n);
+  if(p) p.classList.add('on');
+  if(btn) btn.classList.add('on');
+  if(n==='recetas')   renderRecipes();
+  if(n==='guardadas') renderQuotes();
+  if(n==='paquetes')  renderPkgGrid();
+  if(n==='precios')   renderPricePanel();
+  if(n==='sync')      syncStatus();
+  window.scrollTo(0,0);
+}
+function showTab(n,b){ go(n, document.getElementById('nb-'+n)||b); }
+
 // ══ DATA ══════════════════════════════════════════════════════
 const DEFAULTS = [
   // ── ENTRADAS (6) ──────────────────────────────────────────────────────
-  {id:'e001',category:'entrada',name:'Empanadas criollas al horno',rendimiento:10,desc:"Clásico de la cocina cordobesa. Masa casera dorada al horno, rellenas con carne jugosa, huevo duro, aceitunas y las especias de siempre. Imprescindibles en cualquier evento.",steps:"<strong>Masa:</strong> Mezclá la harina con sal y grasa hasta formar una masa tierna. Dejá descansar 30 min tapada.<br>
-<strong>Relleno:</strong> Dorá la cebolla y el morrón en aceite. Sumá la carne picada y cocinala a fuego fuerte. Condimentá con pimentón, comino y sal. Retirá del fuego y agregá el huevo duro picado y las aceitunas. Dejá enfriar completamente.<br>
-<strong>Armado:</strong> Estirá la masa fina, cortá discos de 12 cm. Poné una cucharada de relleno, humedecé el borde y cerrá haciendo el repulgue cordobés. Pintá con huevo batido.<br>
-<strong>Cocción:</strong> Horno fuerte (220°C) por 15-18 min hasta que estén bien doradas.",ingredients:[
+  {id:'e001',category:'entrada',name:'Empanadas criollas al horno',rendimiento:10,desc:"Clásico de la cocina cordobesa. Masa casera dorada al horno, rellenas con carne jugosa, huevo duro, aceitunas y las especias de siempre. Imprescindibles en cualquier evento.",steps:"Masa: Mezclá la harina con sal y grasa hasta formar una masa tierna. Dejá descansar 30 min tapada. Relleno: Dorá la cebolla y el morrón en aceite. Sumá la carne picada y cocinala a fuego fuerte. Condimentá con pimentón, comino y sal. Retirá del fuego y agregá el huevo duro picado y las aceitunas. Dejá enfriar completamente. Armado: Estirá la masa fina, cortá discos de 12 cm. Poné una cucharada de relleno, humedecé el borde y cerrá haciendo el repulgue cordobés. Pintá con huevo batido. Cocción: Horno fuerte (220°C) por 15-18 min hasta que estén bien doradas.",ingredients:[
     {name:'Harina 000',qty:0.5,unit:'Kg',cost:2200},
     {name:'Carne picada especial',qty:0.35,unit:'Kg',cost:14154},
     {name:'Cebolla',qty:0.2,unit:'Kg',cost:1400},
@@ -431,9 +438,7 @@ const DEFAULTS = [
     {name:'Aceite de girasol',qty:0.05,unit:'Litro',cost:3500},
     {name:'Sal fina',qty:0.01,unit:'Kg',cost:800},
   ]},
-  {id:'e002',category:'entrada',name:'Tabla de fiambres y quesos cordobeses',rendimiento:10,desc:"Una tabla generosa con los mejores fiambres de la región, incluyendo el inconfundible salame de Colonia Caroya. Acompañada de quesos seleccionados, frutos y pan artesanal.",steps:"<strong>Preparación:</strong> Retirá los fiambres de la heladera 20 min antes para que estén a temperatura ambiente.<br>
-<strong>Armado:</strong> Disponé en una tabla de madera o pizarra: el salame de Colonia Caroya en abanico, el jamón en rollitos, los quesos en cubos y láminas alternados. Completá con las aceitunas, las nueces y la mermelada de membrillo en pequeños cuencos.<br>
-<strong>Terminación:</strong> Cortá el pan rústico en rebanadas gruesas. Decorá con uvas frescas distribuidas por la tabla. Serví a temperatura ambiente.",ingredients:[
+  {id:'e002',category:'entrada',name:'Tabla de fiambres y quesos cordobeses',rendimiento:10,desc:"Una tabla generosa con los mejores fiambres de la región, incluyendo el inconfundible salame de Colonia Caroya. Acompañada de quesos seleccionados, frutos y pan artesanal.",steps:"Preparación: Retirá los fiambres de la heladera 20 min antes para que estén a temperatura ambiente. Armado: Disponé en una tabla de madera o pizarra: el salame de Colonia Caroya en abanico, el jamón en rollitos, los quesos en cubos y láminas alternados. Completá con las aceitunas, las nueces y la mermelada de membrillo en pequeños cuencos. Terminación: Cortá el pan rústico en rebanadas gruesas. Decorá con uvas frescas distribuidas por la tabla. Serví a temperatura ambiente.",ingredients:[
     {name:'Jamón cocido premium',qty:0.3,unit:'Kg',cost:18000},
     {name:'Salame de Colonia Caroya',qty:0.3,unit:'Kg',cost:22000},
     {name:'Queso Cuartirolo',qty:0.3,unit:'Kg',cost:10500},
@@ -445,9 +450,7 @@ const DEFAULTS = [
     {name:'Mermelada de membrillo',qty:0.1,unit:'Kg',cost:5000},
     {name:'Nueces',qty:0.1,unit:'Kg',cost:18000},
   ]},
-  {id:'e003',category:'entrada',name:'Bruschettas con tomate y albahaca',rendimiento:10,desc:"Pan crocante tostado con tomate perita fresco, albahaca aromática y un buen chorro de aceite de oliva. Simple, elegante y siempre bienvenida.",steps:"<strong>Base:</strong> Cortá el pan baguette en rodajas de 2 cm en diagonal. Tostá en horno 180°C por 8 min hasta que estén crocantes pero no duras.<br>
-<strong>Tomate:</strong> Pelá y cortá los tomates en cubos pequeños, sin semillas. Mezclá con ajo picado fino, albahaca en chiffonade, aceite de oliva, sal y pimienta. Dejá reposar 15 min.<br>
-<strong>Montaje:</strong> Frotá cada tostada con medio diente de ajo crudo. Poné una cucharada generosa de tomate encima. Terminá con parmesano rallado y un hilo de aceite de oliva extra virgen. Serví de inmediato.",ingredients:[
+  {id:'e003',category:'entrada',name:'Bruschettas con tomate y albahaca',rendimiento:10,desc:"Pan crocante tostado con tomate perita fresco, albahaca aromática y un buen chorro de aceite de oliva. Simple, elegante y siempre bienvenida.",steps:"Base: Cortá el pan baguette en rodajas de 2 cm en diagonal. Tostá en horno 180°C por 8 min hasta que estén crocantes pero no duras. Tomate: Pelá y cortá los tomates en cubos pequeños, sin semillas. Mezclá con ajo picado fino, albahaca en chiffonade, aceite de oliva, sal y pimienta. Dejá reposar 15 min. Montaje: Frotá cada tostada con medio diente de ajo crudo. Poné una cucharada generosa de tomate encima. Terminá con parmesano rallado y un hilo de aceite de oliva extra virgen. Serví de inmediato.",ingredients:[
     {name:'Pan baguette artesanal',qty:0.4,unit:'Kg',cost:4200},
     {name:'Tomate perita',qty:0.5,unit:'Kg',cost:1800},
     {name:'Albahaca fresca',qty:0.05,unit:'Kg',cost:3500},
@@ -457,10 +460,7 @@ const DEFAULTS = [
     {name:'Pimienta negra molida',qty:0.003,unit:'Kg',cost:16000},
     {name:'Queso Parmesano rallado',qty:0.08,unit:'Kg',cost:22000},
   ]},
-  {id:'e004',category:'entrada',name:'Locro cordobés (presentación individual)',rendimiento:10,desc:"El locro de las sierras. Espeso, contundente y con el alma del interior: maíz blanco, porotos, cerdo y chorizo colorado. Presentación individual para eventos.",steps:"<strong>Remojo:</strong> La noche anterior, poné en remojo el maíz y los porotos en agua fría por separado.<br>
-<strong>Cocción base:</strong> En una olla grande, cocinás el maíz con los porotos en agua fría. Cuando rompan hervor, agregás la panceta en trozos, el chorizo colorado y la carne de cerdo.<br>
-<strong>Sofrito:</strong> Aparte, dorá la cebolla y el ajo en aceite con pimentón ahumado. Incorporá al locro.<br>
-<strong>Finalización:</strong> Cociná a fuego bajo 2 horas revolviendo cada tanto. Agregá el zapallo criollo en cubos los últimos 30 min para que se deshaga y espese. Corregí sal. Serví en cazuelitas individuales con un hilo de aceite colorado encima.",ingredients:[
+  {id:'e004',category:'entrada',name:'Locro cordobés (presentación individual)',rendimiento:10,desc:"El locro de las sierras. Espeso, contundente y con el alma del interior: maíz blanco, porotos, cerdo y chorizo colorado. Presentación individual para eventos.",steps:"Remojo: La noche anterior, poné en remojo el maíz y los porotos en agua fría por separado. Cocción base: En una olla grande, cocinás el maíz con los porotos en agua fría. Cuando rompan hervor, agregás la panceta en trozos, el chorizo colorado y la carne de cerdo. Sofrito: Aparte, dorá la cebolla y el ajo en aceite con pimentón ahumado. Incorporá al locro. Finalización: Cociná a fuego bajo 2 horas revolviendo cada tanto. Agregá el zapallo criollo en cubos los últimos 30 min para que se deshaga y espese. Corregí sal. Serví en cazuelitas individuales con un hilo de aceite colorado encima.",ingredients:[
     {name:'Maíz blanco partido',qty:0.4,unit:'Kg',cost:3200},
     {name:'Porotos blancos',qty:0.3,unit:'Kg',cost:4500},
     {name:'Panceta ahumada',qty:0.25,unit:'Kg',cost:12000},
@@ -473,10 +473,7 @@ const DEFAULTS = [
     {name:'Aceite de girasol',qty:0.05,unit:'Litro',cost:3500},
     {name:'Sal y especias',qty:0.01,unit:'Kg',cost:1000},
   ]},
-  {id:'e005',category:'entrada',name:'Ensalada César con crutones artesanales',rendimiento:10,desc:"Lechuga romana crocante, pollo grillado, crutones artesanales y la salsa César clásica con anchoas y parmesano. Fresca y sofisticada.",steps:"<strong>Aderezo César:</strong> Procesá las yemas con las anchoas, el ajo, la mostaza y el jugo de limón. Emulsioná agregando el aceite de oliva en hilo fino hasta obtener una salsa cremosa. Incorporá el parmesano rallado. Reservá en frío.<br>
-<strong>Crutones:</strong> Cortá el pan en cubos de 2 cm, mezclá con aceite de oliva y sal. Tostá en horno 180°C por 10 min hasta dorar.<br>
-<strong>Pollo:</strong> Grillar las pechugas salpimentadas 6 min de cada lado. Dejá reposar y cortá en tiras.<br>
-<strong>Montaje:</strong> Mezclá la lechuga romana cortada gruesa con el aderezo. Distribuí el pollo encima, los crutones y láminas de parmesano. Serví de inmediato.",ingredients:[
+  {id:'e005',category:'entrada',name:'Ensalada César con crutones artesanales',rendimiento:10,desc:"Lechuga romana crocante, pollo grillado, crutones artesanales y la salsa César clásica con anchoas y parmesano. Fresca y sofisticada.",steps:"Aderezo César: Procesá las yemas con las anchoas, el ajo, la mostaza y el jugo de limón. Emulsioná agregando el aceite de oliva en hilo fino hasta obtener una salsa cremosa. Incorporá el parmesano rallado. Reservá en frío. Crutones: Cortá el pan en cubos de 2 cm, mezclá con aceite de oliva y sal. Tostá en horno 180°C por 10 min hasta dorar. Pollo: Grillar las pechugas salpimentadas 6 min de cada lado. Dejá reposar y cortá en tiras. Montaje: Mezclá la lechuga romana cortada gruesa con el aderezo. Distribuí el pollo encima, los crutones y láminas de parmesano. Serví de inmediato.",ingredients:[
     {name:'Lechuga romana',qty:0.6,unit:'Kg',cost:2500},
     {name:'Pechuga de pollo grillada',qty:0.4,unit:'Kg',cost:4069},
     {name:'Queso Parmesano en láminas',qty:0.1,unit:'Kg',cost:22000},
@@ -489,9 +486,7 @@ const DEFAULTS = [
     {name:'Ajo',qty:0.01,unit:'Kg',cost:4000},
     {name:'Sal y pimienta',qty:0.005,unit:'Kg',cost:1000},
   ]},
-  {id:'e006',category:'entrada',name:'Provoleta a la parrilla con chimichurri',rendimiento:10,desc:"Disco de provolone fundido a la parrilla con borde dorado y centro cremoso. Servida con chimichurri casero y tomates cherry. Siempre genera aplausos.",steps:"<strong>Chimichurri:</strong> Picá muy fino el perejil y el ajo. Mezclá con orégano, ají molido, aceite de oliva y vinagre de manzana. Preparalo con al menos 2 horas de anticipación.<br>
-<strong>Provoleta:</strong> Precalentá la parrilla o plancha a fuego fuerte. Colocá los discos de provolone directamente sobre la parrilla. No la muevas los primeros 3 min hasta que se forme costra dorada en la base.<br>
-<strong>Servicio:</strong> Retirá cuando el centro esté fundido y burbujeante. Poné encima los tomates cherry cortados al medio y cubrí con el chimichurri. Serví de inmediato acompañada de pan.",ingredients:[
+  {id:'e006',category:'entrada',name:'Provoleta a la parrilla con chimichurri',rendimiento:10,desc:"Disco de provolone fundido a la parrilla con borde dorado y centro cremoso. Servida con chimichurri casero y tomates cherry. Siempre genera aplausos.",steps:"Chimichurri: Picá muy fino el perejil y el ajo. Mezclá con orégano, ají molido, aceite de oliva y vinagre de manzana. Preparalo con al menos 2 horas de anticipación. Provoleta: Precalentá la parrilla o plancha a fuego fuerte. Colocá los discos de provolone directamente sobre la parrilla. No la muevas los primeros 3 min hasta que se forme costra dorada en la base. Servicio: Retirá cuando el centro esté fundido y burbujeante. Poné encima los tomates cherry cortados al medio y cubrí con el chimichurri. Serví de inmediato acompañada de pan.",ingredients:[
     {name:'Provolone para parrilla',qty:0.8,unit:'Kg',cost:12500},
     {name:'Tomate cherry',qty:0.2,unit:'Kg',cost:3800},
     {name:'Perejil fresco',qty:0.05,unit:'Kg',cost:2500},
@@ -503,10 +498,7 @@ const DEFAULTS = [
     {name:'Sal y pimienta',qty:0.005,unit:'Kg',cost:1000},
   ]},
   // ── PLATOS PRINCIPALES (3) ─────────────────────────────────────────────
-  {id:'p001',category:'principal',name:'Pollo arrollado relleno',rendimiento:10,desc:"Pechuga de pollo extendida y rellena con jamón, queso cremoso, morrón asado y espinaca. Arrollada, atada y asada al horno con vino blanco y hierbas. Elegante y rendidora.",steps:"<strong>Preparación del pollo:</strong> Abrí las pechugas en mariposa y golpeá con mazo hasta obtener un rectángulo parejo de 1 cm de espesor. Salpimentá y untá con mostaza.<br>
-<strong>Relleno:</strong> Distribuí el jamón cocido cubriendo toda la superficie. Agregá el queso cremoso en láminas, el morrón asado en tiras, la espinaca blanqueada y exprimida, y la zanahoria rallada.<br>
-<strong>Arrollado:</strong> Enrollá apretado y atá con hilo de cocina cada 3 cm. Sellá en sartén con aceite de oliva por todos los lados hasta dorar.<br>
-<strong>Cocción:</strong> Pasá a fuente para horno. Rociá con vino blanco, ajo laminado y romero. Cocinás tapado a 180°C por 40 min, luego 10 min destapado. Dejá reposar 10 min antes de cortar. Servís en rodajas con el jugo de cocción reducido.",ingredients:[
+  {id:'p001',category:'principal',name:'Pollo arrollado relleno',rendimiento:10,desc:"Pechuga de pollo extendida y rellena con jamón, queso cremoso, morrón asado y espinaca. Arrollada, atada y asada al horno con vino blanco y hierbas. Elegante y rendidora.",steps:"Preparación del pollo: Abrí las pechugas en mariposa y golpeá con mazo hasta obtener un rectángulo parejo de 1 cm de espesor. Salpimentá y untá con mostaza. Relleno: Distribuí el jamón cocido cubriendo toda la superficie. Agregá el queso cremoso en láminas, el morrón asado en tiras, la espinaca blanqueada y exprimida, y la zanahoria rallada. Arrollado: Enrollá apretado y atá con hilo de cocina cada 3 cm. Sellá en sartén con aceite de oliva por todos los lados hasta dorar. Cocción: Pasá a fuente para horno. Rociá con vino blanco, ajo laminado y romero. Cocinás tapado a 180°C por 40 min, luego 10 min destapado. Dejá reposar 10 min antes de cortar. Servís en rodajas con el jugo de cocción reducido.",ingredients:[
     {name:'Pechuga de pollo (para arrollar)',qty:2.5,unit:'Kg',cost:4069},
     {name:'Jamón cocido',qty:0.3,unit:'Kg',cost:18000},
     {name:'Morrón rojo asado',qty:0.2,unit:'Kg',cost:2800},
@@ -520,10 +512,7 @@ const DEFAULTS = [
     {name:'Vino blanco seco',qty:0.1,unit:'Litro',cost:4500},
     {name:'Sal, pimienta y hierbas',qty:0.01,unit:'Kg',cost:1000},
   ]},
-  {id:'p002',category:'principal',name:'Asado criollo a la parrilla',rendimiento:10,desc:"El rey de la mesa argentina. Asado de tira y vacío a las brasas con chorizo, morcilla y mollejas. Sal gruesa, buen fuego y punto justo. No necesita más.",steps:"<strong>El fuego:</strong> Encendé el carbón con anticipación. La parrilla tiene que estar bien caliente antes de poner la carne. El secreto es el punto del fuego: brasas bien formadas, sin llama.<br>
-<strong>Orden de cocción:</strong> Empezá por las achuras: las mollejas van primero (20 min), luego el chorizo y la morcilla (15 min). La carne va después: el asado de tira con el hueso hacia abajo primero (30 min), luego vuelta (15 min). El vacío va entero (25 min de cada lado).<br>
-<strong>Sazón:</strong> Solo sal gruesa, aplicada del lado que ya cocinaste. La carne se sala una sola vez, después de sellar.<br>
-<strong>Punto:</strong> El asado cordobés se sirve jugoso. Al presionar, debe ceder levemente. Servís con chimichurri y ensalada mixta.",ingredients:[
+  {id:'p002',category:'principal',name:'Asado criollo a la parrilla',rendimiento:10,desc:"El rey de la mesa argentina. Asado de tira y vacío a las brasas con chorizo, morcilla y mollejas. Sal gruesa, buen fuego y punto justo. No necesita más.",steps:"El fuego: Encendé el carbón con anticipación. La parrilla tiene que estar bien caliente antes de poner la carne. El secreto es el punto del fuego: brasas bien formadas, sin llama. Orden de cocción: Empezá por las achuras: las mollejas van primero (20 min), luego el chorizo y la morcilla (15 min). La carne va después: el asado de tira con el hueso hacia abajo primero (30 min), luego vuelta (15 min). El vacío va entero (25 min de cada lado). Sazón: Solo sal gruesa, aplicada del lado que ya cocinaste. La carne se sala una sola vez, después de sellar. Punto: El asado cordobés se sirve jugoso. Al presionar, debe ceder levemente. Servís con chimichurri y ensalada mixta.",ingredients:[
     {name:'Asado de tira',qty:2.0,unit:'Kg',cost:18617},
     {name:'Vacío',qty:1.0,unit:'Kg',cost:19534},
     {name:'Chorizo parrillero',qty:0.8,unit:'Kg',cost:10500},
@@ -535,10 +524,7 @@ const DEFAULTS = [
     {name:'Limón',qty:0.1,unit:'Kg',cost:2500},
     {name:'Ensalada mixta (acompañamiento)',qty:0.5,unit:'Kg',cost:1800},
   ]},
-  {id:'p003',category:'principal',name:'Cazuela de cerdo con verduras de estación',rendimiento:10,desc:"Cazuela de cerdo lenta con verduras de estación cordobesa. El Malbec y el pimentón le dan profundidad y color. Plato de campo con presentación de restaurante.",steps:"<strong>Sellado:</strong> Cortá el pechito en trozos de 5 cm. Sellá en aceite bien caliente por todos los lados hasta dorar profundamente. Retirá y reservá.<br>
-<strong>Base:</strong> En la misma cazuela, sofreí la cebolla, el ajo y los morrones. Incorporá el tomate en cubos y cocinás hasta que se reduzca. Agregá el pimentón dulce, el orégano, el laurel y el tomillo.<br>
-<strong>Cocción lenta:</strong> Volvé la carne a la cazuela. Incorporá el vino tinto Malbec y el caldo caliente hasta cubrir. Cocinás tapado a fuego bajo 1 hora 30 min.<br>
-<strong>Verduras:</strong> Agregá la papa, la batata y el zapallo en los últimos 30 min para que queden enteros pero tiernos. Corregí sal. Servís directo de la cazuela con pan artesanal.",ingredients:[
+  {id:'p003',category:'principal',name:'Cazuela de cerdo con verduras de estación',rendimiento:10,desc:"Cazuela de cerdo lenta con verduras de estación cordobesa. El Malbec y el pimentón le dan profundidad y color. Plato de campo con presentación de restaurante.",steps:"Sellado: Cortá el pechito en trozos de 5 cm. Sellá en aceite bien caliente por todos los lados hasta dorar profundamente. Retirá y reservá. Base: En la misma cazuela, sofreí la cebolla, el ajo y los morrones. Incorporá el tomate en cubos y cocinás hasta que se reduzca. Agregá el pimentón dulce, el orégano, el laurel y el tomillo. Cocción lenta: Volvé la carne a la cazuela. Incorporá el vino tinto Malbec y el caldo caliente hasta cubrir. Cocinás tapado a fuego bajo 1 hora 30 min. Verduras: Agregá la papa, la batata y el zapallo en los últimos 30 min para que queden enteros pero tiernos. Corregí sal. Servís directo de la cazuela con pan artesanal.",ingredients:[
     {name:'Pechito de cerdo',qty:2.0,unit:'Kg',cost:8241},
     {name:'Papa',qty:0.8,unit:'Kg',cost:1500},
     {name:'Batata',qty:0.5,unit:'Kg',cost:1800},
@@ -555,10 +541,7 @@ const DEFAULTS = [
     {name:'Sal y pimienta',qty:0.01,unit:'Kg',cost:1000},
   ]},
   // ── POSTRES (3) ────────────────────────────────────────────────────────
-  {id:'d001',category:'postre',name:'Flan casero con dulce de leche y crema',rendimiento:10,desc:"El postre más querido de las mesas argentinas. Flan casero cremoso con caramelo dorado, dulce de leche repostero y crema chantilly. Infalible.",steps:"<strong>Caramelo:</strong> Derretí el azúcar en sartén a fuego medio sin revolver hasta obtener un caramelo rubio oscuro. Volcalo en los moldes individuales cubriendo el fondo. Dejá enfriar.<br>
-<strong>Mezcla:</strong> Batí los huevos con el azúcar sin incorporar demasiado aire. Agregá la leche tibia y la vainilla. Colá la mezcla.<br>
-<strong>Cocción:</strong> Llenás los moldes acaramelados. Cocinás a baño María en horno a 160°C por 45-50 min. El flan está listo cuando al mover el molde el centro tiembla apenas.<br>
-<strong>Desmolde:</strong> Enfriá completamente y llevá a la heladera mínimo 4 horas. Desmoldá pasando un cuchillo por el borde. Servís con dulce de leche repostero y crema chantilly.",ingredients:[
+  {id:'d001',category:'postre',name:'Flan casero con dulce de leche y crema',rendimiento:10,desc:"El postre más querido de las mesas argentinas. Flan casero cremoso con caramelo dorado, dulce de leche repostero y crema chantilly. Infalible.",steps:"Caramelo: Derretí el azúcar en sartén a fuego medio sin revolver hasta obtener un caramelo rubio oscuro. Volcalo en los moldes individuales cubriendo el fondo. Dejá enfriar. Mezcla: Batí los huevos con el azúcar sin incorporar demasiado aire. Agregá la leche tibia y la vainilla. Colá la mezcla. Cocción: Llenás los moldes acaramelados. Cocinás a baño María en horno a 160°C por 45-50 min. El flan está listo cuando al mover el molde el centro tiembla apenas. Desmolde: Enfriá completamente y llevá a la heladera mínimo 4 horas. Desmoldá pasando un cuchillo por el borde. Servís con dulce de leche repostero y crema chantilly.",ingredients:[
     {name:'Huevos',qty:12,unit:'Unidad',cost:600},
     {name:'Leche entera',qty:1.0,unit:'Litro',cost:2200},
     {name:'Azúcar',qty:0.25,unit:'Kg',cost:2800},
@@ -567,10 +550,7 @@ const DEFAULTS = [
     {name:'Crema de leche',qty:0.25,unit:'Litro',cost:4200},
     {name:'Azúcar para caramelo',qty:0.1,unit:'Kg',cost:2800},
   ]},
-  {id:'d002',category:'postre',name:'Torta de ricota con frutos rojos',rendimiento:10,desc:"Base de galletitas con ricota fresca, crema y un coulis de frutos rojos. Fresca, liviana y con ese toque ácido que equilibra el final del menú.",steps:"<strong>Base:</strong> Procesá las galletitas hasta obtener polvo grueso. Mezclá con manteca derretida. Presioná en el fondo de los moldes y llevá al freezer 15 min.<br>
-<strong>Relleno:</strong> Batí la ricota con el azúcar impalpable hasta que esté cremosa. Incorporá la crema batida a punto chantilly con movimientos envolventes. Agregá las yemas de a una y la vainilla.<br>
-<strong>Armado:</strong> Volcá el relleno sobre la base fría. Cocinás en horno a 160°C a baño María por 50 min. Dejá enfriar en el horno apagado con la puerta entreabierta.<br>
-<strong>Terminación:</strong> Llevá a la heladera mínimo 6 horas. Decorá con las frutillas, los arándanos y un hilo de mermelada de frutos rojos tibia.",ingredients:[
+  {id:'d002',category:'postre',name:'Torta de ricota con frutos rojos',rendimiento:10,desc:"Base de galletitas con ricota fresca, crema y un coulis de frutos rojos. Fresca, liviana y con ese toque ácido que equilibra el final del menú.",steps:"Base: Procesá las galletitas hasta obtener polvo grueso. Mezclá con manteca derretida. Presioná en el fondo de los moldes y llevá al freezer 15 min. Relleno: Batí la ricota con el azúcar impalpable hasta que esté cremosa. Incorporá la crema batida a punto chantilly con movimientos envolventes. Agregá las yemas de a una y la vainilla. Armado: Volcá el relleno sobre la base fría. Cocinás en horno a 160°C a baño María por 50 min. Dejá enfriar en el horno apagado con la puerta entreabierta. Terminación: Llevá a la heladera mínimo 6 horas. Decorá con las frutillas, los arándanos y un hilo de mermelada de frutos rojos tibia.",ingredients:[
     {name:'Ricota fresca',qty:0.6,unit:'Kg',cost:5500},
     {name:'Crema de leche',qty:0.3,unit:'Litro',cost:4200},
     {name:'Azúcar impalpable',qty:0.15,unit:'Kg',cost:3200},
@@ -583,11 +563,7 @@ const DEFAULTS = [
     {name:'Galletitas Digestive (base)',qty:0.2,unit:'Kg',cost:4500},
     {name:'Esencia de vainilla',qty:0.005,unit:'Litro',cost:8000},
   ]},
-  {id:'d003',category:'postre',name:'Budín de pan con salsa de caramelo',rendimiento:10,desc:"Aprovechamiento noble del pan del día anterior. Húmedo, especiado con canela y naranja, con pasas y nueces. Bañado en salsa de dulce de leche y crema.",steps:"<strong>Base:</strong> Cortá el pan en cubos de 3 cm. Tostá levemente en horno 150°C por 10 min.<br>
-<strong>Mezcla:</strong> Batí los huevos con el azúcar. Incorporá la leche tibia, la manteca derretida, la ralladura de naranja, la canela y la vainilla. Sumá las pasas y las nueces.<br>
-<strong>Reposo:</strong> Volcá sobre el pan y dejá absorber 20 min presionando suavemente.<br>
-<strong>Cocción:</strong> Cocinás en molde enmantecado a 170°C por 35-40 min hasta que al insertar un palito salga limpio. La superficie debe estar dorada y ligeramente firme.<br>
-<strong>Salsa:</strong> Calentá el dulce de leche con la crema a fuego bajo hasta integrar. Servís el budín tibio con la salsa caliente encima.",ingredients:[
+  {id:'d003',category:'postre',name:'Budín de pan con salsa de caramelo',rendimiento:10,desc:"Aprovechamiento noble del pan del día anterior. Húmedo, especiado con canela y naranja, con pasas y nueces. Bañado en salsa de dulce de leche y crema.",steps:"Base: Cortá el pan en cubos de 3 cm. Tostá levemente en horno 150°C por 10 min. Mezcla: Batí los huevos con el azúcar. Incorporá la leche tibia, la manteca derretida, la ralladura de naranja, la canela y la vainilla. Sumá las pasas y las nueces. Reposo: Volcá sobre el pan y dejá absorber 20 min presionando suavemente. Cocción: Cocinás en molde enmantecado a 170°C por 35-40 min hasta que al insertar un palito salga limpio. La superficie debe estar dorada y ligeramente firme. Salsa: Calentá el dulce de leche con la crema a fuego bajo hasta integrar. Servís el budín tibio con la salsa caliente encima.",ingredients:[
     {name:'Pan lactal del día anterior',qty:0.4,unit:'Kg',cost:4200},
     {name:'Leche entera',qty:0.75,unit:'Litro',cost:2200},
     {name:'Huevos',qty:4,unit:'Unidad',cost:600},
@@ -601,11 +577,7 @@ const DEFAULTS = [
     {name:'Crema de leche (salsa)',qty:0.1,unit:'Litro',cost:4200},
   ]},
   // ── AFTER (1) ──────────────────────────────────────────────────────────
-  {id:'a001',category:'after',name:'Pizza napolitana a la piedra',rendimiento:10,desc:"Masa de pizza a la piedra con bordes altos y centro fino. Salsa de tomate casera, mozzarella fresca y albahaca. La Napolitana de siempre, hecha con respeto.",steps:"<strong>Masa madre:</strong> Disolvé la levadura y el azúcar en agua tibia a 35°C. Esperá 10 min hasta que espume.<br>
-<strong>Amasado:</strong> Mezclá la harina con sal, incorporá la levadura y el aceite de oliva. Amasá 10 min hasta que la masa sea lisa y elástica. Dejá levar tapada 1 hora hasta que duplique.<br>
-<strong>Armado:</strong> Desgasificá y estirá con las manos en la placa aceitada, llevando la masa hacia los bordes. Dejá descansar 15 min tapada.<br>
-<strong>Cobertura:</strong> Distribuí la salsa de tomate casera dejando borde libre. Cubrí con la mozzarella en rodajas. Acomodá el tomate perita en rodajas finas encima.<br>
-<strong>Cocción:</strong> Horno al máximo (250°C) por 10-12 min. Tiene que entrar caliente y rápido. Cuando salga, poné la albahaca fresca, un hilo de aceite de oliva y orégano seco.",ingredients:[
+  {id:'a001',category:'after',name:'Pizza napolitana a la piedra',rendimiento:10,desc:"Masa de pizza a la piedra con bordes altos y centro fino. Salsa de tomate casera, mozzarella fresca y albahaca. La Napolitana de siempre, hecha con respeto.",steps:"Masa madre: Disolvé la levadura y el azúcar en agua tibia a 35°C. Esperá 10 min hasta que espume. Amasado: Mezclá la harina con sal, incorporá la levadura y el aceite de oliva. Amasá 10 min hasta que la masa sea lisa y elástica. Dejá levar tapada 1 hora hasta que duplique. Armado: Desgasificá y estirá con las manos en la placa aceitada, llevando la masa hacia los bordes. Dejá descansar 15 min tapada. Cobertura: Distribuí la salsa de tomate casera dejando borde libre. Cubrí con la mozzarella en rodajas. Acomodá el tomate perita en rodajas finas encima. Cocción: Horno al máximo (250°C) por 10-12 min. Tiene que entrar caliente y rápido. Cuando salga, poné la albahaca fresca, un hilo de aceite de oliva y orégano seco.",ingredients:[
     {name:'Harina 000',qty:0.7,unit:'Kg',cost:2200},
     {name:'Levadura seca',qty:0.01,unit:'Kg',cost:18000},
     {name:'Aceite de oliva (masa)',qty:0.05,unit:'Litro',cost:12000},
@@ -622,10 +594,7 @@ const DEFAULTS = [
 
   // ── ENTRADAS NUEVAS (5) ────────────────────────────────────────────────────
 
-  {id:'e007',category:'entrada',name:'Humita en chala cordobesa',rendimiento:10,desc:"Preparación típica del norte cordobés. Choclo fresco rallado con queso y especias, cocinada lentamente envuelta en su propia chala. Sabor de abuela.",steps:"<strong>Choclo:</strong> Rallá el choclo fresco obteniendo una pasta gruesa. Guardá algunas chalas enteras para envolver.<br>
-<strong>Base:</strong> Sofreí la cebolla y el morrón en manteca hasta que estén tiernos. Incorporá el choclo rallado y cocinalo revolviendo 5 min. Agregá la leche, el queso cremoso en cubos, el pimentón y el ají molido. Cociná hasta que el queso se integre. Salpimentá.<br>
-<strong>Armado:</strong> Colocá dos cucharadas de la preparación en el centro de cada chala. Doblá los costados y atá los extremos con tiras de chala.<br>
-<strong>Cocción:</strong> Cociná al vapor 40 min. Serví con la chala abierta en el plato.",ingredients:[
+  {id:'e007',category:'entrada',name:'Humita en chala cordobesa',rendimiento:10,desc:"Preparación típica del norte cordobés. Choclo fresco rallado con queso y especias, cocinada lentamente envuelta en su propia chala. Sabor de abuela.",steps:"Choclo: Rallá el choclo fresco obteniendo una pasta gruesa. Guardá algunas chalas enteras para envolver. Base: Sofreí la cebolla y el morrón en manteca hasta que estén tiernos. Incorporá el choclo rallado y cocinalo revolviendo 5 min. Agregá la leche, el queso cremoso en cubos, el pimentón y el ají molido. Cociná hasta que el queso se integre. Salpimentá. Armado: Colocá dos cucharadas de la preparación en el centro de cada chala. Doblá los costados y atá los extremos con tiras de chala. Cocción: Cociná al vapor 40 min. Serví con la chala abierta en el plato.",ingredients:[
     {name:'Choclo fresco',qty:2.0,unit:'Kg',cost:1800},
     {name:'Cebolla',qty:0.3,unit:'Kg',cost:1400},
     {name:'Morrón rojo',qty:0.2,unit:'Kg',cost:2800},
@@ -638,11 +607,7 @@ const DEFAULTS = [
     {name:'Hojas de chala (para envolver)',qty:20,unit:'Unidad',cost:100},
   ]},
 
-  {id:'e008',category:'entrada',name:'Croquetas de quinoa con dip de palta',rendimiento:10,desc:"Croquetas doradas de quinoa con interior cremoso y queso parmesano. Acompañadas de un dip de palta fresco con limón y cilantro. Entrada moderna y liviana.",steps:"<strong>Quinoa:</strong> Lavá y cocinás la quinoa en agua con sal 15 min. Escurrí y dejá enfriar completamente.<br>
-<strong>Masa de croquetas:</strong> Mezclá la quinoa fría con parmesano rallado, sal y pimienta. Formá cilindros del tamaño de un corcho. Pasalos por harina, luego por huevo batido y finalmente por pan rallado.<br>
-<strong>Fritura:</strong> Freí en aceite a 170°C por 3-4 min hasta que estén uniformemente doradas. Escurrí sobre papel.<br>
-<strong>Dip de palta:</strong> Pisá la palta con tenedor, agregá limón, cilantro picado, ajo rallado y sal. No proceses, que quede rústico.<br>
-<strong>Servicio:</strong> Presentá las croquetas calientes con el dip al costado.",ingredients:[
+  {id:'e008',category:'entrada',name:'Croquetas de quinoa con dip de palta',rendimiento:10,desc:"Croquetas doradas de quinoa con interior cremoso y queso parmesano. Acompañadas de un dip de palta fresco con limón y cilantro. Entrada moderna y liviana.",steps:"Quinoa: Lavá y cocinás la quinoa en agua con sal 15 min. Escurrí y dejá enfriar completamente. Masa de croquetas: Mezclá la quinoa fría con parmesano rallado, sal y pimienta. Formá cilindros del tamaño de un corcho. Pasalos por harina, luego por huevo batido y finalmente por pan rallado. Fritura: Freí en aceite a 170°C por 3-4 min hasta que estén uniformemente doradas. Escurrí sobre papel. Dip de palta: Pisá la palta con tenedor, agregá limón, cilantro picado, ajo rallado y sal. No proceses, que quede rústico. Servicio: Presentá las croquetas calientes con el dip al costado.",ingredients:[
     {name:'Quinoa blanca',qty:0.3,unit:'Kg',cost:5500},
     {name:'Queso Parmesano rallado',qty:0.1,unit:'Kg',cost:22000},
     {name:'Huevo',qty:3,unit:'Unidad',cost:600},
@@ -656,10 +621,7 @@ const DEFAULTS = [
     {name:'Sal y pimienta',qty:0.01,unit:'Kg',cost:1000},
   ]},
 
-  {id:'e009',category:'entrada',name:'Sopa crema de zapallo criollo',rendimiento:10,desc:"Crema aterciopelada de zapallo criollo con un toque de jengibre y nuez moscada. Terminada con crema y semillas de zapallo tostadas. Ideal para eventos de otoño e invierno.",steps:"<strong>Base:</strong> Sofreí la cebolla y el ajo en manteca a fuego medio. Agregá el zapallo y la papa en cubos. Cocinás 5 min revolviendo.<br>
-<strong>Cocción:</strong> Incorporá el caldo caliente, el jengibre rallado y la nuez moscada. Cocinás tapado 20 min hasta que el zapallo esté muy tierno.<br>
-<strong>Procesado:</strong> Licuá en tandas hasta obtener una crema muy lisa. Volvé a la olla, agregá la crema de leche y calentá sin hervir. Corregí sal y pimienta.<br>
-<strong>Terminación:</strong> Tostá las semillas de zapallo en sartén seca con sal gruesa. Serví la crema en tazones con un hilo de crema, las semillas tostadas encima y pimienta negra recién molida.",ingredients:[
+  {id:'e009',category:'entrada',name:'Sopa crema de zapallo criollo',rendimiento:10,desc:"Crema aterciopelada de zapallo criollo con un toque de jengibre y nuez moscada. Terminada con crema y semillas de zapallo tostadas. Ideal para eventos de otoño e invierno.",steps:"Base: Sofreí la cebolla y el ajo en manteca a fuego medio. Agregá el zapallo y la papa en cubos. Cocinás 5 min revolviendo. Cocción: Incorporá el caldo caliente, el jengibre rallado y la nuez moscada. Cocinás tapado 20 min hasta que el zapallo esté muy tierno. Procesado: Licuá en tandas hasta obtener una crema muy lisa. Volvé a la olla, agregá la crema de leche y calentá sin hervir. Corregí sal y pimienta. Terminación: Tostá las semillas de zapallo en sartén seca con sal gruesa. Serví la crema en tazones con un hilo de crema, las semillas tostadas encima y pimienta negra recién molida.",ingredients:[
     {name:'Zapallo criollo',qty:1.5,unit:'Kg',cost:1500},
     {name:'Cebolla',qty:0.3,unit:'Kg',cost:1400},
     {name:'Ajo',qty:0.02,unit:'Kg',cost:4000},
@@ -673,10 +635,7 @@ const DEFAULTS = [
     {name:'Sal y pimienta',qty:0.01,unit:'Kg',cost:1000},
   ]},
 
-  {id:'e010',category:'entrada',name:'Tartar de tomate y mozzarella ahumada',rendimiento:10,desc:"Tartar de tomate perita con mozzarella ahumada, reducción de balsámico y miel. Los piñones aportan textura. Presentación elegante sobre pan crocante.",steps:"<strong>Tomate:</strong> Pelá los tomates (escaldalos 30 seg en agua hirviendo). Cortá en cubos pequeños y precisos, sin semillas. Escurrí bien.<br>
-<strong>Mozzarella:</strong> Cortá la mozzarella ahumada en cubos del mismo tamaño que el tomate.<br>
-<strong>Aderezo:</strong> Mezclá el aceite de oliva con el vinagre balsámico y la miel. Emulsioná con tenedor.<br>
-<strong>Montaje:</strong> Combiná el tomate y la mozzarella con el aderezo y la albahaca en chiffonade. Salpimentá. Tostá los piñones en sartén seca. Presentá sobre rodajas de pan crocante y terminá con los piñones y una reducción de balsámico.",ingredients:[
+  {id:'e010',category:'entrada',name:'Tartar de tomate y mozzarella ahumada',rendimiento:10,desc:"Tartar de tomate perita con mozzarella ahumada, reducción de balsámico y miel. Los piñones aportan textura. Presentación elegante sobre pan crocante.",steps:"Tomate: Pelá los tomates (escaldalos 30 seg en agua hirviendo). Cortá en cubos pequeños y precisos, sin semillas. Escurrí bien. Mozzarella: Cortá la mozzarella ahumada en cubos del mismo tamaño que el tomate. Aderezo: Mezclá el aceite de oliva con el vinagre balsámico y la miel. Emulsioná con tenedor. Montaje: Combiná el tomate y la mozzarella con el aderezo y la albahaca en chiffonade. Salpimentá. Tostá los piñones en sartén seca. Presentá sobre rodajas de pan crocante y terminá con los piñones y una reducción de balsámico.",ingredients:[
     {name:'Tomate perita maduro',qty:0.8,unit:'Kg',cost:1800},
     {name:'Mozzarella ahumada',qty:0.4,unit:'Kg',cost:11000},
     {name:'Albahaca fresca',qty:0.05,unit:'Kg',cost:3500},
@@ -688,10 +647,7 @@ const DEFAULTS = [
     {name:'Pan crocante (base)',qty:0.2,unit:'Kg',cost:4200},
   ]},
 
-  {id:'e011',category:'entrada',name:'Arrollado de verduras al vapor con salsa criolla',rendimiento:10,desc:"Arrollado de verduras de estación al vapor con queso Sardo y huevo duro. Acompañado de salsa criolla fresca. Entrada liviana, vistosa y sin fritura.",steps:"<strong>Relleno:</strong> Blanqueá la acelga 2 min en agua hirviendo. Escurrí y exprimí bien. Picá fino. Rallá la zanahoria. Cortá el zapallito en juliana fina y saltealo 3 min.<br>
-<strong>Armado del arrollado:</strong> Extendé las hojas de acelga grandes superpuestas formando un rectángulo. Distribuí encima el queso Sardo rallado, la zanahoria, el zapallito y los huevos duros cortados. Enrollá bien apretado y atá con hilo de cocina.<br>
-<strong>Cocción:</strong> Cocinás al vapor 25 min. Dejá enfriar antes de cortar en rodajas de 2 cm.<br>
-<strong>Salsa criolla:</strong> Picá el tomate, la cebolla y el morrón en brunoise. Aderezá con aceite de oliva, orégano y sal. Servís las rodajas sobre la salsa.",ingredients:[
+  {id:'e011',category:'entrada',name:'Arrollado de verduras al vapor con salsa criolla',rendimiento:10,desc:"Arrollado de verduras de estación al vapor con queso Sardo y huevo duro. Acompañado de salsa criolla fresca. Entrada liviana, vistosa y sin fritura.",steps:"Relleno: Blanqueá la acelga 2 min en agua hirviendo. Escurrí y exprimí bien. Picá fino. Rallá la zanahoria. Cortá el zapallito en juliana fina y saltealo 3 min. Armado del arrollado: Extendé las hojas de acelga grandes superpuestas formando un rectángulo. Distribuí encima el queso Sardo rallado, la zanahoria, el zapallito y los huevos duros cortados. Enrollá bien apretado y atá con hilo de cocina. Cocción: Cocinás al vapor 25 min. Dejá enfriar antes de cortar en rodajas de 2 cm. Salsa criolla: Picá el tomate, la cebolla y el morrón en brunoise. Aderezá con aceite de oliva, orégano y sal. Servís las rodajas sobre la salsa.",ingredients:[
     {name:'Acelga',qty:0.5,unit:'Kg',cost:1500},
     {name:'Zanahoria',qty:0.3,unit:'Kg',cost:1200},
     {name:'Zapallito verde',qty:0.3,unit:'Kg',cost:2000},
@@ -707,10 +663,7 @@ const DEFAULTS = [
 
   // ── PLATOS PRINCIPALES NUEVOS (2) ──────────────────────────────────────────
 
-  {id:'p004',category:'principal',name:'Cordero a la cordobesa con papas rústicas',rendimiento:10,desc:"Pierna de cordero marinada en Malbec de la región con romero, tomillo y ajo. Asada lentamente hasta quedar tierna. Acompañada de papas rústicas al horno.",steps:"<strong>Marinada (noche anterior):</strong> Mezclá el Malbec con aceite de oliva, ajo aplastado, romero, tomillo, pimentón ahumado y jugo de limón. Cubrí la pierna de cordero y dejá marinar en frío 12 horas mínimo.<br>
-<strong>Papas:</strong> Cortá las papas en cuartos con piel. Condimentá con aceite de oliva, ajo, sal gruesa y romero.<br>
-<strong>Cocción:</strong> Poné el cordero en fuente para horno con la marinada colada. Rodeá con las papas. Cocinás tapado con papel aluminio a 160°C por 2 horas. Destapá los últimos 30 min a 200°C para que dore.<br>
-<strong>Servicio:</strong> Dejá reposar 15 min antes de deshuesar. Servís el cordero desmenuzado o en trozos con las papas rústicas y el jugo de cocción colado.",ingredients:[
+  {id:'p004',category:'principal',name:'Cordero a la cordobesa con papas rústicas',rendimiento:10,desc:"Pierna de cordero marinada en Malbec de la región con romero, tomillo y ajo. Asada lentamente hasta quedar tierna. Acompañada de papas rústicas al horno.",steps:"Marinada (noche anterior): Mezclá el Malbec con aceite de oliva, ajo aplastado, romero, tomillo, pimentón ahumado y jugo de limón. Cubrí la pierna de cordero y dejá marinar en frío 12 horas mínimo. Papas: Cortá las papas en cuartos con piel. Condimentá con aceite de oliva, ajo, sal gruesa y romero. Cocción: Poné el cordero en fuente para horno con la marinada colada. Rodeá con las papas. Cocinás tapado con papel aluminio a 160°C por 2 horas. Destapá los últimos 30 min a 200°C para que dore. Servicio: Dejá reposar 15 min antes de deshuesar. Servís el cordero desmenuzado o en trozos con las papas rústicas y el jugo de cocción colado.",ingredients:[
     {name:'Pierna de cordero',qty:2.5,unit:'Kg',cost:22000},
     {name:'Papa',qty:1.2,unit:'Kg',cost:1500},
     {name:'Ajo',qty:0.05,unit:'Kg',cost:4000},
@@ -725,10 +678,7 @@ const DEFAULTS = [
     {name:'Sal gruesa y pimienta',qty:0.01,unit:'Kg',cost:800},
   ]},
 
-  {id:'p005',category:'principal',name:'Trucha del río en costra de almendras',rendimiento:10,desc:"Trucha fresca de río con costra crocante de almendras laminadas. Terminada con manteca, alcaparras y limón. Un guiño a las sierras de Córdoba.",steps:"<strong>Preparación:</strong> Limpiá las truchas, retirá espinas y cortá en porciones. Salpimentá con pimienta blanca y sal.<br>
-<strong>Costra:</strong> Mezclá las almendras laminadas con perejil picado fino. Pasá cada porción de trucha primero por harina, luego por huevo batido y finalmente presioná la mezcla de almendras de un solo lado (el que va a quedar hacia arriba).<br>
-<strong>Cocción:</strong> Cocinás en sartén con manteca y aceite de oliva. Empezá por el lado sin almendras 3 min, luego girá con cuidado y cocinás del lado de la costra 4 min a fuego medio.<br>
-<strong>Salsa:</strong> En la misma sartén, tostá las alcaparras en manteca, agregá jugo de limón y perejil picado. Servís la trucha con las papas al vapor y la salsa encima.",ingredients:[
+  {id:'p005',category:'principal',name:'Trucha del río en costra de almendras',rendimiento:10,desc:"Trucha fresca de río con costra crocante de almendras laminadas. Terminada con manteca, alcaparras y limón. Un guiño a las sierras de Córdoba.",steps:"Preparación: Limpiá las truchas, retirá espinas y cortá en porciones. Salpimentá con pimienta blanca y sal. Costra: Mezclá las almendras laminadas con perejil picado fino. Pasá cada porción de trucha primero por harina, luego por huevo batido y finalmente presioná la mezcla de almendras de un solo lado (el que va a quedar hacia arriba). Cocción: Cocinás en sartén con manteca y aceite de oliva. Empezá por el lado sin almendras 3 min, luego girá con cuidado y cocinás del lado de la costra 4 min a fuego medio. Salsa: En la misma sartén, tostá las alcaparras en manteca, agregá jugo de limón y perejil picado. Servís la trucha con las papas al vapor y la salsa encima.",ingredients:[
     {name:'Trucha fresca entera',qty:3.0,unit:'Kg',cost:9500},
     {name:'Almendras laminadas',qty:0.2,unit:'Kg',cost:18000},
     {name:'Manteca',qty:0.1,unit:'Kg',cost:5800},
@@ -745,10 +695,7 @@ const DEFAULTS = [
 
   // ── POSTRES NUEVOS (2) ─────────────────────────────────────────────────────
 
-  {id:'d004',category:'postre',name:'Alfajores de maicena artesanales',rendimiento:10,desc:"Los alfajores de maicena son el postre cordobés por excelencia. Masa que se deshace en la boca, dulce de leche generoso y coco rallado. Hechos a mano, uno por uno.",steps:"<strong>Masa:</strong> Batí la manteca con el azúcar impalpable hasta obtener una crema blanca. Incorporá los huevos de a uno y la vainilla. Agregá la maicena, la harina y el polvo de hornear tamizados junto con la ralladura de limón. Formá una masa tierna, sin amasar. Descansá en frío 30 min.<br>
-<strong>Medallones:</strong> Estirá la masa a 5 mm de espesor. Cortá discos de 5 cm. Colocá en placa enmantecada y cocinás a 160°C por 12-14 min. Tienen que quedar blancos, sin dorarse.<br>
-<strong>Armado:</strong> Dejá enfriar completamente. Untá la base con dulce de leche repostero bien cargado y tapá con otro medallón. Pasá los bordes por coco rallado presionando suavemente.<br>
-<strong>Reposo:</strong> Dejá reposar 2 horas antes de servir para que el alfajor se integre.",ingredients:[
+  {id:'d004',category:'postre',name:'Alfajores de maicena artesanales',rendimiento:10,desc:"Los alfajores de maicena son el postre cordobés por excelencia. Masa que se deshace en la boca, dulce de leche generoso y coco rallado. Hechos a mano, uno por uno.",steps:"Masa: Batí la manteca con el azúcar impalpable hasta obtener una crema blanca. Incorporá los huevos de a uno y la vainilla. Agregá la maicena, la harina y el polvo de hornear tamizados junto con la ralladura de limón. Formá una masa tierna, sin amasar. Descansá en frío 30 min. Medallones: Estirá la masa a 5 mm de espesor. Cortá discos de 5 cm. Colocá en placa enmantecada y cocinás a 160°C por 12-14 min. Tienen que quedar blancos, sin dorarse. Armado: Dejá enfriar completamente. Untá la base con dulce de leche repostero bien cargado y tapá con otro medallón. Pasá los bordes por coco rallado presionando suavemente. Reposo: Dejá reposar 2 horas antes de servir para que el alfajor se integre.",ingredients:[
     {name:'Maicena',qty:0.35,unit:'Kg',cost:3800},
     {name:'Harina 0000',qty:0.15,unit:'Kg',cost:2500},
     {name:'Manteca',qty:0.18,unit:'Kg',cost:5800},
@@ -761,11 +708,7 @@ const DEFAULTS = [
     {name:'Coco rallado (para cubrir)',qty:0.1,unit:'Kg',cost:6000},
   ]},
 
-  {id:'d005',category:'postre',name:'Volcán de chocolate con helado de crema',rendimiento:10,desc:"Bizcochuelo de chocolate 70% con centro líquido caliente. Se sirve al momento, roto en la mesa, con helado de crema que se funde al contacto. Siempre sorprende.",steps:"<strong>Preparación:</strong> Enmantecá y enharinás moldes individuales de muffin. Llevá al frío.<br>
-<strong>Mezcla:</strong> Derretí el chocolate con la manteca a baño María. Dejá entibiar. Batí los huevos enteros con el azúcar hasta triplicar el volumen. Incorporá el chocolate templado en hilo, luego la harina y el cacao tamizados con movimientos envolventes.<br>
-<strong>Preparación anticipada:</strong> Llenás los moldes hasta 3/4. Podés guardarlos en el freezer hasta el momento de servir.<br>
-<strong>Cocción al momento:</strong> Horno precalentado a 200°C por exactamente 10-11 min (12 min si vienen del freezer). El borde tiene que estar cocido y el centro moverse al sacudir.<br>
-<strong>Servicio:</strong> Desmoldá inmediatamente sobre el plato. Colocá una bocha de helado al costado y decorá con frambuesas y azúcar impalpable.",ingredients:[
+  {id:'d005',category:'postre',name:'Volcán de chocolate con helado de crema',rendimiento:10,desc:"Bizcochuelo de chocolate 70% con centro líquido caliente. Se sirve al momento, roto en la mesa, con helado de crema que se funde al contacto. Siempre sorprende.",steps:"Preparación: Enmantecá y enharinás moldes individuales de muffin. Llevá al frío. Mezcla: Derretí el chocolate con la manteca a baño María. Dejá entibiar. Batí los huevos enteros con el azúcar hasta triplicar el volumen. Incorporá el chocolate templado en hilo, luego la harina y el cacao tamizados con movimientos envolventes. Preparación anticipada: Llenás los moldes hasta 3/4. Podés guardarlos en el freezer hasta el momento de servir. Cocción al momento: Horno precalentado a 200°C por exactamente 10-11 min (12 min si vienen del freezer). El borde tiene que estar cocido y el centro moverse al sacudir. Servicio: Desmoldá inmediatamente sobre el plato. Colocá una bocha de helado al costado y decorá con frambuesas y azúcar impalpable.",ingredients:[
     {name:'Chocolate negro 70%',qty:0.3,unit:'Kg',cost:14000},
     {name:'Manteca',qty:0.15,unit:'Kg',cost:5800},
     {name:'Huevo',qty:6,unit:'Unidad',cost:600},
@@ -780,12 +723,7 @@ const DEFAULTS = [
 
   // ── AFTER NUEVO (1) ────────────────────────────────────────────────────────
 
-  {id:'a002',category:'after',name:'Tabla de frituras crocantes (after show)',rendimiento:10,desc:"Tabla generosa para el after: papas crocantes, calamaretes rebozados, berenjenas fritas y provolone dorado. Con salsa golf casera y criolla. Para compartir sin cubiertos.",steps:"<strong>Preparación de rebozados:</strong> Preparás tres estaciones: harina saborizada con sal y pimienta, huevo batido con sal, pan rallado grueso. Pasás cada elemento por las tres estaciones en ese orden.<br>
-<strong>Calamaretes:</strong> Limpialos y secalos muy bien. Rebozalos y freílos en aceite a 180°C por 2-3 min hasta dorar. Salí inmediatamente al salir del aceite.<br>
-<strong>Berenjenas:</strong> Cortá en rodajas de 1 cm, salá y dejá reposar 20 min. Secá, rebozá y freí 3 min de cada lado.<br>
-<strong>Provolone frito:</strong> Cortá en bastones de 2 cm. Pasá por harina, huevo y pan rallado dos veces para asegurar la costra. Freí a 180°C muy rápido, 2 min, hasta que dore antes de que el queso escape.<br>
-<strong>Papas:</strong> Freí las papas bastón a 160°C primero (pre-cocción), luego a 190°C para que queden crocantes.<br>
-<strong>Armado:</strong> Distribuí todo en tabla o fuente grande. Servís con la salsa golf y la criolla en bols separados. Se sirve al momento, bien caliente.",ingredients:[
+  {id:'a002',category:'after',name:'Tabla de frituras crocantes (after show)',rendimiento:10,desc:"Tabla generosa para el after: papas crocantes, calamaretes rebozados, berenjenas fritas y provolone dorado. Con salsa golf casera y criolla. Para compartir sin cubiertos.",steps:"Preparación de rebozados: Preparás tres estaciones: harina saborizada con sal y pimienta, huevo batido con sal, pan rallado grueso. Pasás cada elemento por las tres estaciones en ese orden. Calamaretes: Limpialos y secalos muy bien. Rebozalos y freílos en aceite a 180°C por 2-3 min hasta dorar. Salí inmediatamente al salir del aceite. Berenjenas: Cortá en rodajas de 1 cm, salá y dejá reposar 20 min. Secá, rebozá y freí 3 min de cada lado. Provolone frito: Cortá en bastones de 2 cm. Pasá por harina, huevo y pan rallado dos veces para asegurar la costra. Freí a 180°C muy rápido, 2 min, hasta que dore antes de que el queso escape. Papas: Freí las papas bastón a 160°C primero (pre-cocción), luego a 190°C para que queden crocantes. Armado: Distribuí todo en tabla o fuente grande. Servís con la salsa golf y la criolla en bols separados. Se sirve al momento, bien caliente.",ingredients:[
     {name:'Papas bastón (prefritas)',qty:1.0,unit:'Kg',cost:2800},
     {name:'Calamaretes frescos',qty:0.5,unit:'Kg',cost:12000},
     {name:'Berenjenas en rodajas',qty:0.4,unit:'Kg',cost:2200},
@@ -817,7 +755,7 @@ function loadLocal(){
 
 function persist(){
   lsSet(SK, JSON.stringify(S));
-  if(window._fb) window._fb.save(S).catch(function(){});
+  
   toast('Guardado ✓');
   syncStatus();
 }
@@ -829,29 +767,11 @@ function initDefaults(){
   }
 }
 
-function fbSync(){
-  if(!window._fb) return;
-  window._fb.load().then(function(data){
-    if(data && data.recipes && data.recipes.length > 0){
-      S.recipes=data.recipes; S.quotes=data.quotes||[]; S.packages=data.packages||[]; S.priceLog=data.priceLog||{};
-      lsSet(SK, JSON.stringify(S));
-      buildMenu(); renderRecipes(); renderQuotes(); renderPkgGrid(); calc(); syncStatus();
-      toast('☁️ Sincronizado con Firebase');
-    }
-    // live updates
-    window._fb.listen(function(data){
-      if(!data||!data.recipes) return;
-      S.recipes=data.recipes; S.quotes=data.quotes||[]; S.packages=data.packages||[]; S.priceLog=data.priceLog||{};
-      lsSet(SK, JSON.stringify(S));
-      buildMenu(); renderRecipes(); renderQuotes(); renderPkgGrid(); calc();
-      toast('🔄 Datos actualizados');
-    });
-  }).catch(function(){});
-}
+function fbSync(){}
 
 function syncStatus(){
   var el = document.getElementById('sync-status'); if(!el) return;
-  el.innerHTML = 'Firebase: <strong style="color:var(--gold)">' + (window._fb ? '🟢 Conectado' : '🔴 Sin conexión') + '</strong><br>' +
+  el.innerHTML = 'Firebase: <strong style="color:var(--gold)">' + ('💾 localStorage') + '</strong><br>' +
     'Recetas: <strong style="color:var(--tx)">' + S.recipes.length + '</strong><br>' +
     'Cotizaciones: <strong style="color:var(--tx)">' + S.quotes.length + '</strong><br>' +
     'Paquetes: <strong style="color:var(--tx)">' + (S.packages||[]).length + '</strong>';
@@ -1313,7 +1233,7 @@ function applyInflation(){
 }
 
 // ══ EXPORT ══════════════════════════════════════════════════════
-function exportPDF(){
+function exportPDF(){ toast("PDF disponible solo en GitHub Pages"); return; if(false){
   if(!window.jspdf){ toast('⚠️ Cargando PDF, reintentá'); return; }
   var jsPDF=window.jspdf.jsPDF;
   var cl=document.getElementById('c-cl').value||'Sin nombre';
@@ -1383,7 +1303,7 @@ function exportPDF(){
   doc.setFillColor.apply(doc,BG); doc.rect(0,277,W,20,'F');
   doc.setTextColor.apply(doc,GOLD); doc.setFont('helvetica','bolditalic'); doc.setFontSize(9); doc.text('Cocina cordobesa con alma',W/2,285,{align:'center'});
   doc.setTextColor.apply(doc,GRAY); doc.setFont('helvetica','normal'); doc.setFontSize(7); doc.text('Cotización válida por 48 horas. Precios sujetos a variación de materia prima.',W/2,290,{align:'center'});
-  doc.save('cotizacion-'+cl.replace(/\s+/g,'-').toLowerCase()+'-'+new Date().toISOString().slice(0,10)+'.pdf');
+  } doc.save('cotizacion-'+cl.replace(/\s+/g,'-').toLowerCase()+'-'+new Date().toISOString().slice(0,10)+'.pdf');
   toast('📄 PDF generado ✓');
 }
 
@@ -1432,7 +1352,17 @@ renderPkgGrid();
 calc();
 syncStatus();
 // Firebase en segundo plano
-setTimeout(fbSync, 500);
+
 </script>
+
+<!-- BOTTOM NAV -->
+<nav class="bnav">
+  <button class="nb on" id="nb-cotizador" onclick="go('cotizador',this)"><span class="ni">⚡</span><span>Cotizador</span></button>
+  <button class="nb" id="nb-guardadas" onclick="go('guardadas',this)"><span class="ni">📁</span><span>Guardadas</span></button>
+  <button class="nb" id="nb-recetas" onclick="go('recetas',this)"><span class="ni">📋</span><span>Recetas</span></button>
+  <button class="nb" id="nb-paquetes" onclick="go('paquetes',this)"><span class="ni">📦</span><span>Paquetes</span></button>
+  <button class="nb" id="nb-precios" onclick="go('precios',this)"><span class="ni">📈</span><span>Precios</span></button>
+  <button class="nb" id="nb-sync" onclick="go('sync',this)"><span class="ni">☁️</span><span>iCloud</span></button>
+</nav>
 </body>
 </html>
