@@ -864,16 +864,33 @@ function load(){
 function save(){lsSet(SK,JSON.stringify(S));toast('Guardado');sSt();}
 
 function initDef(){
-  if(S.recipes.length>0)return;
-  var defs=DEFAULTS;
-  S.recipes=[];
-  for(var i=0;i<defs.length;i++){
-    var r={};
-    for(var k in defs[i])r[k]=defs[i][k];
-    r.createdAt=new Date().toISOString();
-    S.recipes.push(r);
+  // Si no hay recetas, carga todas
+  if(S.recipes.length===0){
+    S.recipes=[];
+    for(var i=0;i<DEFAULTS.length;i++){
+      var r={};for(var k in DEFAULTS[i])r[k]=DEFAULTS[i][k];
+      r.createdAt=new Date().toISOString();
+      S.recipes.push(r);
+    }
+    lsSet(SK,JSON.stringify(S));
+    return;
   }
-  lsSet(SK,JSON.stringify(S));
+  // Si ya hay recetas, agrega solo las que no existen (por id)
+  var existIds={};
+  for(var i=0;i<S.recipes.length;i++) existIds[S.recipes[i].id]=true;
+  var added=0;
+  for(var i=0;i<DEFAULTS.length;i++){
+    if(!existIds[DEFAULTS[i].id]){
+      var r={};for(var k in DEFAULTS[i])r[k]=DEFAULTS[i][k];
+      r.createdAt=new Date().toISOString();
+      S.recipes.push(r);
+      added++;
+    }
+  }
+  if(added>0){
+    lsSet(SK,JSON.stringify(S));
+    toast(added+' recetas nuevas agregadas');
+  }
 }
 
 var _tt=null;
