@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Cotizador Gastronomico</title>
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,600;1,300&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#0F0F0F;--sf:#1A1A1A;--sf2:#242424;--sf3:#2E2E2E;--gold:#C9A84C;--gdim:#8A6E2A;--tx:#F0EDE8;--tx2:#8A8580;--tx3:#5A5550;--red:#C04A3A;--bd:#333333;}
@@ -134,6 +135,33 @@ h1,h2{font-family:'Fraunces',serif;}
           <p style="font-size:11px;color:var(--tx3);padding-bottom:4px;">Precio = Costo / (1 - margen%)</p>
         </div>
       </div>
+      <div class="card" style="border-color:var(--gdim);">
+        <div class="ctit">
+          <span>Proyeccion por inflacion</span>
+          <span style="font-size:11px;color:var(--tx3);font-family:'Inter';font-weight:400;">Cuanto cobrare en el futuro</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-end">
+          <div class="fi">
+            <label>Inflacion proyectada %</label>
+            <input type="number" id="c-inf" placeholder="0" min="0" max="1000" inputmode="decimal" oninput="calc()" style="border-color:var(--gdim);">
+          </div>
+          <p style="font-size:11px;color:var(--tx3);padding-bottom:4px;">Aplica sobre el precio final con margen. Util para eventos a pagar en meses futuros.</p>
+        </div>
+        <div id="inf-result" style="display:none;margin-top:12px;background:var(--sf2);border-radius:8px;padding:12px;">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;">
+            <span style="font-size:12px;color:var(--tx2);">Precio hoy (sin inflacion)</span>
+            <span id="inf-base" style="font-weight:600;color:var(--tx);">$0</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:baseline;padding-top:8px;border-top:1px solid var(--bd);">
+            <span style="font-size:13px;color:var(--tx);font-weight:600;">Precio proyectado</span>
+            <span id="inf-total" style="font-family:'Fraunces',serif;font-size:20px;color:var(--gold);font-weight:300;">$0</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:6px;">
+            <span style="font-size:12px;color:var(--tx2);">Por persona proyectado</span>
+            <span id="inf-pp" style="font-weight:600;color:var(--gold);">$0</span>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="lg:col-span-1">
       <div class="tick">
@@ -155,6 +183,7 @@ h1,h2{font-family:'Fraunces',serif;}
           <div class="trow"><span>Margen</span><span id="r-mg2">0%</span></div>
         </div>
         <button class="bg" style="width:100%;margin-top:14px;" onclick="saveQuote()">Guardar cotizacion</button>
+        <button class="bg" style="width:100%;margin-top:8px;background:linear-gradient(135deg,#b8883a,#c9a84c);" onclick="exportPDF()">Exportar PDF cliente</button>
         <button class="bgh" style="width:100%;margin-top:8px;" onclick="exportTXT()">Exportar texto</button>
       </div>
     </div>
@@ -649,6 +678,174 @@ const DEFAULTS = [
  {name:'Salsa criolla (acompañamiento)',qty:0.15,unit:'Litro',cost:2000},
  {name:'Sal y especias',qty:0.01,unit:'Kg',cost:1000},
  ]},
+
+ // ── ENTRADAS NUEVAS (4) ──────────────────────────────────────────────────
+
+ {id:'e012',category:'entrada',name:'Tarta de puerro y queso azul',rendimiento:10,
+  desc:'Tarta artesanal de masa quebrada con relleno cremoso de puerro caramelizado y queso azul. Elegante y sabrosa, ideal como entrada caliente.',
+  steps:'Masa: Mezcla harina, manteca fria en cubos y una pizca de sal hasta obtener migas. Agrega agua fria de a poco hasta unir. Refrigera 30 min. Estira y forra un molde. Cocina en blanco a 180C por 15 min. Relleno: Sofrie el puerro en rodajas en manteca hasta caramelizar, unos 15 min a fuego bajo. Bate los huevos con la crema, sal, pimienta y nuez moscada. Incorpora el puerro y el queso azul desmenuzado. Vuelca sobre la masa precocida. Cocina a 180C por 25 min hasta que el relleno este firme y dorado.',
+  ingredients:[
+   {name:'Harina 0000',qty:0.3,unit:'Kg',cost:2500},
+   {name:'Manteca',qty:0.15,unit:'Kg',cost:5800},
+   {name:'Puerro',qty:0.4,unit:'Kg',cost:2200},
+   {name:'Queso azul',qty:0.15,unit:'Kg',cost:18000},
+   {name:'Huevo',qty:3,unit:'Unidad',cost:600},
+   {name:'Crema de leche',qty:0.2,unit:'Litro',cost:4200},
+   {name:'Nuez moscada',qty:0.003,unit:'Kg',cost:20000},
+   {name:'Sal y pimienta',qty:0.005,unit:'Kg',cost:1000},
+ ]},
+
+ {id:'e013',category:'entrada',name:'Ceviche de salmon con leche de tigre cordobesa',rendimiento:10,
+  desc:'Salmon fresco marinado en citricos con leche de tigre suavizada con crema. Un guino moderno al estilo cordobes con ingredientes de primera calidad.',
+  steps:'Salmon: Corta el salmon en cubos de 2 cm, libres de piel y espinas. Refrigera hasta el momento. Leche de tigre: Licua el jugo de limon con el jugo de naranja, el aji amarillo, el jengibre, el cilantro, sal y una cucharada de crema de leche. Cuela y reserva fria. Marinada: 10 minutos antes de servir, mezcla el salmon con la leche de tigre, el pepino en brunoise y la cebolla morada en juliana fina. El acido cocina el pescado levemente. Presentacion: Sirve en copas o bowls frios con chips de batata o tostadas al costado.',
+  ingredients:[
+   {name:'Salmon fresco',qty:0.8,unit:'Kg',cost:22000},
+   {name:'Jugo de limon',qty:0.15,unit:'Litro',cost:3000},
+   {name:'Jugo de naranja',qty:0.1,unit:'Litro',cost:2000},
+   {name:'Cebolla morada',qty:0.15,unit:'Kg',cost:2000},
+   {name:'Pepino',qty:0.2,unit:'Kg',cost:1800},
+   {name:'Aji amarillo (pasta)',qty:0.02,unit:'Kg',cost:8000},
+   {name:'Jengibre fresco',qty:0.01,unit:'Kg',cost:8000},
+   {name:'Cilantro fresco',qty:0.03,unit:'Kg',cost:3000},
+   {name:'Crema de leche',qty:0.05,unit:'Litro',cost:4200},
+   {name:'Sal y pimienta',qty:0.005,unit:'Kg',cost:1000},
+ ]},
+
+ {id:'e014',category:'entrada',name:'Minihamburguesas de cordero con chutney de mango',rendimiento:10,
+  desc:'Bocados de cordero jugoso en pan brioche con chutney casero de mango y menta. Una entrada sofisticada y divertida para eventos especiales.',
+  steps:'Chutney: Corta el mango en cubos. Cocina con el azucar, el vinagre, el jengibre y la menta a fuego bajo 20 min hasta espesar. Deja enfriar. Hamburguesas: Mezcla la carne de cordero molida con el ajo, el comino, el cilantro, sal y pimienta. Forma medallones de 40g. Refrigera 15 min. Cocina en plancha bien caliente 2 min de cada lado. Pan brioche: Tuesta los panes partidos al medio con manteca. Armado: Base de pan, hoja de lechuga, hamburguesa, chutney de mango y tapa. Servir caliente.',
+  ingredients:[
+   {name:'Carne de cordero molida',qty:0.7,unit:'Kg',cost:20000},
+   {name:'Pan brioche mini',qty:10,unit:'Unidad',cost:800},
+   {name:'Mango maduro',qty:0.3,unit:'Kg',cost:3500},
+   {name:'Azucar',qty:0.05,unit:'Kg',cost:2800},
+   {name:'Vinagre de manzana',qty:0.05,unit:'Litro',cost:4000},
+   {name:'Jengibre fresco',qty:0.01,unit:'Kg',cost:8000},
+   {name:'Menta fresca',qty:0.02,unit:'Kg',cost:3000},
+   {name:'Lechuga mantecosa',qty:0.1,unit:'Kg',cost:2500},
+   {name:'Ajo',qty:0.01,unit:'Kg',cost:4000},
+   {name:'Comino y cilantro molido',qty:0.005,unit:'Kg',cost:12000},
+   {name:'Sal y pimienta',qty:0.005,unit:'Kg',cost:1000},
+ ]},
+
+ {id:'e015',category:'entrada',name:'Carpaccio de remolacha con ricota y nueces',rendimiento:10,
+  desc:'Laminas finas de remolacha asada con ricota cremosa, nueces tostadas y aderezo de miel y balsamico. Colorida, fresca y vegetariana.',
+  steps:'Remolacha: Envuelve las remolachas enteras en papel aluminio con un chorrito de aceite de oliva. Asa en horno a 200C por 60 min hasta que esten tiernas. Enfria, pela y corta en laminas muy finas con mandolina o cuchillo. Ricota: Bate la ricota con sal, pimienta y ralladura de limon hasta que quede cremosa. Nueces: Tuesta en sarten seca con una cucharada de miel y sal hasta caramelizar. Aderezo: Mezcla el aceite de oliva con el vinagre balsamico, la miel, sal y pimienta. Presentacion: Dispone las laminas de remolacha superpuestas, puntea con la ricota, distribuye las nueces y rociaa con el aderezo. Termina con microgreens o brotes.',
+  ingredients:[
+   {name:'Remolacha',qty:0.8,unit:'Kg',cost:1800},
+   {name:'Ricota fresca',qty:0.3,unit:'Kg',cost:5500},
+   {name:'Nueces',qty:0.1,unit:'Kg',cost:18000},
+   {name:'Miel',qty:0.04,unit:'Kg',cost:6500},
+   {name:'Vinagre balsamico',qty:0.04,unit:'Litro',cost:7000},
+   {name:'Aceite de oliva extra virgen',qty:0.06,unit:'Litro',cost:12000},
+   {name:'Limon (ralladura)',qty:0.05,unit:'Kg',cost:2500},
+   {name:'Brotes o microgreens',qty:0.03,unit:'Kg',cost:6000},
+   {name:'Sal y pimienta',qty:0.005,unit:'Kg',cost:1000},
+ ]},
+
+ // ── PLATOS PRINCIPALES NUEVOS (3) ─────────────────────────────────────────
+
+ {id:'p006',category:'principal',name:'Matambre a la pizza estilo cordobes',rendimiento:10,
+  desc:'El clasico cordobes elevado. Matambre tierno cocido lentamente, cubierto con salsa de tomate casera, mozzarella fundida y aceitunas. Sale a la mesa como una pizza gigante.',
+  steps:'Matambre: Coloca el matambre en una olla con agua, cebolla, laurel, ajo y sal. Cocina a fuego bajo tapado por 2 horas hasta que este muy tierno. Retira y escurre bien. Cobertura: Extiende el matambre en una placa. Cubre con salsa de tomate casera, distribuye la mozzarella en rodajas, agrega las aceitunas y el oregano. Gratinado: Lleva al horno precalentado a 220C por 10-12 min hasta que la mozzarella este completamente fundida y con manchas doradas. Corta en porciones y sirve de inmediato.',
+  ingredients:[
+   {name:'Matambre vacuno',qty:2.5,unit:'Kg',cost:11000},
+   {name:'Salsa de tomate casera',qty:0.5,unit:'Litro',cost:2500},
+   {name:'Mozzarella para pizza',qty:0.5,unit:'Kg',cost:9500},
+   {name:'Aceitunas verdes',qty:0.1,unit:'Kg',cost:4500},
+   {name:'Oregano seco',qty:0.01,unit:'Kg',cost:8000},
+   {name:'Cebolla (coccion)',qty:0.2,unit:'Kg',cost:1400},
+   {name:'Ajo',qty:0.03,unit:'Kg',cost:4000},
+   {name:'Laurel y especias',qty:0.005,unit:'Kg',cost:2000},
+   {name:'Sal',qty:0.01,unit:'Kg',cost:800},
+ ]},
+
+ {id:'p007',category:'principal',name:'Risotto de hongos silvestres con parmesano',rendimiento:10,
+  desc:'Risotto cremoso con mezcla de hongos silvestres rehidratados y frescos, terminado con manteca y parmesano en abundancia. Un plato que impresiona.',
+  steps:'Caldo: Calienta el caldo de verduras a fuego minimo, que quede siempre caliente. Hongos: Rehidrata los hongos secos en agua tibia 20 min. Escurre y pica. Saltea los hongos frescos en manteca con ajo hasta dorar. Reserva. Risotto: En una cazuela ancha, sofrie la cebolla en aceite de oliva hasta transparente. Agrega el arroz y tostar 2 min revolviendo. Incorpora el vino blanco y espera que se absorba. Agrega el caldo caliente cucharon a cucharon, revolviendo constantemente y esperando que se absorba antes de agregar el siguiente. Este proceso tarda 18 min. Al final incorpora los hongos salteados, la manteca fria en cubos y el parmesano. Ajusta sal y sirve de inmediato con mas parmesano encima.',
+  ingredients:[
+   {name:'Arroz arborio o carnaroli',qty:0.8,unit:'Kg',cost:6500},
+   {name:'Hongos portobellos frescos',qty:0.4,unit:'Kg',cost:12000},
+   {name:'Hongos secos mixtos',qty:0.08,unit:'Kg',cost:22000},
+   {name:'Caldo de verduras casero',qty:2.0,unit:'Litro',cost:1500},
+   {name:'Cebolla',qty:0.2,unit:'Kg',cost:1400},
+   {name:'Ajo',qty:0.02,unit:'Kg',cost:4000},
+   {name:'Vino blanco seco',qty:0.15,unit:'Litro',cost:4500},
+   {name:'Manteca',qty:0.1,unit:'Kg',cost:5800},
+   {name:'Queso Parmesano rallado',qty:0.15,unit:'Kg',cost:22000},
+   {name:'Aceite de oliva',qty:0.05,unit:'Litro',cost:12000},
+   {name:'Sal y pimienta',qty:0.01,unit:'Kg',cost:1000},
+ ]},
+
+ {id:'p008',category:'principal',name:'Supremas de pollo rellenas en salsa de limon y alcaparras',rendimiento:10,
+  desc:'Supremas jugosas rellenas con queso, jamon y morron, baneadas en una salsa vibrante de limon y alcaparras. Elegante y de coccion rapida para eventos.',
+  steps:'Relleno: Mezcla el queso cremoso con el jamon picado y el morron asado en brunoise. Salpimenta. Supremas: Abre un bolsillo lateral en cada suprema sin atravesarla. Rellena y cierra con palillo. Salpimenta por fuera. Sellado: Dora las supremas en aceite de oliva a fuego fuerte 3 min por lado hasta dorar bien. Pasa a bandeja para horno. Termina en horno a 180C por 12 min. Salsa: En la misma sarten, agrega el vino blanco y raspa el fondo. Incorpora el caldo, el jugo de limon, las alcaparras y la ralladura de limon. Reduce a fuego medio 5 min. Termina con una nuez de manteca fuera del fuego. Sirve las supremas baneadas con la salsa.',
+  ingredients:[
+   {name:'Supremas de pollo',qty:2.0,unit:'Kg',cost:6500},
+   {name:'Queso cremoso',qty:0.2,unit:'Kg',cost:9500},
+   {name:'Jamon cocido',qty:0.15,unit:'Kg',cost:18000},
+   {name:'Morron rojo asado',qty:0.15,unit:'Kg',cost:2800},
+   {name:'Limon (jugo y ralladura)',qty:0.15,unit:'Kg',cost:2500},
+   {name:'Alcaparras',qty:0.06,unit:'Kg',cost:16000},
+   {name:'Vino blanco seco',qty:0.15,unit:'Litro',cost:4500},
+   {name:'Caldo de pollo',qty:0.3,unit:'Litro',cost:1500},
+   {name:'Manteca',qty:0.04,unit:'Kg',cost:5800},
+   {name:'Aceite de oliva',qty:0.05,unit:'Litro',cost:12000},
+   {name:'Sal y pimienta',qty:0.01,unit:'Kg',cost:1000},
+ ]},
+
+ // ── POSTRES NUEVOS (2) ────────────────────────────────────────────────────
+
+ {id:'d006',category:'postre',name:'Cheesecake de dulce de leche sin horno',rendimiento:10,
+  desc:'Cheesecake frio y cremoso sobre base de galletitas y manteca, con cobertura generosa de dulce de leche repostero. Facil de preparar con anticipacion, perfecto para eventos.',
+  steps:'Base: Procesa las galletitas hasta obtener polvo fino. Mezcla con la manteca derretida. Presiona en un molde desmontable de 26 cm cubriendo bien el fondo. Lleva al freezer 15 min. Relleno: Bate el queso crema con el azucar impalpable hasta que este liso y sin grumos. Incorpora la crema batida a punto chantilly con movimientos envolventes. Agrega la esencia de vainilla y el jugo de limon. Vuelca sobre la base fria y alisa la superficie. Refrigera minimo 6 horas o toda la noche. Cobertura: Antes de servir, cubre con el dulce de leche repostero atemperado. Decora con nueces picadas o galletitas trituradas en los bordes.',
+  ingredients:[
+   {name:'Queso crema tipo Philadelphia',qty:0.5,unit:'Kg',cost:12000},
+   {name:'Crema de leche',qty:0.3,unit:'Litro',cost:4200},
+   {name:'Azucar impalpable',qty:0.1,unit:'Kg',cost:3200},
+   {name:'Galletitas Oreo o similar',qty:0.25,unit:'Kg',cost:5500},
+   {name:'Manteca derretida',qty:0.08,unit:'Kg',cost:5800},
+   {name:'Dulce de leche repostero',qty:0.4,unit:'Kg',cost:5500},
+   {name:'Jugo de limon',qty:0.03,unit:'Litro',cost:3000},
+   {name:'Esencia de vainilla',qty:0.005,unit:'Litro',cost:8000},
+   {name:'Nueces (decoracion)',qty:0.05,unit:'Kg',cost:18000},
+ ]},
+
+ {id:'d007',category:'postre',name:'Crepes suzette con salsa de naranja y cointreau',rendimiento:10,
+  desc:'Crepes finos flameados en salsa caramelizada de manteca, naranja y un toque de cointreau. Un postre clasico frances con presentacion teatral perfecta para eventos.',
+  steps:'Crepes: Bate los huevos con la leche, la harina tamizada, la manteca derretida y una pizca de sal hasta obtener una mezcla lisa. Reposa 30 min en la heladera. Cocina crepes finos en sarten antiadherente apenas enmantecada, 1 min por lado. Reserva apilados. Salsa suzette: En una sarten grande derrite la manteca con el azucar hasta obtener un caramelo rubio. Agrega el jugo de naranja, la ralladura de naranja y el cointreau. Cocina 2 min hasta que espese levemente. Armado: Dobla los crepes en cuartos y sumerge en la salsa caliente, voltea para impregnar. Sirve de inmediato con una bocha de helado de vainilla al costado.',
+  ingredients:[
+   {name:'Huevo',qty:4,unit:'Unidad',cost:600},
+   {name:'Leche entera',qty:0.4,unit:'Litro',cost:2200},
+   {name:'Harina 0000',qty:0.15,unit:'Kg',cost:2500},
+   {name:'Manteca',qty:0.12,unit:'Kg',cost:5800},
+   {name:'Azucar',qty:0.1,unit:'Kg',cost:2800},
+   {name:'Naranja (jugo y ralladura)',qty:0.4,unit:'Kg',cost:2500},
+   {name:'Cointreau o triple sec',qty:0.05,unit:'Litro',cost:18000},
+   {name:'Helado de vainilla',qty:0.5,unit:'Litro',cost:7500},
+   {name:'Sal',qty:0.002,unit:'Kg',cost:800},
+ ]},
+
+ // ── AFTER NUEVO (1) ──────────────────────────────────────────────────────
+
+ {id:'a003',category:'after',name:'Mini bruschettas y tostadas surtidas',rendimiento:10,
+  desc:'Variedad de tostadas y bruschettas con diferentes toppings: tomate y albahaca, pate de campo, jamon y queso brie, y hummus casero. Perfecto para el after informal.',
+  steps:'Bases: Corta la baguette y el pan de campo en rodajas de 1.5 cm. Tosta en horno a 180C por 8 min hasta que esten crocantes pero no duras. Topping tomate y albahaca: Pica el tomate en cubos finos con ajo, aceite de oliva, sal y albahaca fresca. Topping jamon y brie: Coloca una lamina de jamon y una rodaja de brie. Gratina 2 min bajo el grill. Topping hummus: Procesa los garbanzos con tahini, limon, ajo y sal hasta obtener una pasta lisa. Extiende generosamente y decora con pimenton y aceite de oliva. Pate de campo: Comprado de buena calidad, servir en cuenco aparte. Presentacion: Organiza todas las variedades en tablas grandes, etiquetando cada opcion.',
+  ingredients:[
+   {name:'Pan baguette artesanal',qty:0.4,unit:'Kg',cost:4200},
+   {name:'Pan de campo rustico',qty:0.3,unit:'Kg',cost:4500},
+   {name:'Tomate perita',qty:0.3,unit:'Kg',cost:1800},
+   {name:'Albahaca fresca',qty:0.03,unit:'Kg',cost:3500},
+   {name:'Jamon cocido premium',qty:0.2,unit:'Kg',cost:18000},
+   {name:'Queso Brie',qty:0.2,unit:'Kg',cost:16000},
+   {name:'Garbanzos cocidos',qty:0.3,unit:'Kg',cost:3500},
+   {name:'Tahini (pasta de sesamo)',qty:0.05,unit:'Kg',cost:12000},
+   {name:'Pate de campo',qty:0.15,unit:'Kg',cost:14000},
+   {name:'Aceite de oliva',qty:0.08,unit:'Litro',cost:12000},
+   {name:'Ajo',qty:0.02,unit:'Kg',cost:4000},
+   {name:'Limon',qty:0.05,unit:'Kg',cost:2500},
+   {name:'Sal y pimenton',qty:0.005,unit:'Kg',cost:1000},
+ ]},
 ];
 
 var SK='cotizador_v6';
@@ -769,6 +966,19 @@ function calc(){
   document.getElementById('r-mg2').textContent=(gn('c-mg')||0)+'%';
   var cl=document.getElementById('c-cl').value;
   document.getElementById('r-cn').textContent=cl?cl+' - '+(p||0)+' pers.':(p>0?p+' personas':'—');
+  // Proyeccion inflacion
+  var infPct=gn('c-inf');
+  var irDiv=document.getElementById('inf-result');
+  if(infPct>0 && pt>0){
+    var ptInf=Math.round(pt*(1+infPct/100));
+    var ppInf=p>0?Math.round(ptInf/p):0;
+    document.getElementById('inf-base').textContent=fmt(pt);
+    document.getElementById('inf-total').textContent=fmt(ptInf);
+    document.getElementById('inf-pp').textContent=fmt(ppInf);
+    irDiv.style.display='block';
+  } else {
+    irDiv.style.display='none';
+  }
   var sd=document.getElementById('menu-sum'),si=document.getElementById('menu-sum-i');
   if(items.length>0&&p>0){
     sd.style.display='block';
@@ -1123,6 +1333,163 @@ function applyInf(){
 function sSt(){
   var el=document.getElementById('sync-st');if(!el)return;
   el.innerHTML='Almacenamiento: localStorage<br>Recetas: '+S.recipes.length+'<br>Cotizaciones: '+S.quotes.length+'<br>Paquetes: '+(S.packages||[]).length;
+}
+
+function exportPDF(){
+  if(!window.jspdf){toast('PDF cargando, reintenta en un momento');return;}
+  var jsPDF=window.jspdf.jsPDF;
+  var cl=document.getElementById('c-cl').value||'Sin nombre';
+  var p=gn('c-pe');
+  var mg=gn('c-mg');
+  var infPct=gn('c-inf');
+  var fecha=new Date().toLocaleDateString('es-AR',{day:'2-digit',month:'long',year:'numeric'});
+  var ids=selIds();
+  // Agrupar menu por categoria
+  var catOrder=['entrada','principal','postre','after'];
+  var catNames={entrada:'Entradas',principal:'Platos Principales',postre:'Postres',after:'After'};
+  var bycat={};
+  for(var i=0;i<ids.length;i++){
+    var r=getR(ids[i]);if(!r)continue;
+    if(!bycat[r.category])bycat[r.category]=[];
+    bycat[r.category].push(r.name);
+  }
+  // Valores financieros
+  var ptEl=document.getElementById('r-pt').textContent;
+  var ppEl=document.getElementById('r-pp').textContent;
+  var ptInfEl=infPct>0?document.getElementById('inf-total').textContent:'';
+  var ppInfEl=infPct>0?document.getElementById('inf-pp').textContent:'';
+
+  var doc=new jsPDF({unit:'mm',format:'a4'});
+  var W=210,M=20,CW=W-M*2;
+  var GOLD=[180,140,60],DARK=[15,15,15],GRAY=[100,100,100],LGRAY=[180,180,180],BG=[18,18,18],BGCARD=[28,28,28];
+
+  // HEADER negro
+  doc.setFillColor(BG[0],BG[1],BG[2]);
+  doc.rect(0,0,W,50,'F');
+  doc.setTextColor(GOLD[0],GOLD[1],GOLD[2]);
+  doc.setFont('helvetica','bolditalic');
+  doc.setFontSize(28);
+  doc.text('Cotizacion',M,22);
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(12);
+  doc.setTextColor(LGRAY[0],LGRAY[1],LGRAY[2]);
+  doc.text('Gastronomica',M,32);
+  doc.setDrawColor(GOLD[0],GOLD[1],GOLD[2]);
+  doc.setLineWidth(0.8);
+  doc.line(M,38,W-M,38);
+  doc.setFontSize(9);
+  doc.text(fecha,W-M,44,{align:'right'});
+
+  var y=60;
+
+  // BLOQUE CLIENTE
+  doc.setFillColor(BGCARD[0],BGCARD[1],BGCARD[2]);
+  doc.roundedRect(M,y,CW,22,3,3,'F');
+  doc.setTextColor(GOLD[0],GOLD[1],GOLD[2]);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(8);
+  doc.text('CLIENTE',M+6,y+7);
+  doc.setTextColor(240,237,232);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(15);
+  doc.text(cl,M+6,y+16);
+  doc.setTextColor(GOLD[0],GOLD[1],GOLD[2]);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(8);
+  doc.text('PERSONAS',W-M-6,y+7,{align:'right'});
+  doc.setTextColor(240,237,232);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(22);
+  doc.text(String(p||0),W-M-6,y+17,{align:'right'});
+  y+=32;
+
+  // MENU
+  if(ids.length>0){
+    doc.setTextColor(GOLD[0],GOLD[1],GOLD[2]);
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(8);
+    doc.text('MENU',M,y);
+    doc.setDrawColor(GOLD[0],GOLD[1],GOLD[2]);
+    doc.setLineWidth(0.3);
+    doc.line(M+12,y-1,W-M,y-1);
+    y+=7;
+    for(var ci=0;ci<catOrder.length;ci++){
+      var cat=catOrder[ci];
+      if(!bycat[cat])continue;
+      doc.setFillColor(GOLD[0],GOLD[1],GOLD[2]);
+      doc.roundedRect(M,y,34,5.5,1.5,1.5,'F');
+      doc.setTextColor(DARK[0],DARK[1],DARK[2]);
+      doc.setFont('helvetica','bold');
+      doc.setFontSize(7);
+      doc.text(catNames[cat].toUpperCase(),M+17,y+3.8,{align:'center'});
+      doc.setTextColor(60,60,60);
+      doc.setFont('helvetica','normal');
+      doc.setFontSize(10);
+      var lineas=doc.splitTextToSize(bycat[cat].join('  /  '),CW-40);
+      doc.text(lineas,M+38,y+3.8);
+      y+=Math.max(8,lineas.length*5)+3;
+    }
+    y+=4;
+  }
+
+  // PRECIO FINAL
+  doc.setFillColor(BG[0],BG[1],BG[2]);
+  doc.roundedRect(M,y,CW,infPct>0?50:30,3,3,'F');
+  doc.setDrawColor(GOLD[0],GOLD[1],GOLD[2]);
+  doc.setLineWidth(0.5);
+  doc.roundedRect(M,y,CW,infPct>0?50:30,3,3,'S');
+
+  doc.setTextColor(LGRAY[0],LGRAY[1],LGRAY[2]);
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(8);
+  doc.text('VALOR POR TARJETA',M+6,y+9);
+  doc.setTextColor(GOLD[0],GOLD[1],GOLD[2]);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(24);
+  doc.text(ptEl,M+6,y+21);
+  doc.setTextColor(LGRAY[0],LGRAY[1],LGRAY[2]);
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(8);
+  doc.text('por persona:',W-M-50,y+11);
+  doc.setTextColor(240,237,232);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(13);
+  doc.text(ppEl,W-M-6,y+21,{align:'right'});
+
+  if(infPct>0 && ptInfEl){
+    doc.setDrawColor(GOLD[0],GOLD[1],GOLD[2]);
+    doc.setLineWidth(0.2);
+    doc.line(M+6,y+26,W-M-6,y+26);
+    doc.setTextColor(LGRAY[0],LGRAY[1],LGRAY[2]);
+    doc.setFont('helvetica','normal');
+    doc.setFontSize(8);
+    doc.text('PRECIO PROYECTADO (+'+Math.round(infPct)+'% inflacion)',M+6,y+33);
+    doc.setTextColor(GOLD[0],GOLD[1],GOLD[2]);
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(18);
+    doc.text(ptInfEl,M+6,y+43);
+    doc.setTextColor(LGRAY[0],LGRAY[1],LGRAY[2]);
+    doc.setFont('helvetica','normal');
+    doc.setFontSize(8);
+    doc.text('por persona:',W-M-50,y+35);
+    doc.setTextColor(240,237,232);
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(11);
+    doc.text(ppInfEl,W-M-6,y+43,{align:'right'});
+    y+=50;
+  } else {
+    y+=30;
+  }
+
+  // FOOTER
+  y+=8;
+  doc.setTextColor(GRAY[0],GRAY[1],GRAY[2]);
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(8);
+  doc.text('Cotizacion valida por 48 horas. Precios sujetos a variacion de materia prima.',W/2,y,{align:'center'});
+
+  doc.save('cotizacion-'+cl.replace(/\s+/g,'-').toLowerCase()+'-'+new Date().toISOString().slice(0,10)+'.pdf');
+  toast('PDF generado');
 }
 
 function exportTXT(){
