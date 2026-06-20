@@ -1,117 +1,77 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-
-<style>
-/* Grid */
-.grid{display:grid;}.grid-cols-1{grid-template-columns:repeat(1,minmax(0,1fr));}.grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr));}.grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr));}.gap-3{gap:12px;}.gap-4{gap:16px;}.gap-5{gap:20px;}.gap-6{gap:24px;}
-@media(min-width:640px){.sm\:col-span-1{grid-column:span 1}.sm\:grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr));}.sm\:grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr));}}
-@media(min-width:768px){.md\:grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr));}}
-@media(min-width:1024px){.lg\:col-span-1{grid-column:span 1}.lg\:col-span-2{grid-column:span 2}.lg\:grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr));}}
-@media(min-width:1280px){.xl\:grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr));}}
-/* Flex */
-.flex{display:flex;}.flex-col{flex-direction:column;}.flex-1{flex:1;}.flex-wrap{flex-wrap:wrap;}.flex-shrink-0{flex-shrink:0;}
-.items-center{align-items:center;}.items-end{align-items:flex-end;}.items-start{align-items:flex-start;}
-.justify-between{justify-content:space-between;}.justify-end{justify-content:flex-end;}.justify-center{justify-content:center;}
-/* Spacing */
-.mx-auto{margin-left:auto;margin-right:auto;}.max-w-6xl{max-width:72rem;}.max-w-5xl{max-width:64rem;}.max-w-2xl{max-width:42rem;}
-.px-4{padding-left:1rem;padding-right:1rem;}.py-5{padding-top:1.25rem;padding-bottom:1.25rem;}.py-3{padding-top:.75rem;padding-bottom:.75rem;}
-.mb-5{margin-bottom:1.25rem;}.mb-4{margin-bottom:1rem;}.mb-3{margin-bottom:.75rem;}.mt-4{margin-top:1rem;}.mt-2{margin-top:.5rem;}
-/* Hidden for responsive */
-.hidden{display:none;}
-</style>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cotizador Gastronómico</title>
+<title>Cotizador Gastronomico</title>
+<script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,600;1,300&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-
 <style>
-:root{--bg:#0F0F0F;--sf:#1A1A1A;--sf2:#242424;--sf3:#2E2E2E;--gold:#C9A84C;--gdim:#8A6E2A;--tx:#F0EDE8;--tx2:#8A8580;--tx3:#5A5550;--red:#C04A3A;--bd:#333;}
+:root{--bg:#0F0F0F;--sf:#1A1A1A;--sf2:#242424;--sf3:#2E2E2E;--gold:#C9A84C;--gdim:#8A6E2A;--tx:#F0EDE8;--tx2:#8A8580;--tx3:#5A5550;--red:#C04A3A;--bd:#333333;}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-body{background:var(--bg);color:var(--tx);font-family:Inter,sans-serif;font-size:14px;min-height:100vh;padding-bottom:72px;}
-h1,h2{font-family:Fraunces,serif;}
-/* TABS */
-.tb{padding:10px 16px;border:none;background:transparent;color:var(--tx2);font-family:Inter,sans-serif;font-size:13px;font-weight:500;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;}
-.tb.on{color:var(--gold);border-bottom-color:var(--gold);}
-.tp{display:none;}.tp.on{display:block;}
-/* INPUTS */
+body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;font-size:14px;min-height:100vh;}
+h1,h2{font-family:'Fraunces',serif;}
+.tab-btn{padding:10px 16px;border:none;background:transparent;color:var(--tx2);font-family:'Inter',sans-serif;font-size:13px;font-weight:500;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:color .2s,border-color .2s;}
+.tab-btn.on{color:var(--gold);border-bottom-color:var(--gold);}
+.tab-pnl{display:none;}.tab-pnl.on{display:block;}
 .fi{display:flex;flex-direction:column;gap:5px;}
 .fi label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--tx2);}
-.fi input,.fi select,.si{background:var(--sf2);border:1px solid var(--bd);border-radius:6px;padding:9px 12px;color:var(--tx);font-family:Inter,sans-serif;font-size:14px;outline:none;width:100%;-webkit-appearance:none;}
-.fi input:focus,.fi select:focus,.si:focus{border-color:var(--gdim);}
+.fi input,.fi select{background:var(--sf2);border:1px solid var(--bd);border-radius:6px;padding:9px 12px;color:var(--tx);font-family:'Inter',sans-serif;font-size:14px;outline:none;width:100%;-webkit-appearance:none;}
+.fi input:focus,.fi select:focus{border-color:var(--gdim);}
 .fi input::placeholder{color:var(--tx3);}
-/* CARD */
 .card{background:var(--sf);border:1px solid var(--bd);border-radius:10px;padding:20px;}
-.ctit{font-family:Fraunces,serif;font-size:15px;font-weight:400;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;}
-/* TICKER */
-.tick{background:var(--sf);border:1px solid var(--gdim);border-radius:10px;padding:20px;position:sticky;top:56px;}
+.ctit{font-family:'Fraunces',serif;font-size:15px;font-weight:400;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;}
+.tick{background:var(--sf);border:1px solid var(--gdim);border-radius:10px;padding:20px;position:sticky;top:60px;}
 .tlb{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.12em;color:var(--tx2);margin-bottom:3px;}
-.tval{font-family:Fraunces,serif;font-size:24px;font-weight:300;color:var(--gold);line-height:1;}
+.tval{font-family:'Fraunces',serif;font-size:24px;font-weight:300;color:var(--gold);line-height:1;}
 .tsub{font-size:12px;color:var(--tx2);margin-top:3px;}
 .trow{display:flex;justify-content:space-between;align-items:baseline;padding:7px 0;border-bottom:1px solid var(--bd);}
 .trow:last-child{border-bottom:none;}
-.trl{font-size:12px;color:var(--tx2);}
-.trv{font-size:13px;font-weight:500;color:var(--tx);}
-/* BTNS */
-.bg{background:var(--gold);color:#000;border:none;border-radius:6px;padding:9px 18px;font-family:Inter,sans-serif;font-size:13px;font-weight:600;cursor:pointer;}
-.bg:active{opacity:.8;}
-.bgh{background:transparent;color:var(--tx2);border:1px solid var(--bd);border-radius:6px;padding:8px 14px;font-family:Inter,sans-serif;font-size:12px;font-weight:500;cursor:pointer;}
-.bgh:active{color:var(--tx);}
-.bsm{background:transparent;color:var(--gold);border:1px solid var(--gdim);border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer;font-family:Inter,sans-serif;}
-.bdn{background:transparent;color:var(--red);border:1px solid var(--red);border-radius:6px;padding:4px 9px;font-size:11px;cursor:pointer;font-family:Inter,sans-serif;}
-/* MENU SELECTOR */
-.mc{background:var(--sf2);border:1px solid var(--bd);border-radius:8px;overflow:hidden;}
-.mch{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;cursor:pointer;user-select:none;}
-.mch:active{background:var(--sf3);}
+.trow span:first-child{font-size:12px;color:var(--tx2);}
+.trow span:last-child{font-size:13px;font-weight:500;}
+.bg{background:var(--gold);color:#000;border:none;border-radius:6px;padding:9px 18px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;}
+.bg:hover{opacity:.88;}
+.bgh{background:transparent;color:var(--tx2);border:1px solid var(--bd);border-radius:6px;padding:8px 14px;font-family:'Inter',sans-serif;font-size:12px;font-weight:500;cursor:pointer;}
+.bsm{background:transparent;color:var(--gold);border:1px solid var(--gdim);border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer;font-family:'Inter',sans-serif;}
+.bdn{background:transparent;color:var(--red);border:1px solid var(--red);border-radius:6px;padding:4px 9px;font-size:11px;cursor:pointer;font-family:'Inter',sans-serif;}
+.mc{background:var(--sf2);border:1px solid var(--bd);border-radius:8px;overflow:hidden;margin-bottom:6px;}
+.mch{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;cursor:pointer;user-select:none;}
+.mch:hover{background:var(--sf3);}
 .mcl{font-size:12px;font-weight:600;color:var(--tx2);display:flex;align-items:center;gap:8px;}
 .mcc{background:var(--gdim);color:var(--gold);font-size:10px;font-weight:700;border-radius:100px;padding:1px 7px;display:none;}
-.mo{display:none;padding:6px 8px 10px;border-top:1px solid var(--bd);}
-.mo.on{display:block;}
-.mopt{display:flex;align-items:center;gap:10px;padding:7px 8px;border-radius:6px;cursor:pointer;}
-.mopt:active{background:var(--sf3);}
-.mopt input[type=checkbox]{width:15px;height:15px;accent-color:var(--gold);flex-shrink:0;}
+.mopts{display:none;padding:6px 8px 10px;border-top:1px solid var(--bd);}
+.mopts.on{display:block;}
+.mopt{display:flex;align-items:center;gap:10px;padding:8px;border-radius:6px;cursor:pointer;}
+.mopt:hover{background:var(--sf3);}
+.mopt input[type=checkbox]{width:16px;height:16px;accent-color:var(--gold);flex-shrink:0;}
 .mon{font-size:13px;color:var(--tx);flex:1;}
 .moc{font-size:11px;color:var(--tx3);}
-/* RECIPE / QUOTE CARDS */
-.rc{background:var(--sf2);border:1px solid var(--bd);border-radius:8px;padding:16px;cursor:pointer;}
-.rc:active{border-color:var(--tx3);}
-.qc{background:var(--sf2);border:1px solid var(--bd);border-radius:8px;padding:16px;}
-/* BADGES */
-.bdg{display:inline-block;padding:2px 8px;border-radius:100px;font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;}
+.rc{background:var(--sf2);border:1px solid var(--bd);border-radius:8px;padding:16px;margin-bottom:10px;cursor:pointer;}
+.rc:hover{border-color:var(--tx3);}
+.qc{background:var(--sf2);border:1px solid var(--bd);border-radius:8px;padding:16px;margin-bottom:10px;}
+.pkc{background:var(--sf2);border:1px solid var(--bd);border-radius:8px;padding:16px;margin-bottom:10px;}
+.bdg{display:inline-block;padding:2px 8px;border-radius:100px;font-size:10px;font-weight:600;text-transform:uppercase;}
 .be{background:rgba(74,140,92,.18);color:#6BBD88;}
 .bp{background:rgba(201,168,76,.18);color:var(--gold);}
-.bd{background:rgba(160,100,180,.18);color:#C48DE0;}
+.bd2{background:rgba(160,100,180,.18);color:#C48DE0;}
 .ba{background:rgba(80,140,200,.18);color:#7BBCE8;}
-/* ING TABLE */
 .it{width:100%;border-collapse:collapse;}
-.it th{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--tx3);text-align:left;padding:6px 6px;border-bottom:1px solid var(--bd);}
+.it th{font-size:10px;font-weight:600;text-transform:uppercase;color:var(--tx3);text-align:left;padding:6px;border-bottom:1px solid var(--bd);}
 .it td{padding:5px 6px;border-bottom:1px solid rgba(51,51,51,.4);vertical-align:middle;}
 .it tr:last-child td{border-bottom:none;}
-.ci{background:var(--sf3);border:1px solid transparent;border-radius:4px;padding:5px 7px;color:var(--tx);font-family:Inter,sans-serif;font-size:13px;width:100%;outline:none;}
+.ci{background:var(--sf3);border:1px solid transparent;border-radius:4px;padding:5px 7px;color:var(--tx);font-family:'Inter',sans-serif;font-size:13px;width:100%;outline:none;-webkit-appearance:none;}
 .ci:focus{border-color:var(--gdim);}
 .cig{color:var(--gold)!important;}
-/* MODAL */
-.ov{position:fixed;inset:0;background:rgba(0,0,0,.78);display:flex;align-items:center;justify-content:center;z-index:100;padding:16px;}
-.md{background:var(--sf);border:1px solid var(--bd);border-radius:12px;width:100%;max-width:680px;max-height:90vh;overflow-y:auto;padding:20px;}
-.mdt{font-family:Fraunces,serif;font-size:19px;font-weight:400;margin-bottom:16px;}
-/* MISC */
-.sh{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--tx3);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
-.sh::after{content:\'\';flex:1;height:1px;background:var(--bd);}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;z-index:100;padding:16px;}
+.md{background:var(--sf);border:1px solid var(--bd);border-radius:12px;width:100%;max-width:680px;max-height:88vh;overflow-y:auto;padding:20px;}
+.sh{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--tx3);margin:14px 0 8px;display:flex;align-items:center;gap:8px;}
+.sh::after{content:'';flex:1;height:1px;background:var(--bd);}
 .emp{text-align:center;padding:36px 20px;color:var(--tx3);font-size:13px;}
-.emp .ic{font-size:30px;margin-bottom:8px;}
-.tst{position:fixed;bottom:76px;left:50%;transform:translateX(-50%);background:var(--sf3);border:1px solid var(--bd);color:var(--tx);padding:10px 20px;border-radius:100px;font-size:13px;z-index:999;pointer-events:none;white-space:nowrap;}
-/* PRICE ALERTS */
+.tst{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--sf3);border:1px solid var(--bd);color:var(--tx);padding:10px 20px;border-radius:100px;font-size:13px;z-index:999;pointer-events:none;white-space:nowrap;display:none;}
 .aok{background:rgba(74,140,92,.15);color:#6BBD88;}
 .awk{background:rgba(232,160,64,.15);color:#E8A040;}
 .aol{background:rgba(192,74,58,.15);color:var(--red);}
-.pkg-card{background:var(--sf2);border:1px solid var(--bd);border-radius:8px;padding:16px;}
 ::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-thumb{background:var(--bd);border-radius:3px;}
-
-.bnav{position:fixed;bottom:0;left:0;right:0;background:#1A1A1A;border-top:1px solid #333;display:flex;z-index:9999;padding-bottom:env(safe-area-inset-bottom,0px);}
-.nb{flex:1;background:transparent;border:none;border-top:2px solid transparent;color:#8A8580;font-family:Inter,sans-serif;font-size:10px;font-weight:500;padding:8px 2px 6px;display:flex;flex-direction:column;align-items:center;gap:2px;min-height:52px;cursor:pointer;}
-.nb .ni{font-size:20px;line-height:1.2;}
-.nb.on{color:#C9A84C;border-top-color:#C9A84C;}
 </style>
 </head>
 <body>
@@ -119,52 +79,59 @@ h1,h2{font-family:Fraunces,serif;}
 <header style="border-bottom:1px solid var(--bd);background:var(--sf);position:sticky;top:0;z-index:50;">
   <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
     <div>
-      <h1 style="font-weight:300;font-size:20px;line-height:1;">Cotizador <span style="color:var(--gold);font-style:italic;">Gastronómico</span></h1>
-      <p style="font-size:10px;color:var(--tx3);margin-top:1px;">Córdoba · Precios jun 2026</p>
+      <h1 style="font-weight:300;font-size:20px;line-height:1;">Cotizador <span style="color:var(--gold);font-style:italic;">Gastronomico</span></h1>
+      <p style="font-size:10px;color:var(--tx3);margin-top:2px;">Cordoba · jun 2026</p>
     </div>
     <div style="display:flex;gap:8px;">
-      <button class="bgh" onclick="exportBackup()" style="padding:7px 10px;font-size:11px;">⬇ Backup</button>
-      <label class="bgh" style="padding:7px 10px;font-size:11px;cursor:pointer;">⬆ Importar<input type="file" accept=".json" onchange="importBackup(event)" style="display:none;"></label>
+      <button class="bgh" onclick="exportBackup()" style="padding:7px 10px;font-size:11px;">Backup</button>
+      <label class="bgh" style="padding:7px 10px;font-size:11px;cursor:pointer;">Importar<input type="file" accept=".json" onchange="importBackup(event)" style="display:none;"></label>
     </div>
+  </div>
+  <div class="max-w-6xl mx-auto px-4" style="display:flex;overflow-x:auto;-webkit-overflow-scrolling:touch;gap:0;">
+    <button class="tab-btn on" id="tb-cotizador" onclick="switchTab('cotizador',this)">Cotizador</button>
+    <button class="tab-btn" id="tb-guardadas" onclick="switchTab('guardadas',this)">Cotizaciones</button>
+    <button class="tab-btn" id="tb-recetas" onclick="switchTab('recetas',this)">Recetas</button>
+    <button class="tab-btn" id="tb-paquetes" onclick="switchTab('paquetes',this)">Paquetes</button>
+    <button class="tab-btn" id="tb-precios" onclick="switchTab('precios',this)">Precios</button>
+    <button class="tab-btn" id="tb-sync" onclick="switchTab('sync',this)">Backup</button>
   </div>
 </header>
 
-<!-- ══ COTIZADOR ══ -->
-<div id="tab-cotizador" class="tp on">
+<div id="tab-cotizador" class="tab-pnl on">
 <div class="max-w-6xl mx-auto px-4 py-5">
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
     <div class="lg:col-span-2 flex flex-col gap-4">
       <div class="card">
         <div class="ctit">Datos del evento</div>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div class="fi"><label>Nombre del cliente</label><input type="text" id="c-cl" placeholder="Ej: Familia Rodríguez" oninput="calc()"></div>
-          <div class="fi"><label>Cantidad de personas</label><input type="number" id="c-pe" placeholder="0" min="1" inputmode="numeric" oninput="calc();refCosts()"></div>
+          <div class="fi"><label>Cliente</label><input type="text" id="c-cl" placeholder="Nombre del cliente" oninput="calc()"></div>
+          <div class="fi"><label>Personas</label><input type="number" id="c-pe" placeholder="0" min="1" inputmode="numeric" oninput="calc();refCosts()"></div>
         </div>
       </div>
       <div class="card">
-        <div class="ctit"><span>Selección de menú</span><span style="font-size:11px;color:var(--tx3);font-weight:400;font-family:Inter,sans-serif;">Elegí uno o varios por categoría</span></div>
-        <div id="menu-sel" style="display:flex;flex-direction:column;gap:8px;"></div>
-        <div id="menu-sum" style="margin-top:14px;display:none;">
-          <div class="sh">Costo MP por ítem</div>
-          <div id="menu-sum-items" style="display:flex;flex-direction:column;gap:4px;"></div>
+        <div class="ctit"><span>Menu</span><span style="font-size:11px;color:var(--tx3);font-family:'Inter';font-weight:400;">Elegí uno o varios</span></div>
+        <div id="menu-sel"></div>
+        <div id="menu-sum" style="margin-top:12px;display:none;">
+          <div class="sh">Costo MP por item</div>
+          <div id="menu-sum-i"></div>
         </div>
       </div>
       <div class="card">
-        <div class="ctit">Gastos de servicios</div>
+        <div class="ctit">Servicios</div>
         <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
-          <div class="fi"><label>Personal ($)</label><input type="number" id="g-pe" placeholder="0" inputmode="decimal" oninput="calc()"></div>
-          <div class="fi"><label>Limpieza ($)</label><input type="number" id="g-li" placeholder="0" inputmode="decimal" oninput="calc()"></div>
-          <div class="fi"><label>Salón ($)</label><input type="number" id="g-sa" placeholder="0" inputmode="decimal" oninput="calc()"></div>
-          <div class="fi"><label>DJ ($)</label><input type="number" id="g-dj" placeholder="0" inputmode="decimal" oninput="calc()"></div>
-          <div class="fi"><label>Bebidas ($)</label><input type="number" id="g-be" placeholder="0" inputmode="decimal" oninput="calc()"></div>
-          <div class="fi"><label>Varios ($)</label><input type="number" id="g-va" placeholder="0" inputmode="decimal" oninput="calc()"></div>
+          <div class="fi"><label>Personal $</label><input type="number" id="g-pe" placeholder="0" inputmode="decimal" oninput="calc()"></div>
+          <div class="fi"><label>Limpieza $</label><input type="number" id="g-li" placeholder="0" inputmode="decimal" oninput="calc()"></div>
+          <div class="fi"><label>Salon $</label><input type="number" id="g-sa" placeholder="0" inputmode="decimal" oninput="calc()"></div>
+          <div class="fi"><label>DJ $</label><input type="number" id="g-dj" placeholder="0" inputmode="decimal" oninput="calc()"></div>
+          <div class="fi"><label>Bebidas $</label><input type="number" id="g-be" placeholder="0" inputmode="decimal" oninput="calc()"></div>
+          <div class="fi"><label>Varios $</label><input type="number" id="g-va" placeholder="0" inputmode="decimal" oninput="calc()"></div>
         </div>
       </div>
       <div class="card">
         <div class="ctit">Margen de ganancia</div>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-end">
-          <div class="fi"><label>Margen (%)</label><input type="number" id="c-mg" placeholder="30" min="0" max="90" inputmode="decimal" oninput="calc()"></div>
-          <p style="font-size:11px;color:var(--tx3);padding-bottom:4px;">Precio = Costo ÷ (1 − margen%)</p>
+          <div class="fi"><label>Margen %</label><input type="number" id="c-mg" placeholder="30" min="0" max="90" inputmode="decimal" oninput="calc()"></div>
+          <p style="font-size:11px;color:var(--tx3);padding-bottom:4px;">Precio = Costo / (1 - margen%)</p>
         </div>
       </div>
     </div>
@@ -176,19 +143,18 @@ h1,h2{font-family:Fraunces,serif;}
           <div class="tsub" id="r-cn">—</div>
         </div>
         <div>
-          <div class="trow"><span class="trl">Materia prima</span><span class="trv" id="r-mp">$0</span></div>
-          <div class="trow"><span class="trl">MP / persona</span><span class="trv" id="r-mpp">$0</span></div>
-          <div class="trow"><span class="trl">Servicios</span><span class="trv" id="r-sv">$0</span></div>
-          <div class="trow"><span class="trl">Costo base</span><span class="trv" id="r-ct">$0</span></div>
+          <div class="trow"><span>Materia prima</span><span id="r-mp">$0</span></div>
+          <div class="trow"><span>MP/persona</span><span id="r-mpp">$0</span></div>
+          <div class="trow"><span>Servicios</span><span id="r-sv">$0</span></div>
+          <div class="trow"><span>Costo base</span><span id="r-ct">$0</span></div>
           <div class="trow" style="border-top:1px solid var(--gdim);margin-top:4px;padding-top:10px;">
-            <span class="trl" style="color:var(--tx);font-weight:600;">Precio total</span>
-            <span class="trv" id="r-pt" style="color:var(--gold);font-size:15px;">$0</span>
+            <span style="color:var(--tx);font-weight:600;">Precio total</span>
+            <span id="r-pt" style="color:var(--gold);font-size:15px;font-weight:500;">$0</span>
           </div>
-          <div class="trow"><span class="trl">Ganancia</span><span class="trv" id="r-gn" style="color:#6BBD88;">$0</span></div>
-          <div class="trow"><span class="trl">Margen</span><span class="trv" id="r-mg">0%</span></div>
+          <div class="trow"><span>Ganancia</span><span id="r-gn" style="color:#6BBD88;">$0</span></div>
+          <div class="trow"><span>Margen</span><span id="r-mg2">0%</span></div>
         </div>
-        <button class="bg" style="width:100%;margin-top:14px;" onclick="saveQuote()">💾 Guardar cotización</button>
-        <button class="bg" style="width:100%;margin-top:8px;background:linear-gradient(135deg,#C9A84C,#A8873B);" onclick="exportPDF()">📄 Exportar PDF</button>
+        <button class="bg" style="width:100%;margin-top:14px;" onclick="saveQuote()">Guardar cotizacion</button>
         <button class="bgh" style="width:100%;margin-top:8px;" onclick="exportTXT()">Exportar texto</button>
       </div>
     </div>
@@ -196,682 +162,603 @@ h1,h2{font-family:Fraunces,serif;}
 </div>
 </div>
 
-<!-- ══ COTIZACIONES ══ -->
-<div id="tab-guardadas" class="tp">
+<div id="tab-guardadas" class="tab-pnl">
 <div class="max-w-6xl mx-auto px-4 py-5">
   <h2 style="font-size:20px;font-weight:400;margin-bottom:4px;">Cotizaciones guardadas</h2>
-  <p style="font-size:12px;color:var(--tx2);margin-bottom:20px;">Sincronizadas en tiempo real entre dispositivos via Firebase.</p>
-  <div id="quotes-list" style="display:flex;flex-direction:column;gap:12px;"></div>
+  <p style="font-size:12px;color:var(--tx2);margin-bottom:16px;">Guardadas en este dispositivo.</p>
+  <div id="quotes-list"></div>
 </div>
 </div>
 
-<!-- ══ RECETAS ══ -->
-<div id="tab-recetas" class="tp">
+<div id="tab-recetas" class="tab-pnl">
 <div class="max-w-6xl mx-auto px-4 py-5">
-  <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
-    <div>
-      <h2 style="font-size:20px;font-weight:400;">Base de recetas</h2>
-      <p style="font-size:12px;color:var(--tx2);margin-top:2px;">Tocá una receta para ver el paso a paso y editar precios.</p>
-    </div>
+  <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin-bottom:16px;">
+    <div><h2 style="font-size:20px;font-weight:400;">Recetas</h2><p style="font-size:12px;color:var(--tx2);margin-top:2px;">Toca para ver y editar precios.</p></div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;">
-      <select id="filt-cat" onchange="renderRecipes()" class="si" style="min-width:140px;">
+      <select id="filt" onchange="renderRec()" style="background:var(--sf2);border:1px solid var(--bd);border-radius:6px;padding:9px 12px;color:var(--tx);font-family:'Inter';font-size:13px;outline:none;-webkit-appearance:none;min-width:120px;">
         <option value="">Todas</option>
         <option value="entrada">Entradas</option>
         <option value="principal">Principales</option>
         <option value="postre">Postres</option>
         <option value="after">After</option>
       </select>
-      <button class="bg" onclick="openNewModal()">+ Nueva receta</button>
+      <button class="bg" onclick="openNew()">+ Nueva</button>
     </div>
   </div>
   <div id="rec-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
 </div>
 </div>
 
-<!-- ══ PAQUETES ══ -->
-<div id="tab-paquetes" class="tp">
+<div id="tab-paquetes" class="tab-pnl">
 <div class="max-w-5xl mx-auto px-4 py-5">
-  <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
-    <div>
-      <h2 style="font-size:20px;font-weight:400;">Paquetes de menú</h2>
-      <p style="font-size:12px;color:var(--tx2);margin-top:2px;">Guardá combinaciones completas y cargalas con un clic.</p>
-    </div>
-    <button class="bg" onclick="openNewPkg()">+ Nuevo paquete</button>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+    <div><h2 style="font-size:20px;font-weight:400;">Paquetes</h2><p style="font-size:12px;color:var(--tx2);margin-top:2px;">Combinaciones guardadas.</p></div>
+    <button class="bg" onclick="openPkg()">+ Nuevo</button>
   </div>
-  <div id="pkg-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+  <div id="pkg-list" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
 </div>
 </div>
 
-<!-- ══ PRECIOS ══ -->
-<div id="tab-precios" class="tp">
+<div id="tab-precios" class="tab-pnl">
 <div class="max-w-5xl mx-auto px-4 py-5">
-  <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
-    <div><h2 style="font-size:20px;font-weight:400;">Control de precios</h2>
-    <p style="font-size:12px;color:var(--tx2);margin-top:2px;">Alertas de desactualización y ajuste masivo por inflación.</p></div>
-    <div id="price-badges" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
+  <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin-bottom:16px;">
+    <h2 style="font-size:20px;font-weight:400;">Control de precios</h2>
+    <div id="pbadges" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
   </div>
-  <div class="card" style="margin-bottom:20px;border-color:var(--gdim);">
-    <div class="ctit">📈 Ajuste masivo por inflación</div>
+  <div class="card" style="margin-bottom:16px;border-color:var(--gdim);">
+    <div class="ctit">Ajuste por inflacion</div>
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
-      <div class="fi"><label>Categoría</label>
-        <select id="inf-cat" class="si" style="-webkit-appearance:none;">
-          <option value="all">Todas las recetas</option>
-          <option value="entrada">Solo Entradas</option>
-          <option value="principal">Solo Principales</option>
-          <option value="postre">Solo Postres</option>
-          <option value="after">Solo After</option>
+      <div class="fi"><label>Categoria</label>
+        <select id="inf-cat" style="background:var(--sf2);border:1px solid var(--bd);border-radius:6px;padding:9px 12px;color:var(--tx);font-family:'Inter';font-size:14px;outline:none;-webkit-appearance:none;width:100%;">
+          <option value="all">Todas</option><option value="entrada">Entradas</option><option value="principal">Principales</option><option value="postre">Postres</option><option value="after">After</option>
         </select>
       </div>
-      <div class="fi">
-        <label>Aumento: <span id="inf-pct" style="color:var(--gold);font-weight:700;">10%</span></label>
-        <input type="range" id="inf-sl" min="1" max="100" value="10" style="width:100%;accent-color:var(--gold);cursor:pointer;" oninput="document.getElementById('inf-pct').textContent=this.value+'%';infPreview()">
+      <div class="fi"><label>Aumento: <span id="inf-pct" style="color:var(--gold);font-weight:700;">10%</span></label>
+        <input type="range" id="inf-sl" min="1" max="100" value="10" style="width:100%;accent-color:var(--gold);" oninput="document.getElementById('inf-pct').textContent=this.value+'%'">
       </div>
-      <button class="bg" onclick="applyInflation()">Aplicar aumento</button>
+      <button class="bg" onclick="applyInf()">Aplicar</button>
     </div>
-    <div id="inf-prev" style="display:none;margin-top:12px;background:var(--sf2);border-radius:8px;padding:12px;font-size:12px;color:var(--tx2);"></div>
   </div>
   <div class="card">
-    <div class="ctit"><span>Estado de precios</span>
-      <span style="font-size:11px;color:var(--tx3);font-family:Inter,sans-serif;font-weight:400;">
-        <span style="color:#6BBD88;">●</span> &lt;7d &nbsp;<span style="color:#E8A040;">●</span> &lt;30d &nbsp;<span style="color:var(--red);">●</span> +30d
-      </span>
-    </div>
-    <div style="overflow-x:auto;"><table class="it" id="price-tbl">
-      <thead><tr><th>Receta</th><th>Ingrediente</th><th>Precio actual</th><th>Estado</th><th>Nuevo precio</th></tr></thead>
-      <tbody id="price-body"></tbody>
-    </table></div>
+    <div class="ctit"><span>Estado de precios</span><span style="font-size:11px;color:var(--tx3);">Verde &lt;7d · Naranja &lt;30d · Rojo +30d</span></div>
+    <div style="overflow-x:auto;"><table class="it" id="price-tbl"><thead><tr><th>Receta</th><th>Ingrediente</th><th>Precio</th><th>Estado</th><th>Actualizar</th></tr></thead><tbody id="price-body"></tbody></table></div>
   </div>
 </div>
 </div>
 
-<!-- ══ ICLOUD ══ -->
-<div id="tab-sync" class="tp">
+<div id="tab-sync" class="tab-pnl">
 <div class="max-w-2xl mx-auto px-4 py-5">
-  <h2 style="font-size:20px;font-weight:400;margin-bottom:6px;">Sincronización ☁️</h2>
-  <p style="font-size:13px;color:var(--tx2);margin-bottom:20px;">Tus datos en Firebase se sincronizan en tiempo real entre iPhone y Mac.</p>
-  <div style="display:flex;flex-direction:column;gap:14px;">
-    <div class="card" style="border-color:var(--gdim);">
-      <div style="font-family:Fraunces,serif;font-size:15px;margin-bottom:8px;">🔐 Backup manual</div>
-      <p style="font-size:13px;color:var(--tx2);margin-bottom:12px;">Exportá un JSON periódicamente como respaldo adicional.</p>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;">
-        <button class="bg" onclick="exportBackup()">⬇ Exportar backup</button>
-        <label class="bgh" style="cursor:pointer;">⬆ Importar<input type="file" accept=".json" onchange="importBackup(event)" style="display:none;"></label>
-      </div>
-    </div>
-    <div class="card">
-      <div style="font-family:Fraunces,serif;font-size:15px;margin-bottom:8px;">ℹ️ Estado</div>
-      <div id="sync-status" style="font-size:13px;color:var(--tx2);line-height:1.8;"></div>
+  <h2 style="font-size:20px;font-weight:400;margin-bottom:14px;">Backup y sincronizacion</h2>
+  <div class="card" style="margin-bottom:12px;border-color:var(--gdim);">
+    <div class="ctit">Exportar / Importar datos</div>
+    <p style="font-size:13px;color:var(--tx2);margin-bottom:14px;">Para sincronizar entre iPhone y Mac exporta el backup en un dispositivo e importalo en el otro.</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <button class="bg" onclick="exportBackup()">Exportar backup</button>
+      <label class="bgh" style="cursor:pointer;">Importar backup<input type="file" accept=".json" onchange="importBackup(event)" style="display:none;"></label>
     </div>
   </div>
+  <div class="card"><div class="ctit">Estado</div><div id="sync-st" style="font-size:13px;color:var(--tx2);line-height:1.8;"></div></div>
 </div>
 </div>
 
-<!-- MODAL EDITAR RECETA -->
-<div id="mod-edit" class="ov" style="display:none;" onclick="if(event.target===this)this.style.display='none'">
+<div id="mod-rec" class="ov" style="display:none;" onclick="if(event.target===this)this.style.display='none'">
 <div class="md">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-    <div class="mdt" id="mod-edit-tit">Nueva receta</div>
-    <button onclick="document.getElementById('mod-edit').style.display='none'" style="background:transparent;border:none;color:var(--tx2);font-size:22px;cursor:pointer;">✕</button>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+    <h2 id="mrec-t" style="font-size:18px;font-weight:400;">Nueva receta</h2>
+    <button onclick="document.getElementById('mod-rec').style.display='none'" style="background:transparent;border:none;color:var(--tx2);font-size:22px;cursor:pointer;">x</button>
   </div>
-  <input type="hidden" id="edit-id">
+  <input type="hidden" id="eid">
   <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">
     <div class="fi sm:col-span-1"><label>Nombre</label><input type="text" id="r-nom" placeholder="Nombre de la receta"></div>
-    <div class="fi"><label>Categoría</label><select id="r-cat"><option value="entrada">Entrada</option><option value="principal">Plato principal</option><option value="postre">Postre</option><option value="after">After</option></select></div>
+    <div class="fi"><label>Categoria</label><select id="r-cat"><option value="entrada">Entrada</option><option value="principal">Plato principal</option><option value="postre">Postre</option><option value="after">After</option></select></div>
     <div class="fi"><label>Rinde (personas)</label><input type="number" id="r-rin" placeholder="10" min="1" inputmode="numeric"></div>
   </div>
-  <div class="fi mb-3"><label>Descripción breve</label><input type="text" id="r-dsc" placeholder="Descripción corta..."></div>
-  <div class="fi mb-4"><label>Preparación paso a paso</label>
-    <textarea id="r-stp" placeholder="Paso 1: ... Paso 2: ..." style="background:var(--sf2);border:1px solid var(--bd);border-radius:6px;padding:9px 12px;color:var(--tx);font-family:Inter,sans-serif;font-size:13px;outline:none;width:100%;min-height:90px;resize:vertical;-webkit-appearance:none;"></textarea>
-  </div>
+  <div class="fi mb-3"><label>Descripcion</label><input type="text" id="r-dsc" placeholder="Descripcion breve"></div>
+  <div class="fi mb-4"><label>Preparacion</label><textarea id="r-stp" style="background:var(--sf2);border:1px solid var(--bd);border-radius:6px;padding:9px 12px;color:var(--tx);font-family:'Inter',sans-serif;font-size:13px;outline:none;width:100%;min-height:80px;resize:vertical;" placeholder="Pasos de preparacion..."></textarea></div>
   <div class="sh">Ingredientes</div>
   <div style="overflow-x:auto;margin-bottom:10px;">
-    <table class="it"><thead><tr><th style="min-width:130px;">Ingrediente</th><th style="min-width:70px;">Cant.</th><th style="min-width:80px;">Unidad</th><th style="min-width:100px;">$ / unidad</th><th style="min-width:80px;">Subtotal</th><th></th></tr></thead>
+    <table class="it"><thead><tr><th style="min-width:120px;">Ingrediente</th><th style="min-width:65px;">Cant.</th><th style="min-width:75px;">Unidad</th><th style="min-width:90px;">$/unidad</th><th style="min-width:75px;">Subtotal</th><th></th></tr></thead>
     <tbody id="ing-body"></tbody>
-    <tfoot><tr><td colspan="3"></td><td style="padding:8px 6px;font-size:12px;color:var(--tx2);">Total:</td><td id="edit-tot" style="padding:8px 6px;font-weight:600;color:var(--gold);font-size:13px;">$0</td><td></td></tr></tfoot>
+    <tfoot><tr><td colspan="3"></td><td style="padding:7px 6px;font-size:12px;color:var(--tx2);">Total:</td><td id="ing-tot" style="padding:7px 6px;font-weight:600;color:var(--gold);">$0</td><td></td></tr></tfoot>
     </table>
   </div>
-  <button class="bgh" onclick="addRow()" style="width:100%;margin-bottom:16px;">+ Ingrediente</button>
+  <button class="bgh" onclick="addRow()" style="width:100%;margin-bottom:14px;">+ Ingrediente</button>
   <div style="display:flex;justify-content:flex-end;gap:10px;">
-    <button class="bgh" onclick="document.getElementById('mod-edit').style.display='none'">Cancelar</button>
-    <button class="bg" onclick="saveRecipe()">Guardar</button>
+    <button class="bgh" onclick="document.getElementById('mod-rec').style.display='none'">Cancelar</button>
+    <button class="bg" onclick="saveRec()">Guardar</button>
   </div>
 </div>
 </div>
 
-<!-- MODAL VER RECETA -->
 <div id="mod-view" class="ov" style="display:none;" onclick="if(event.target===this)this.style.display='none'">
-<div class="md" style="max-width:720px;">
-  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;">
+<div class="md" style="max-width:700px;">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
     <div>
-      <div id="vw-bdg" class="bdg" style="margin-bottom:6px;"></div>
-      <div id="vw-nom" style="font-family:Fraunces,serif;font-size:20px;font-weight:400;"></div>
-      <div id="vw-inf" style="font-size:12px;color:var(--tx2);margin-top:4px;"></div>
+      <span id="vw-bdg" class="bdg" style="margin-bottom:6px;display:inline-block;"></span>
+      <h2 id="vw-nom" style="font-size:20px;font-weight:400;margin-top:4px;"></h2>
+      <p id="vw-inf" style="font-size:12px;color:var(--tx2);margin-top:4px;"></p>
     </div>
-    <button onclick="document.getElementById('mod-view').style.display='none'" style="background:transparent;border:none;color:var(--tx2);font-size:22px;cursor:pointer;flex-shrink:0;margin-left:10px;">✕</button>
+    <button onclick="document.getElementById('mod-view').style.display='none'" style="background:transparent;border:none;color:var(--tx2);font-size:22px;cursor:pointer;flex-shrink:0;margin-left:10px;">x</button>
   </div>
-  <p style="font-size:11px;color:var(--tx3);margin-bottom:10px;">✏️ Tocá el campo dorado para actualizar el precio al instante.</p>
+  <p style="font-size:11px;color:var(--tx3);margin-bottom:10px;">Toca el campo dorado para editar el precio.</p>
   <div style="overflow-x:auto;">
-    <table class="it"><thead><tr><th>Ingrediente</th><th>Cant.</th><th>Unidad</th><th>$ / unidad ✏️</th><th>Subtotal</th></tr></thead>
+    <table class="it"><thead><tr><th>Ingrediente</th><th>Cant.</th><th>Unidad</th><th>$/unidad</th><th>Subtotal</th></tr></thead>
     <tbody id="vw-body"></tbody>
     <tfoot>
       <tr style="border-top:1px solid var(--bd);"><td colspan="3"></td><td style="padding:8px 6px;font-size:12px;color:var(--tx2);">Costo base:</td><td id="vw-tot" style="padding:8px 6px;font-weight:600;color:var(--gold);font-size:14px;">$0</td></tr>
-      <tr><td colspan="3"></td><td style="padding:4px 6px;font-size:12px;color:var(--tx2);">Por persona:</td><td id="vw-pp" style="padding:4px 6px;font-weight:600;color:var(--tx);font-size:13px;">$0</td></tr>
+      <tr><td colspan="3"></td><td style="padding:4px 6px;font-size:12px;color:var(--tx2);">Por persona:</td><td id="vw-ppa" style="padding:4px 6px;font-weight:600;color:var(--tx);">$0</td></tr>
     </tfoot>
     </table>
   </div>
-  <div id="vw-steps" style="margin-top:16px;display:none;">
-    <div class="sh" style="margin-bottom:8px;">📋 Preparación</div>
-    <div id="vw-steps-body" style="font-size:13px;color:var(--tx2);line-height:1.8;background:var(--sf2);border-radius:8px;padding:14px;"></div>
+  <div id="vw-stp" style="display:none;margin-top:14px;">
+    <div class="sh">Preparacion</div>
+    <div id="vw-stp-b" style="font-size:13px;color:var(--tx2);line-height:1.8;background:var(--sf2);border-radius:8px;padding:14px;white-space:pre-wrap;"></div>
   </div>
   <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:14px;">
-    <button class="bsm" id="vw-edit-btn">Editar receta</button>
+    <button class="bsm" id="vw-edit">Editar receta</button>
     <button class="bgh" onclick="document.getElementById('mod-view').style.display='none'">Cerrar</button>
   </div>
 </div>
 </div>
 
-<!-- MODAL VER COTIZACION -->
-<div id="mod-quote" class="ov" style="display:none;" onclick="if(event.target===this)this.style.display='none'">
-<div class="md" style="max-width:540px;">
+<div id="mod-q" class="ov" style="display:none;" onclick="if(event.target===this)this.style.display='none'">
+<div class="md" style="max-width:520px;">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
-    <div class="mdt" id="mq-tit" style="margin-bottom:0;"></div>
-    <button onclick="document.getElementById('mod-quote').style.display='none'" style="background:transparent;border:none;color:var(--tx2);font-size:22px;cursor:pointer;">✕</button>
+    <h2 id="mq-t" style="font-size:18px;font-weight:400;"></h2>
+    <button onclick="document.getElementById('mod-q').style.display='none'" style="background:transparent;border:none;color:var(--tx2);font-size:22px;cursor:pointer;">x</button>
   </div>
-  <div id="mq-body" style="font-size:13px;color:var(--tx2);line-height:1.8;"></div>
-  <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;">
+  <div id="mq-b" style="font-size:13px;color:var(--tx2);line-height:1.8;"></div>
+  <div style="display:flex;gap:8px;margin-top:14px;">
     <button class="bg" id="mq-load">Cargar en cotizador</button>
-    <button class="bgh" onclick="document.getElementById('mod-quote').style.display='none'">Cerrar</button>
+    <button class="bgh" onclick="document.getElementById('mod-q').style.display='none'">Cerrar</button>
   </div>
 </div>
 </div>
 
-<!-- MODAL PAQUETE -->
 <div id="mod-pkg" class="ov" style="display:none;" onclick="if(event.target===this)this.style.display='none'">
-<div class="md" style="max-width:560px;">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-    <div class="mdt" id="pkg-tit">Nuevo paquete</div>
-    <button onclick="document.getElementById('mod-pkg').style.display='none'" style="background:transparent;border:none;color:var(--tx2);font-size:22px;cursor:pointer;">✕</button>
+<div class="md" style="max-width:520px;">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+    <h2 id="mpkg-t" style="font-size:18px;font-weight:400;">Nuevo paquete</h2>
+    <button onclick="document.getElementById('mod-pkg').style.display='none'" style="background:transparent;border:none;color:var(--tx2);font-size:22px;cursor:pointer;">x</button>
   </div>
-  <input type="hidden" id="pkg-id">
-  <div class="fi mb-3"><label>Nombre del paquete</label><input type="text" id="pkg-nom" placeholder="Ej: Menú bodas clásico"></div>
-  <div class="fi mb-4"><label>Descripción (opcional)</label><input type="text" id="pkg-dsc" placeholder="Ej: Ideal para 50-100 personas"></div>
-  <div class="sh">Seleccioná las recetas</div>
-  <div id="pkg-sel" style="max-height:300px;overflow-y:auto;margin-bottom:16px;"></div>
+  <input type="hidden" id="pkg-eid">
+  <div class="fi mb-3"><label>Nombre del paquete</label><input type="text" id="pkg-nom" placeholder="Ej: Menu bodas clasico"></div>
+  <div class="fi mb-4"><label>Descripcion (opcional)</label><input type="text" id="pkg-dsc" placeholder="Opcional"></div>
+  <div class="sh">Recetas incluidas</div>
+  <div id="pkg-sel" style="max-height:280px;overflow-y:auto;margin-bottom:14px;"></div>
   <div style="display:flex;justify-content:flex-end;gap:10px;">
     <button class="bgh" onclick="document.getElementById('mod-pkg').style.display='none'">Cancelar</button>
-    <button class="bg" onclick="savePkg()">Guardar paquete</button>
+    <button class="bg" onclick="savePkg()">Guardar</button>
   </div>
 </div>
 </div>
 
+<div class="tst" id="toast"></div>
+
 <script>
-
-function go(n, btn){
-  var panels = document.querySelectorAll('.tp');
-  for(var i=0;i<panels.length;i++) panels[i].classList.remove('on');
-  var nbs = document.querySelectorAll('.nb');
-  for(var i=0;i<nbs.length;i++) nbs[i].classList.remove('on');
-  var p = document.getElementById('tab-'+n);
-  if(p) p.classList.add('on');
-  if(btn) btn.classList.add('on');
-  if(n==='recetas')   renderRecipes();
-  if(n==='guardadas') renderQuotes();
-  if(n==='paquetes')  renderPkgGrid();
-  if(n==='precios')   renderPricePanel();
-  if(n==='sync')      syncStatus();
-  window.scrollTo(0,0);
-}
-function showTab(n,b){ go(n, document.getElementById('nb-'+n)||b); }
-
-// ══ DATA ══════════════════════════════════════════════════════
 const DEFAULTS = [
-  // ── ENTRADAS (6) ──────────────────────────────────────────────────────
-  {id:'e001',category:'entrada',name:'Empanadas criollas al horno',rendimiento:10,desc:"Clásico de la cocina cordobesa. Masa casera dorada al horno, rellenas con carne jugosa, huevo duro, aceitunas y las especias de siempre. Imprescindibles en cualquier evento.",steps:"Masa: Mezclá la harina con sal y grasa hasta formar una masa tierna. Dejá descansar 30 min tapada. Relleno: Dorá la cebolla y el morrón en aceite. Sumá la carne picada y cocinala a fuego fuerte. Condimentá con pimentón, comino y sal. Retirá del fuego y agregá el huevo duro picado y las aceitunas. Dejá enfriar completamente. Armado: Estirá la masa fina, cortá discos de 12 cm. Poné una cucharada de relleno, humedecé el borde y cerrá haciendo el repulgue cordobés. Pintá con huevo batido. Cocción: Horno fuerte (220°C) por 15-18 min hasta que estén bien doradas.",ingredients:[
-    {name:'Harina 000',qty:0.5,unit:'Kg',cost:2200},
-    {name:'Carne picada especial',qty:0.35,unit:'Kg',cost:14154},
-    {name:'Cebolla',qty:0.2,unit:'Kg',cost:1400},
-    {name:'Morrón rojo',qty:0.1,unit:'Kg',cost:2800},
-    {name:'Huevo',qty:3,unit:'Unidad',cost:600},
-    {name:'Aceitunas verdes',qty:0.05,unit:'Kg',cost:4500},
-    {name:'Pimentón dulce',qty:0.01,unit:'Kg',cost:12000},
-    {name:'Comino molido',qty:0.005,unit:'Kg',cost:14000},
-    {name:'Aceite de girasol',qty:0.05,unit:'Litro',cost:3500},
-    {name:'Sal fina',qty:0.01,unit:'Kg',cost:800},
-  ]},
-  {id:'e002',category:'entrada',name:'Tabla de fiambres y quesos cordobeses',rendimiento:10,desc:"Una tabla generosa con los mejores fiambres de la región, incluyendo el inconfundible salame de Colonia Caroya. Acompañada de quesos seleccionados, frutos y pan artesanal.",steps:"Preparación: Retirá los fiambres de la heladera 20 min antes para que estén a temperatura ambiente. Armado: Disponé en una tabla de madera o pizarra: el salame de Colonia Caroya en abanico, el jamón en rollitos, los quesos en cubos y láminas alternados. Completá con las aceitunas, las nueces y la mermelada de membrillo en pequeños cuencos. Terminación: Cortá el pan rústico en rebanadas gruesas. Decorá con uvas frescas distribuidas por la tabla. Serví a temperatura ambiente.",ingredients:[
-    {name:'Jamón cocido premium',qty:0.3,unit:'Kg',cost:18000},
-    {name:'Salame de Colonia Caroya',qty:0.3,unit:'Kg',cost:22000},
-    {name:'Queso Cuartirolo',qty:0.3,unit:'Kg',cost:10500},
-    {name:'Queso Sardo',qty:0.25,unit:'Kg',cost:13000},
-    {name:'Queso Brie',qty:0.2,unit:'Kg',cost:16000},
-    {name:'Aceitunas mixtas',qty:0.15,unit:'Kg',cost:4800},
-    {name:'Pan rústico artesanal',qty:0.5,unit:'Kg',cost:4200},
-    {name:'Uvas',qty:0.3,unit:'Kg',cost:3200},
-    {name:'Mermelada de membrillo',qty:0.1,unit:'Kg',cost:5000},
-    {name:'Nueces',qty:0.1,unit:'Kg',cost:18000},
-  ]},
-  {id:'e003',category:'entrada',name:'Bruschettas con tomate y albahaca',rendimiento:10,desc:"Pan crocante tostado con tomate perita fresco, albahaca aromática y un buen chorro de aceite de oliva. Simple, elegante y siempre bienvenida.",steps:"Base: Cortá el pan baguette en rodajas de 2 cm en diagonal. Tostá en horno 180°C por 8 min hasta que estén crocantes pero no duras. Tomate: Pelá y cortá los tomates en cubos pequeños, sin semillas. Mezclá con ajo picado fino, albahaca en chiffonade, aceite de oliva, sal y pimienta. Dejá reposar 15 min. Montaje: Frotá cada tostada con medio diente de ajo crudo. Poné una cucharada generosa de tomate encima. Terminá con parmesano rallado y un hilo de aceite de oliva extra virgen. Serví de inmediato.",ingredients:[
-    {name:'Pan baguette artesanal',qty:0.4,unit:'Kg',cost:4200},
-    {name:'Tomate perita',qty:0.5,unit:'Kg',cost:1800},
-    {name:'Albahaca fresca',qty:0.05,unit:'Kg',cost:3500},
-    {name:'Ajo',qty:0.03,unit:'Kg',cost:4000},
-    {name:'Aceite de oliva extra virgen',qty:0.08,unit:'Litro',cost:12000},
-    {name:'Sal gruesa',qty:0.005,unit:'Kg',cost:600},
-    {name:'Pimienta negra molida',qty:0.003,unit:'Kg',cost:16000},
-    {name:'Queso Parmesano rallado',qty:0.08,unit:'Kg',cost:22000},
-  ]},
-  {id:'e004',category:'entrada',name:'Locro cordobés (presentación individual)',rendimiento:10,desc:"El locro de las sierras. Espeso, contundente y con el alma del interior: maíz blanco, porotos, cerdo y chorizo colorado. Presentación individual para eventos.",steps:"Remojo: La noche anterior, poné en remojo el maíz y los porotos en agua fría por separado. Cocción base: En una olla grande, cocinás el maíz con los porotos en agua fría. Cuando rompan hervor, agregás la panceta en trozos, el chorizo colorado y la carne de cerdo. Sofrito: Aparte, dorá la cebolla y el ajo en aceite con pimentón ahumado. Incorporá al locro. Finalización: Cociná a fuego bajo 2 horas revolviendo cada tanto. Agregá el zapallo criollo en cubos los últimos 30 min para que se deshaga y espese. Corregí sal. Serví en cazuelitas individuales con un hilo de aceite colorado encima.",ingredients:[
-    {name:'Maíz blanco partido',qty:0.4,unit:'Kg',cost:3200},
-    {name:'Porotos blancos',qty:0.3,unit:'Kg',cost:4500},
-    {name:'Panceta ahumada',qty:0.25,unit:'Kg',cost:12000},
-    {name:'Chorizo colorado',qty:0.3,unit:'Kg',cost:10500},
-    {name:'Carne de cerdo (paleta)',qty:0.3,unit:'Kg',cost:8241},
-    {name:'Zapallo criollo',qty:0.4,unit:'Kg',cost:1500},
-    {name:'Cebolla',qty:0.2,unit:'Kg',cost:1400},
-    {name:'Ajo',qty:0.02,unit:'Kg',cost:4000},
-    {name:'Pimentón ahumado',qty:0.01,unit:'Kg',cost:14000},
-    {name:'Aceite de girasol',qty:0.05,unit:'Litro',cost:3500},
-    {name:'Sal y especias',qty:0.01,unit:'Kg',cost:1000},
-  ]},
-  {id:'e005',category:'entrada',name:'Ensalada César con crutones artesanales',rendimiento:10,desc:"Lechuga romana crocante, pollo grillado, crutones artesanales y la salsa César clásica con anchoas y parmesano. Fresca y sofisticada.",steps:"Aderezo César: Procesá las yemas con las anchoas, el ajo, la mostaza y el jugo de limón. Emulsioná agregando el aceite de oliva en hilo fino hasta obtener una salsa cremosa. Incorporá el parmesano rallado. Reservá en frío. Crutones: Cortá el pan en cubos de 2 cm, mezclá con aceite de oliva y sal. Tostá en horno 180°C por 10 min hasta dorar. Pollo: Grillar las pechugas salpimentadas 6 min de cada lado. Dejá reposar y cortá en tiras. Montaje: Mezclá la lechuga romana cortada gruesa con el aderezo. Distribuí el pollo encima, los crutones y láminas de parmesano. Serví de inmediato.",ingredients:[
-    {name:'Lechuga romana',qty:0.6,unit:'Kg',cost:2500},
-    {name:'Pechuga de pollo grillada',qty:0.4,unit:'Kg',cost:4069},
-    {name:'Queso Parmesano en láminas',qty:0.1,unit:'Kg',cost:22000},
-    {name:'Pan de campo (crutones)',qty:0.15,unit:'Kg',cost:4200},
-    {name:'Huevo (yemas)',qty:3,unit:'Unidad',cost:600},
-    {name:'Aceite de oliva',qty:0.1,unit:'Litro',cost:12000},
-    {name:'Anchoas en lata',qty:0.05,unit:'Kg',cost:18000},
-    {name:'Jugo de limón',qty:0.05,unit:'Litro',cost:3000},
-    {name:'Mostaza Dijon',qty:0.02,unit:'Kg',cost:8000},
-    {name:'Ajo',qty:0.01,unit:'Kg',cost:4000},
-    {name:'Sal y pimienta',qty:0.005,unit:'Kg',cost:1000},
-  ]},
-  {id:'e006',category:'entrada',name:'Provoleta a la parrilla con chimichurri',rendimiento:10,desc:"Disco de provolone fundido a la parrilla con borde dorado y centro cremoso. Servida con chimichurri casero y tomates cherry. Siempre genera aplausos.",steps:"Chimichurri: Picá muy fino el perejil y el ajo. Mezclá con orégano, ají molido, aceite de oliva y vinagre de manzana. Preparalo con al menos 2 horas de anticipación. Provoleta: Precalentá la parrilla o plancha a fuego fuerte. Colocá los discos de provolone directamente sobre la parrilla. No la muevas los primeros 3 min hasta que se forme costra dorada en la base. Servicio: Retirá cuando el centro esté fundido y burbujeante. Poné encima los tomates cherry cortados al medio y cubrí con el chimichurri. Serví de inmediato acompañada de pan.",ingredients:[
-    {name:'Provolone para parrilla',qty:0.8,unit:'Kg',cost:12500},
-    {name:'Tomate cherry',qty:0.2,unit:'Kg',cost:3800},
-    {name:'Perejil fresco',qty:0.05,unit:'Kg',cost:2500},
-    {name:'Orégano seco',qty:0.01,unit:'Kg',cost:8000},
-    {name:'Ajo',qty:0.02,unit:'Kg',cost:4000},
-    {name:'Aceite de oliva',qty:0.06,unit:'Litro',cost:12000},
-    {name:'Vinagre de manzana',qty:0.03,unit:'Litro',cost:4000},
-    {name:'Ají molido',qty:0.005,unit:'Kg',cost:12000},
-    {name:'Sal y pimienta',qty:0.005,unit:'Kg',cost:1000},
-  ]},
-  // ── PLATOS PRINCIPALES (3) ─────────────────────────────────────────────
-  {id:'p001',category:'principal',name:'Pollo arrollado relleno',rendimiento:10,desc:"Pechuga de pollo extendida y rellena con jamón, queso cremoso, morrón asado y espinaca. Arrollada, atada y asada al horno con vino blanco y hierbas. Elegante y rendidora.",steps:"Preparación del pollo: Abrí las pechugas en mariposa y golpeá con mazo hasta obtener un rectángulo parejo de 1 cm de espesor. Salpimentá y untá con mostaza. Relleno: Distribuí el jamón cocido cubriendo toda la superficie. Agregá el queso cremoso en láminas, el morrón asado en tiras, la espinaca blanqueada y exprimida, y la zanahoria rallada. Arrollado: Enrollá apretado y atá con hilo de cocina cada 3 cm. Sellá en sartén con aceite de oliva por todos los lados hasta dorar. Cocción: Pasá a fuente para horno. Rociá con vino blanco, ajo laminado y romero. Cocinás tapado a 180°C por 40 min, luego 10 min destapado. Dejá reposar 10 min antes de cortar. Servís en rodajas con el jugo de cocción reducido.",ingredients:[
-    {name:'Pechuga de pollo (para arrollar)',qty:2.5,unit:'Kg',cost:4069},
-    {name:'Jamón cocido',qty:0.3,unit:'Kg',cost:18000},
-    {name:'Morrón rojo asado',qty:0.2,unit:'Kg',cost:2800},
-    {name:'Queso cremoso',qty:0.25,unit:'Kg',cost:9500},
-    {name:'Espinaca blanqueada',qty:0.2,unit:'Kg',cost:2200},
-    {name:'Zanahoria rallada',qty:0.1,unit:'Kg',cost:1200},
-    {name:'Ajo',qty:0.02,unit:'Kg',cost:4000},
-    {name:'Aceite de oliva',qty:0.06,unit:'Litro',cost:12000},
-    {name:'Romero fresco',qty:0.01,unit:'Kg',cost:3000},
-    {name:'Mostaza Dijon',qty:0.03,unit:'Kg',cost:8000},
-    {name:'Vino blanco seco',qty:0.1,unit:'Litro',cost:4500},
-    {name:'Sal, pimienta y hierbas',qty:0.01,unit:'Kg',cost:1000},
-  ]},
-  {id:'p002',category:'principal',name:'Asado criollo a la parrilla',rendimiento:10,desc:"El rey de la mesa argentina. Asado de tira y vacío a las brasas con chorizo, morcilla y mollejas. Sal gruesa, buen fuego y punto justo. No necesita más.",steps:"El fuego: Encendé el carbón con anticipación. La parrilla tiene que estar bien caliente antes de poner la carne. El secreto es el punto del fuego: brasas bien formadas, sin llama. Orden de cocción: Empezá por las achuras: las mollejas van primero (20 min), luego el chorizo y la morcilla (15 min). La carne va después: el asado de tira con el hueso hacia abajo primero (30 min), luego vuelta (15 min). El vacío va entero (25 min de cada lado). Sazón: Solo sal gruesa, aplicada del lado que ya cocinaste. La carne se sala una sola vez, después de sellar. Punto: El asado cordobés se sirve jugoso. Al presionar, debe ceder levemente. Servís con chimichurri y ensalada mixta.",ingredients:[
-    {name:'Asado de tira',qty:2.0,unit:'Kg',cost:18617},
-    {name:'Vacío',qty:1.0,unit:'Kg',cost:19534},
-    {name:'Chorizo parrillero',qty:0.8,unit:'Kg',cost:10500},
-    {name:'Morcilla',qty:0.5,unit:'Kg',cost:9000},
-    {name:'Mollejas',qty:0.4,unit:'Kg',cost:16000},
-    {name:'Sal gruesa parrillera',qty:0.08,unit:'Kg',cost:600},
-    {name:'Chimichurri (preparado)',qty:0.1,unit:'Kg',cost:6000},
-    {name:'Carbón vegetal',qty:1.5,unit:'Kg',cost:1800},
-    {name:'Limón',qty:0.1,unit:'Kg',cost:2500},
-    {name:'Ensalada mixta (acompañamiento)',qty:0.5,unit:'Kg',cost:1800},
-  ]},
-  {id:'p003',category:'principal',name:'Cazuela de cerdo con verduras de estación',rendimiento:10,desc:"Cazuela de cerdo lenta con verduras de estación cordobesa. El Malbec y el pimentón le dan profundidad y color. Plato de campo con presentación de restaurante.",steps:"Sellado: Cortá el pechito en trozos de 5 cm. Sellá en aceite bien caliente por todos los lados hasta dorar profundamente. Retirá y reservá. Base: En la misma cazuela, sofreí la cebolla, el ajo y los morrones. Incorporá el tomate en cubos y cocinás hasta que se reduzca. Agregá el pimentón dulce, el orégano, el laurel y el tomillo. Cocción lenta: Volvé la carne a la cazuela. Incorporá el vino tinto Malbec y el caldo caliente hasta cubrir. Cocinás tapado a fuego bajo 1 hora 30 min. Verduras: Agregá la papa, la batata y el zapallo en los últimos 30 min para que queden enteros pero tiernos. Corregí sal. Servís directo de la cazuela con pan artesanal.",ingredients:[
-    {name:'Pechito de cerdo',qty:2.0,unit:'Kg',cost:8241},
-    {name:'Papa',qty:0.8,unit:'Kg',cost:1500},
-    {name:'Batata',qty:0.5,unit:'Kg',cost:1800},
-    {name:'Zapallo criollo',qty:0.4,unit:'Kg',cost:1500},
-    {name:'Cebolla',qty:0.3,unit:'Kg',cost:1400},
-    {name:'Morrón rojo y verde',qty:0.3,unit:'Kg',cost:2800},
-    {name:'Tomate perita',qty:0.3,unit:'Kg',cost:1800},
-    {name:'Ajo',qty:0.03,unit:'Kg',cost:4000},
-    {name:'Vino tinto Malbec',qty:0.2,unit:'Litro',cost:6000},
-    {name:'Caldo de verduras',qty:0.5,unit:'Litro',cost:1500},
-    {name:'Pimentón dulce',qty:0.01,unit:'Kg',cost:12000},
-    {name:'Orégano, laurel, tomillo',qty:0.01,unit:'Kg',cost:8000},
-    {name:'Aceite de girasol',qty:0.05,unit:'Litro',cost:3500},
-    {name:'Sal y pimienta',qty:0.01,unit:'Kg',cost:1000},
-  ]},
-  // ── POSTRES (3) ────────────────────────────────────────────────────────
-  {id:'d001',category:'postre',name:'Flan casero con dulce de leche y crema',rendimiento:10,desc:"El postre más querido de las mesas argentinas. Flan casero cremoso con caramelo dorado, dulce de leche repostero y crema chantilly. Infalible.",steps:"Caramelo: Derretí el azúcar en sartén a fuego medio sin revolver hasta obtener un caramelo rubio oscuro. Volcalo en los moldes individuales cubriendo el fondo. Dejá enfriar. Mezcla: Batí los huevos con el azúcar sin incorporar demasiado aire. Agregá la leche tibia y la vainilla. Colá la mezcla. Cocción: Llenás los moldes acaramelados. Cocinás a baño María en horno a 160°C por 45-50 min. El flan está listo cuando al mover el molde el centro tiembla apenas. Desmolde: Enfriá completamente y llevá a la heladera mínimo 4 horas. Desmoldá pasando un cuchillo por el borde. Servís con dulce de leche repostero y crema chantilly.",ingredients:[
-    {name:'Huevos',qty:12,unit:'Unidad',cost:600},
-    {name:'Leche entera',qty:1.0,unit:'Litro',cost:2200},
-    {name:'Azúcar',qty:0.25,unit:'Kg',cost:2800},
-    {name:'Vainilla en pasta',qty:0.01,unit:'Kg',cost:25000},
-    {name:'Dulce de leche repostero',qty:0.4,unit:'Kg',cost:5500},
-    {name:'Crema de leche',qty:0.25,unit:'Litro',cost:4200},
-    {name:'Azúcar para caramelo',qty:0.1,unit:'Kg',cost:2800},
-  ]},
-  {id:'d002',category:'postre',name:'Torta de ricota con frutos rojos',rendimiento:10,desc:"Base de galletitas con ricota fresca, crema y un coulis de frutos rojos. Fresca, liviana y con ese toque ácido que equilibra el final del menú.",steps:"Base: Procesá las galletitas hasta obtener polvo grueso. Mezclá con manteca derretida. Presioná en el fondo de los moldes y llevá al freezer 15 min. Relleno: Batí la ricota con el azúcar impalpable hasta que esté cremosa. Incorporá la crema batida a punto chantilly con movimientos envolventes. Agregá las yemas de a una y la vainilla. Armado: Volcá el relleno sobre la base fría. Cocinás en horno a 160°C a baño María por 50 min. Dejá enfriar en el horno apagado con la puerta entreabierta. Terminación: Llevá a la heladera mínimo 6 horas. Decorá con las frutillas, los arándanos y un hilo de mermelada de frutos rojos tibia.",ingredients:[
-    {name:'Ricota fresca',qty:0.6,unit:'Kg',cost:5500},
-    {name:'Crema de leche',qty:0.3,unit:'Litro',cost:4200},
-    {name:'Azúcar impalpable',qty:0.15,unit:'Kg',cost:3200},
-    {name:'Huevos',qty:4,unit:'Unidad',cost:600},
-    {name:'Harina leudante',qty:0.15,unit:'Kg',cost:2200},
-    {name:'Manteca',qty:0.1,unit:'Kg',cost:5800},
-    {name:'Frutillas',qty:0.3,unit:'Kg',cost:4500},
-    {name:'Arándanos',qty:0.15,unit:'Kg',cost:8000},
-    {name:'Mermelada de frutos rojos',qty:0.1,unit:'Kg',cost:5500},
-    {name:'Galletitas Digestive (base)',qty:0.2,unit:'Kg',cost:4500},
-    {name:'Esencia de vainilla',qty:0.005,unit:'Litro',cost:8000},
-  ]},
-  {id:'d003',category:'postre',name:'Budín de pan con salsa de caramelo',rendimiento:10,desc:"Aprovechamiento noble del pan del día anterior. Húmedo, especiado con canela y naranja, con pasas y nueces. Bañado en salsa de dulce de leche y crema.",steps:"Base: Cortá el pan en cubos de 3 cm. Tostá levemente en horno 150°C por 10 min. Mezcla: Batí los huevos con el azúcar. Incorporá la leche tibia, la manteca derretida, la ralladura de naranja, la canela y la vainilla. Sumá las pasas y las nueces. Reposo: Volcá sobre el pan y dejá absorber 20 min presionando suavemente. Cocción: Cocinás en molde enmantecado a 170°C por 35-40 min hasta que al insertar un palito salga limpio. La superficie debe estar dorada y ligeramente firme. Salsa: Calentá el dulce de leche con la crema a fuego bajo hasta integrar. Servís el budín tibio con la salsa caliente encima.",ingredients:[
-    {name:'Pan lactal del día anterior',qty:0.4,unit:'Kg',cost:4200},
-    {name:'Leche entera',qty:0.75,unit:'Litro',cost:2200},
-    {name:'Huevos',qty:4,unit:'Unidad',cost:600},
-    {name:'Azúcar',qty:0.2,unit:'Kg',cost:2800},
-    {name:'Manteca',qty:0.05,unit:'Kg',cost:5800},
-    {name:'Pasas de uva',qty:0.1,unit:'Kg',cost:7500},
-    {name:'Nueces',qty:0.08,unit:'Kg',cost:18000},
-    {name:'Canela molida',qty:0.005,unit:'Kg',cost:18000},
-    {name:'Ralladura de naranja',qty:0.01,unit:'Kg',cost:2500},
-    {name:'Dulce de leche (salsa)',qty:0.2,unit:'Kg',cost:5500},
-    {name:'Crema de leche (salsa)',qty:0.1,unit:'Litro',cost:4200},
-  ]},
-  // ── AFTER (1) ──────────────────────────────────────────────────────────
-  {id:'a001',category:'after',name:'Pizza napolitana a la piedra',rendimiento:10,desc:"Masa de pizza a la piedra con bordes altos y centro fino. Salsa de tomate casera, mozzarella fresca y albahaca. La Napolitana de siempre, hecha con respeto.",steps:"Masa madre: Disolvé la levadura y el azúcar en agua tibia a 35°C. Esperá 10 min hasta que espume. Amasado: Mezclá la harina con sal, incorporá la levadura y el aceite de oliva. Amasá 10 min hasta que la masa sea lisa y elástica. Dejá levar tapada 1 hora hasta que duplique. Armado: Desgasificá y estirá con las manos en la placa aceitada, llevando la masa hacia los bordes. Dejá descansar 15 min tapada. Cobertura: Distribuí la salsa de tomate casera dejando borde libre. Cubrí con la mozzarella en rodajas. Acomodá el tomate perita en rodajas finas encima. Cocción: Horno al máximo (250°C) por 10-12 min. Tiene que entrar caliente y rápido. Cuando salga, poné la albahaca fresca, un hilo de aceite de oliva y orégano seco.",ingredients:[
-    {name:'Harina 000',qty:0.7,unit:'Kg',cost:2200},
-    {name:'Levadura seca',qty:0.01,unit:'Kg',cost:18000},
-    {name:'Aceite de oliva (masa)',qty:0.05,unit:'Litro',cost:12000},
-    {name:'Sal fina',qty:0.01,unit:'Kg',cost:800},
-    {name:'Azúcar (para levadura)',qty:0.005,unit:'Kg',cost:2800},
-    {name:'Salsa de tomate casera',qty:0.4,unit:'Litro',cost:2500},
-    {name:'Mozzarella fresca',qty:0.5,unit:'Kg',cost:9500},
-    {name:'Tomate perita',qty:0.4,unit:'Kg',cost:1800},
-    {name:'Albahaca fresca',qty:0.03,unit:'Kg',cost:3500},
-    {name:'Ajo en polvo',qty:0.005,unit:'Kg',cost:12000},
-    {name:'Orégano seco',qty:0.01,unit:'Kg',cost:8000},
-    {name:'Aceite de oliva (terminación)',qty:0.03,unit:'Litro',cost:12000},
-  ]},
+ // ── ENTRADAS (6) ──────────────────────────────────────────────────────
+ {id:'e001',category:'entrada',name:'Empanadas criollas al horno',rendimiento:10,desc:'Clasico cordobes. Masa casera dorada al horno, rellenas con carne jugosa, huevo duro, aceitunas y especias de siempre.',steps:'Masa: Mezcla la harina con sal y grasa hasta formar una masa tierna. Descansar 30 min tapada. Relleno: Dora la cebolla y el morron en aceite. Suma la carne picada y cocina a fuego fuerte. Condimenta con pimenton, comino y sal. Retira del fuego y agrega huevo duro picado y aceitunas. Enfriar completamente. Armado: Estira la masa fina, corta discos de 12 cm. Pon una cucharada de relleno, humedece el borde y cierra haciendo el repulgue. Pinta con huevo batido. Coccion: Horno fuerte 220C por 15-18 min hasta dorar.',ingredients:[
+ {name:'Harina 000',qty:0.5,unit:'Kg',cost:2200},
+ {name:'Carne picada especial',qty:0.35,unit:'Kg',cost:14154},
+ {name:'Cebolla',qty:0.2,unit:'Kg',cost:1400},
+ {name:'Morrón rojo',qty:0.1,unit:'Kg',cost:2800},
+ {name:'Huevo',qty:3,unit:'Unidad',cost:600},
+ {name:'Aceitunas verdes',qty:0.05,unit:'Kg',cost:4500},
+ {name:'Pimentón dulce',qty:0.01,unit:'Kg',cost:12000},
+ {name:'Comino molido',qty:0.005,unit:'Kg',cost:14000},
+ {name:'Aceite de girasol',qty:0.05,unit:'Litro',cost:3500},
+ {name:'Sal fina',qty:0.01,unit:'Kg',cost:800},
+ ]},
+ {id:'e002',category:'entrada',name:'Tabla de fiambres y quesos cordobeses',rendimiento:10,desc:'Tabla generosa con los mejores fiambres de la region, incluyendo el salame de Colonia Caroya, quesos seleccionados, frutos y pan artesanal.',steps:'Preparacion: Retira los fiambres de la heladera 20 min antes. Armado: Dispone en tabla de madera el salame en abanico, el jamon en rollitos, los quesos en cubos y laminas alternados. Completa con aceitunas, nueces y mermelada de membrillo en pequeños cuencos. Terminacion: Corta el pan rustico en rebanadas gruesas. Decora con uvas frescas. Servir a temperatura ambiente.',ingredients:[
+ {name:'Jamón cocido premium',qty:0.3,unit:'Kg',cost:18000},
+ {name:'Salame de Colonia Caroya',qty:0.3,unit:'Kg',cost:22000},
+ {name:'Queso Cuartirolo',qty:0.3,unit:'Kg',cost:10500},
+ {name:'Queso Sardo',qty:0.25,unit:'Kg',cost:13000},
+ {name:'Queso Brie',qty:0.2,unit:'Kg',cost:16000},
+ {name:'Aceitunas mixtas',qty:0.15,unit:'Kg',cost:4800},
+ {name:'Pan rústico artesanal',qty:0.5,unit:'Kg',cost:4200},
+ {name:'Uvas',qty:0.3,unit:'Kg',cost:3200},
+ {name:'Mermelada de membrillo',qty:0.1,unit:'Kg',cost:5000},
+ {name:'Nueces',qty:0.1,unit:'Kg',cost:18000},
+ ]},
+ {id:'e003',category:'entrada',name:'Bruschettas con tomate y albahaca',rendimiento:10,desc:'Pan crocante tostado con tomate perita fresco, albahaca aromatica y aceite de oliva. Simple, elegante y siempre bienvenida.',steps:'Base: Corta el pan baguette en rodajas de 2 cm en diagonal. Tosta en horno 180C por 8 min. Tomate: Pela y corta los tomates en cubos pequenos sin semillas. Mezcla con ajo picado fino, albahaca, aceite de oliva, sal y pimienta. Dejar reposar 15 min. Montaje: Frota cada tostada con medio diente de ajo crudo. Pon una cucharada de tomate encima. Termina con parmesano rallado y un hilo de aceite de oliva. Servir de inmediato.',ingredients:[
+ {name:'Pan baguette artesanal',qty:0.4,unit:'Kg',cost:4200},
+ {name:'Tomate perita',qty:0.5,unit:'Kg',cost:1800},
+ {name:'Albahaca fresca',qty:0.05,unit:'Kg',cost:3500},
+ {name:'Ajo',qty:0.03,unit:'Kg',cost:4000},
+ {name:'Aceite de oliva extra virgen',qty:0.08,unit:'Litro',cost:12000},
+ {name:'Sal gruesa',qty:0.005,unit:'Kg',cost:600},
+ {name:'Pimienta negra molida',qty:0.003,unit:'Kg',cost:16000},
+ {name:'Queso Parmesano rallado',qty:0.08,unit:'Kg',cost:22000},
+ ]},
+ {id:'e004',category:'entrada',name:'Locro cordobés (presentación individual)',rendimiento:10,desc:'El locro de las sierras. Espeso y contundente con maiz blanco, porotos, cerdo y chorizo colorado. Presentacion individual.',steps:'Remojo: La noche anterior, pon en remojo el maiz y los porotos en agua fria por separado. Coccion base: En olla grande cocina el maiz con los porotos en agua fria. Cuando rompa hervor agrega la panceta, el chorizo colorado y la carne de cerdo. Sofrito: Dora la cebolla y el ajo en aceite con pimenton ahumado. Incorpora al locro. Finalizacion: Cocina a fuego bajo 2 horas revolviendo. Agrega el zapallo criollo en cubos los ultimos 30 min para que espese. Sirve en cazuelitas individuales.',ingredients:[
+ {name:'Maíz blanco partido',qty:0.4,unit:'Kg',cost:3200},
+ {name:'Porotos blancos',qty:0.3,unit:'Kg',cost:4500},
+ {name:'Panceta ahumada',qty:0.25,unit:'Kg',cost:12000},
+ {name:'Chorizo colorado',qty:0.3,unit:'Kg',cost:10500},
+ {name:'Carne de cerdo (paleta)',qty:0.3,unit:'Kg',cost:8241},
+ {name:'Zapallo criollo',qty:0.4,unit:'Kg',cost:1500},
+ {name:'Cebolla',qty:0.2,unit:'Kg',cost:1400},
+ {name:'Ajo',qty:0.02,unit:'Kg',cost:4000},
+ {name:'Pimentón ahumado',qty:0.01,unit:'Kg',cost:14000},
+ {name:'Aceite de girasol',qty:0.05,unit:'Litro',cost:3500},
+ {name:'Sal y especias',qty:0.01,unit:'Kg',cost:1000},
+ ]},
+ {id:'e005',category:'entrada',name:'Ensalada César con crutones artesanales',rendimiento:10,desc:'Lechuga romana crocante, pollo grillado, crutones artesanales y salsa Cesar clasica con anchoas y parmesano.',steps:'Aderezo Cesar: Procesa las yemas con las anchoas, el ajo, la mostaza y el jugo de limon. Emulsiona agregando el aceite de oliva en hilo fino. Incorpora el parmesano rallado. Crutones: Corta el pan en cubos de 2 cm, mezcla con aceite y sal. Tosta en horno 180C por 10 min. Pollo: Grilla las pechugas salpimentadas 6 min de cada lado. Corta en tiras. Montaje: Mezcla la lechuga con el aderezo. Distribuye el pollo encima, los crutones y laminas de parmesano.',ingredients:[
+ {name:'Lechuga romana',qty:0.6,unit:'Kg',cost:2500},
+ {name:'Pechuga de pollo grillada',qty:0.4,unit:'Kg',cost:4069},
+ {name:'Queso Parmesano en láminas',qty:0.1,unit:'Kg',cost:22000},
+ {name:'Pan de campo (crutones)',qty:0.15,unit:'Kg',cost:4200},
+ {name:'Huevo (yemas)',qty:3,unit:'Unidad',cost:600},
+ {name:'Aceite de oliva',qty:0.1,unit:'Litro',cost:12000},
+ {name:'Anchoas en lata',qty:0.05,unit:'Kg',cost:18000},
+ {name:'Jugo de limón',qty:0.05,unit:'Litro',cost:3000},
+ {name:'Mostaza Dijon',qty:0.02,unit:'Kg',cost:8000},
+ {name:'Ajo',qty:0.01,unit:'Kg',cost:4000},
+ {name:'Sal y pimienta',qty:0.005,unit:'Kg',cost:1000},
+ ]},
+ {id:'e006',category:'entrada',name:'Provoleta a la parrilla con chimichurri',rendimiento:10,desc:'Disco de provolone fundido a la parrilla con borde dorado y centro cremoso. Con chimichurri casero y tomates cherry.',steps:'Chimichurri: Pica muy fino el perejil y el ajo. Mezcla con oregano, aji molido, aceite de oliva y vinagre. Preparar con al menos 2 horas de anticipacion. Provoleta: Precalienta la parrilla a fuego fuerte. Coloca los discos de provolone directamente sobre la parrilla. No la muevas los primeros 3 min hasta que se forme costra dorada. Retira cuando el centro este fundido y burbujeante. Pon los tomates cherry cortados y cubre con el chimichurri. Servir de inmediato con pan.',ingredients:[
+ {name:'Provolone para parrilla',qty:0.8,unit:'Kg',cost:12500},
+ {name:'Tomate cherry',qty:0.2,unit:'Kg',cost:3800},
+ {name:'Perejil fresco',qty:0.05,unit:'Kg',cost:2500},
+ {name:'Orégano seco',qty:0.01,unit:'Kg',cost:8000},
+ {name:'Ajo',qty:0.02,unit:'Kg',cost:4000},
+ {name:'Aceite de oliva',qty:0.06,unit:'Litro',cost:12000},
+ {name:'Vinagre de manzana',qty:0.03,unit:'Litro',cost:4000},
+ {name:'Ají molido',qty:0.005,unit:'Kg',cost:12000},
+ {name:'Sal y pimienta',qty:0.005,unit:'Kg',cost:1000},
+ ]},
+ // ── PLATOS PRINCIPALES (3) ─────────────────────────────────────────────
+ {id:'p001',category:'principal',name:'Pollo arrollado relleno',rendimiento:10,desc:'Pechuga de pollo rellena con jamon, queso cremoso, morron asado y espinaca. Arrollada y asada al horno con vino blanco.',steps:'Preparacion: Abre las pechugas en mariposa y golpea con mazo hasta obtener un rectangulo parejo. Salpimenta y unta con mostaza. Relleno: Distribuye el jamon cocido cubriendo toda la superficie. Agrega el queso cremoso en laminas, el morron asado en tiras, la espinaca blanqueada y la zanahoria rallada. Arrollado: Enrolla apretado y ata con hilo. Sella en sarten con aceite por todos los lados hasta dorar. Coccion: Pasa a fuente para horno. Rocia con vino blanco, ajo laminado y romero. Cocina tapado a 180C por 40 min, luego 10 min destapado. Reposa 10 min antes de cortar en rodajas.',ingredients:[
+ {name:'Pechuga de pollo (para arrollar)',qty:2.5,unit:'Kg',cost:4069},
+ {name:'Jamón cocido',qty:0.3,unit:'Kg',cost:18000},
+ {name:'Morrón rojo asado',qty:0.2,unit:'Kg',cost:2800},
+ {name:'Queso cremoso',qty:0.25,unit:'Kg',cost:9500},
+ {name:'Espinaca blanqueada',qty:0.2,unit:'Kg',cost:2200},
+ {name:'Zanahoria rallada',qty:0.1,unit:'Kg',cost:1200},
+ {name:'Ajo',qty:0.02,unit:'Kg',cost:4000},
+ {name:'Aceite de oliva',qty:0.06,unit:'Litro',cost:12000},
+ {name:'Romero fresco',qty:0.01,unit:'Kg',cost:3000},
+ {name:'Mostaza Dijon',qty:0.03,unit:'Kg',cost:8000},
+ {name:'Vino blanco seco',qty:0.1,unit:'Litro',cost:4500},
+ {name:'Sal, pimienta y hierbas',qty:0.01,unit:'Kg',cost:1000},
+ ]},
+ {id:'p002',category:'principal',name:'Asado criollo a la parrilla',rendimiento:10,desc:'El rey de la mesa argentina. Asado de tira y vacio a las brasas con chorizo, morcilla y mollejas. Solo sal gruesa y buen fuego.',steps:'El fuego: Enciende el carbon con anticipacion. La parrilla tiene que estar bien caliente antes de poner la carne. Brasas bien formadas, sin llama. Orden de coccion: Empieza por las achuras: mollejas 20 min, luego chorizo y morcilla 15 min. La carne va despues: asado de tira con el hueso hacia abajo primero 30 min, luego vuelta 15 min. El vacio va entero 25 min de cada lado. Sazon: Solo sal gruesa, aplicada del lado que ya cocinaste. Punto: El asado cordobes se sirve jugoso. Al presionar debe ceder levemente.',ingredients:[
+ {name:'Asado de tira',qty:2.0,unit:'Kg',cost:18617},
+ {name:'Vacío',qty:1.0,unit:'Kg',cost:19534},
+ {name:'Chorizo parrillero',qty:0.8,unit:'Kg',cost:10500},
+ {name:'Morcilla',qty:0.5,unit:'Kg',cost:9000},
+ {name:'Mollejas',qty:0.4,unit:'Kg',cost:16000},
+ {name:'Sal gruesa parrillera',qty:0.08,unit:'Kg',cost:600},
+ {name:'Chimichurri (preparado)',qty:0.1,unit:'Kg',cost:6000},
+ {name:'Carbón vegetal',qty:1.5,unit:'Kg',cost:1800},
+ {name:'Limón',qty:0.1,unit:'Kg',cost:2500},
+ {name:'Ensalada mixta (acompañamiento)',qty:0.5,unit:'Kg',cost:1800},
+ ]},
+ {id:'p003',category:'principal',name:'Cazuela de cerdo con verduras de estación',rendimiento:10,desc:'Cazuela de cerdo lenta con verduras de estacion cordobesa. El Malbec y el pimenton le dan profundidad y color.',steps:'Sellado: Corta el pechito en trozos de 5 cm. Sella en aceite bien caliente por todos los lados hasta dorar profundamente. Retira y reserva. Base: En la misma cazuela sofrie la cebolla, el ajo y los morrones. Incorpora el tomate en cubos y cocina hasta que se reduzca. Agrega el pimenton dulce, el oregano, el laurel y el tomillo. Coccion lenta: Vuelve la carne a la cazuela. Incorpora el vino tinto Malbec y el caldo caliente hasta cubrir. Cocina tapado a fuego bajo 1 hora 30 min. Verduras: Agrega la papa, la batata y el zapallo en los ultimos 30 min. Sirve directo de la cazuela con pan artesanal.',ingredients:[
+ {name:'Pechito de cerdo',qty:2.0,unit:'Kg',cost:8241},
+ {name:'Papa',qty:0.8,unit:'Kg',cost:1500},
+ {name:'Batata',qty:0.5,unit:'Kg',cost:1800},
+ {name:'Zapallo criollo',qty:0.4,unit:'Kg',cost:1500},
+ {name:'Cebolla',qty:0.3,unit:'Kg',cost:1400},
+ {name:'Morrón rojo y verde',qty:0.3,unit:'Kg',cost:2800},
+ {name:'Tomate perita',qty:0.3,unit:'Kg',cost:1800},
+ {name:'Ajo',qty:0.03,unit:'Kg',cost:4000},
+ {name:'Vino tinto Malbec',qty:0.2,unit:'Litro',cost:6000},
+ {name:'Caldo de verduras',qty:0.5,unit:'Litro',cost:1500},
+ {name:'Pimentón dulce',qty:0.01,unit:'Kg',cost:12000},
+ {name:'Orégano, laurel, tomillo',qty:0.01,unit:'Kg',cost:8000},
+ {name:'Aceite de girasol',qty:0.05,unit:'Litro',cost:3500},
+ {name:'Sal y pimienta',qty:0.01,unit:'Kg',cost:1000},
+ ]},
+ // ── POSTRES (3) ────────────────────────────────────────────────────────
+ {id:'d001',category:'postre',name:'Flan casero con dulce de leche y crema',rendimiento:10,desc:'El postre mas querido de las mesas argentinas. Flan casero cremoso con caramelo dorado, dulce de leche y crema chantilly.',steps:'Caramelo: Derrite el azucar en sarten a fuego medio sin revolver hasta obtener un caramelo rubio oscuro. Volcalo en los moldes cubriendo el fondo. Deja enfriar. Mezcla: Bate los huevos con el azucar sin incorporar demasiado aire. Agrega la leche tibia y la vainilla. Cuela la mezcla. Coccion: Llena los moldes acaramelados. Cocina a bano Maria en horno a 160C por 45-50 min. El flan esta listo cuando al mover el molde el centro tiembla apenas. Desmolde: Enfria completamente y lleva a la heladera minimo 4 horas. Sirve con dulce de leche repostero y crema chantilly.',ingredients:[
+ {name:'Huevos',qty:12,unit:'Unidad',cost:600},
+ {name:'Leche entera',qty:1.0,unit:'Litro',cost:2200},
+ {name:'Azúcar',qty:0.25,unit:'Kg',cost:2800},
+ {name:'Vainilla en pasta',qty:0.01,unit:'Kg',cost:25000},
+ {name:'Dulce de leche repostero',qty:0.4,unit:'Kg',cost:5500},
+ {name:'Crema de leche',qty:0.25,unit:'Litro',cost:4200},
+ {name:'Azúcar para caramelo',qty:0.1,unit:'Kg',cost:2800},
+ ]},
+ {id:'d002',category:'postre',name:'Torta de ricota con frutos rojos',rendimiento:10,desc:'Base de galletitas con ricota fresca, crema y coulis de frutos rojos. Fresca, liviana y con toque acido.',steps:'Base: Procesa las galletitas hasta obtener polvo grueso. Mezcla con manteca derretida. Presiona en el fondo de los moldes y lleva al freezer 15 min. Relleno: Bate la ricota con el azucar impalpable hasta que este cremosa. Incorpora la crema batida a punto chantilly con movimientos envolventes. Agrega las yemas de a una y la vainilla. Armado: Volca el relleno sobre la base fria. Cocina en horno a 160C a bano Maria por 50 min. Deja enfriar en el horno apagado con la puerta entreabierta. Lleva a la heladera minimo 6 horas. Decora con frutillas, arandanos y un hilo de mermelada tibia.',ingredients:[
+ {name:'Ricota fresca',qty:0.6,unit:'Kg',cost:5500},
+ {name:'Crema de leche',qty:0.3,unit:'Litro',cost:4200},
+ {name:'Azúcar impalpable',qty:0.15,unit:'Kg',cost:3200},
+ {name:'Huevos',qty:4,unit:'Unidad',cost:600},
+ {name:'Harina leudante',qty:0.15,unit:'Kg',cost:2200},
+ {name:'Manteca',qty:0.1,unit:'Kg',cost:5800},
+ {name:'Frutillas',qty:0.3,unit:'Kg',cost:4500},
+ {name:'Arándanos',qty:0.15,unit:'Kg',cost:8000},
+ {name:'Mermelada de frutos rojos',qty:0.1,unit:'Kg',cost:5500},
+ {name:'Galletitas Digestive (base)',qty:0.2,unit:'Kg',cost:4500},
+ {name:'Esencia de vainilla',qty:0.005,unit:'Litro',cost:8000},
+ ]},
+ {id:'d003',category:'postre',name:'Budín de pan con salsa de caramelo',rendimiento:10,desc:'Pan del dia anterior, especiado con canela y naranja, con pasas y nueces. Banado en salsa de dulce de leche.',steps:'Base: Corta el pan en cubos de 3 cm. Tosta levemente en horno 150C por 10 min. Mezcla: Bate los huevos con el azucar. Incorpora la leche tibia, la manteca derretida, la ralladura de naranja, la canela y la vainilla. Suma las pasas y las nueces. Reposo: Volca sobre el pan y deja absorber 20 min presionando suavemente. Coccion: Cocina en molde enmantecado a 170C por 35-40 min hasta que al insertar un palito salga limpio. La superficie debe estar dorada. Salsa: Calienta el dulce de leche con la crema a fuego bajo hasta integrar. Sirve el budin tibio con la salsa caliente encima.',ingredients:[
+ {name:'Pan lactal del día anterior',qty:0.4,unit:'Kg',cost:4200},
+ {name:'Leche entera',qty:0.75,unit:'Litro',cost:2200},
+ {name:'Huevos',qty:4,unit:'Unidad',cost:600},
+ {name:'Azúcar',qty:0.2,unit:'Kg',cost:2800},
+ {name:'Manteca',qty:0.05,unit:'Kg',cost:5800},
+ {name:'Pasas de uva',qty:0.1,unit:'Kg',cost:7500},
+ {name:'Nueces',qty:0.08,unit:'Kg',cost:18000},
+ {name:'Canela molida',qty:0.005,unit:'Kg',cost:18000},
+ {name:'Ralladura de naranja',qty:0.01,unit:'Kg',cost:2500},
+ {name:'Dulce de leche (salsa)',qty:0.2,unit:'Kg',cost:5500},
+ {name:'Crema de leche (salsa)',qty:0.1,unit:'Litro',cost:4200},
+ ]},
+ // ── AFTER (1) ──────────────────────────────────────────────────────────
+ {id:'a001',category:'after',name:'Pizza napolitana a la piedra',rendimiento:10,desc:'Masa a la piedra con bordes altos y centro fino. Salsa de tomate casera, mozzarella fresca y albahaca. La napolitana de siempre.',steps:'Masa madre: Disuelve la levadura y el azucar en agua tibia a 35C. Espera 10 min hasta que espume. Amasado: Mezcla la harina con sal, incorpora la levadura y el aceite de oliva. Amasa 10 min hasta que la masa sea lisa y elastica. Deja levar tapada 1 hora hasta que duplique. Armado: Desgasifica y estira con las manos en la placa aceitada llevando la masa hacia los bordes. Deja descansar 15 min tapada. Cobertura: Distribuye la salsa de tomate casera dejando borde libre. Cubre con la mozzarella en rodajas. Acomoda el tomate perita en rodajas finas encima. Coccion: Horno al maximo 250C por 10-12 min.',ingredients:[
+ {name:'Harina 000',qty:0.7,unit:'Kg',cost:2200},
+ {name:'Levadura seca',qty:0.01,unit:'Kg',cost:18000},
+ {name:'Aceite de oliva (masa)',qty:0.05,unit:'Litro',cost:12000},
+ {name:'Sal fina',qty:0.01,unit:'Kg',cost:800},
+ {name:'Azúcar (para levadura)',qty:0.005,unit:'Kg',cost:2800},
+ {name:'Salsa de tomate casera',qty:0.4,unit:'Litro',cost:2500},
+ {name:'Mozzarella fresca',qty:0.5,unit:'Kg',cost:9500},
+ {name:'Tomate perita',qty:0.4,unit:'Kg',cost:1800},
+ {name:'Albahaca fresca',qty:0.03,unit:'Kg',cost:3500},
+ {name:'Ajo en polvo',qty:0.005,unit:'Kg',cost:12000},
+ {name:'Orégano seco',qty:0.01,unit:'Kg',cost:8000},
+ {name:'Aceite de oliva (terminación)',qty:0.03,unit:'Litro',cost:12000},
+ ]},
 
-  // ── ENTRADAS NUEVAS (5) ────────────────────────────────────────────────────
+ // ── ENTRADAS NUEVAS (5) ────────────────────────────────────────────────────
 
-  {id:'e007',category:'entrada',name:'Humita en chala cordobesa',rendimiento:10,desc:"Preparación típica del norte cordobés. Choclo fresco rallado con queso y especias, cocinada lentamente envuelta en su propia chala. Sabor de abuela.",steps:"Choclo: Rallá el choclo fresco obteniendo una pasta gruesa. Guardá algunas chalas enteras para envolver. Base: Sofreí la cebolla y el morrón en manteca hasta que estén tiernos. Incorporá el choclo rallado y cocinalo revolviendo 5 min. Agregá la leche, el queso cremoso en cubos, el pimentón y el ají molido. Cociná hasta que el queso se integre. Salpimentá. Armado: Colocá dos cucharadas de la preparación en el centro de cada chala. Doblá los costados y atá los extremos con tiras de chala. Cocción: Cociná al vapor 40 min. Serví con la chala abierta en el plato.",ingredients:[
-    {name:'Choclo fresco',qty:2.0,unit:'Kg',cost:1800},
-    {name:'Cebolla',qty:0.3,unit:'Kg',cost:1400},
-    {name:'Morrón rojo',qty:0.2,unit:'Kg',cost:2800},
-    {name:'Queso cremoso',qty:0.2,unit:'Kg',cost:9500},
-    {name:'Manteca',qty:0.08,unit:'Kg',cost:5800},
-    {name:'Leche entera',qty:0.2,unit:'Litro',cost:2200},
-    {name:'Pimentón dulce',qty:0.01,unit:'Kg',cost:12000},
-    {name:'Ají molido',qty:0.005,unit:'Kg',cost:12000},
-    {name:'Sal y pimienta',qty:0.01,unit:'Kg',cost:1000},
-    {name:'Hojas de chala (para envolver)',qty:20,unit:'Unidad',cost:100},
-  ]},
+ {id:'e007',category:'entrada',name:'Humita en chala cordobesa',rendimiento:10,desc:'Preparacion tipica del norte cordobes. Choclo fresco rallado con queso y especias, cocinada envuelta en su propia chala.',steps:'Choclo: Ralla el choclo fresco obteniendo una pasta gruesa. Guarda algunas chalas para envolver. Base: Sofrie la cebolla y el morron en manteca hasta que esten tiernos. Incorpora el choclo rallado y cocina 5 min. Agrega la leche, el queso cremoso en cubos, el pimenton y el aji molido. Cocina hasta que el queso se integre. Salpimenta. Armado: Coloca dos cucharadas de la preparacion en el centro de cada chala. Dobla los costados y ata los extremos. Coccion: Cocina al vapor 40 min.',ingredients:[
+ {name:'Choclo fresco',qty:2.0,unit:'Kg',cost:1800},
+ {name:'Cebolla',qty:0.3,unit:'Kg',cost:1400},
+ {name:'Morrón rojo',qty:0.2,unit:'Kg',cost:2800},
+ {name:'Queso cremoso',qty:0.2,unit:'Kg',cost:9500},
+ {name:'Manteca',qty:0.08,unit:'Kg',cost:5800},
+ {name:'Leche entera',qty:0.2,unit:'Litro',cost:2200},
+ {name:'Pimentón dulce',qty:0.01,unit:'Kg',cost:12000},
+ {name:'Ají molido',qty:0.005,unit:'Kg',cost:12000},
+ {name:'Sal y pimienta',qty:0.01,unit:'Kg',cost:1000},
+ {name:'Hojas de chala (para envolver)',qty:20,unit:'Unidad',cost:100},
+ ]},
 
-  {id:'e008',category:'entrada',name:'Croquetas de quinoa con dip de palta',rendimiento:10,desc:"Croquetas doradas de quinoa con interior cremoso y queso parmesano. Acompañadas de un dip de palta fresco con limón y cilantro. Entrada moderna y liviana.",steps:"Quinoa: Lavá y cocinás la quinoa en agua con sal 15 min. Escurrí y dejá enfriar completamente. Masa de croquetas: Mezclá la quinoa fría con parmesano rallado, sal y pimienta. Formá cilindros del tamaño de un corcho. Pasalos por harina, luego por huevo batido y finalmente por pan rallado. Fritura: Freí en aceite a 170°C por 3-4 min hasta que estén uniformemente doradas. Escurrí sobre papel. Dip de palta: Pisá la palta con tenedor, agregá limón, cilantro picado, ajo rallado y sal. No proceses, que quede rústico. Servicio: Presentá las croquetas calientes con el dip al costado.",ingredients:[
-    {name:'Quinoa blanca',qty:0.3,unit:'Kg',cost:5500},
-    {name:'Queso Parmesano rallado',qty:0.1,unit:'Kg',cost:22000},
-    {name:'Huevo',qty:3,unit:'Unidad',cost:600},
-    {name:'Harina 000',qty:0.1,unit:'Kg',cost:2200},
-    {name:'Pan rallado',qty:0.15,unit:'Kg',cost:3000},
-    {name:'Palta (para dip)',qty:3,unit:'Unidad',cost:2500},
-    {name:'Limón',qty:0.1,unit:'Kg',cost:2500},
-    {name:'Cilantro fresco',qty:0.03,unit:'Kg',cost:3000},
-    {name:'Ajo',qty:0.01,unit:'Kg',cost:4000},
-    {name:'Aceite de girasol (para freír)',qty:0.3,unit:'Litro',cost:3500},
-    {name:'Sal y pimienta',qty:0.01,unit:'Kg',cost:1000},
-  ]},
+ {id:'e008',category:'entrada',name:'Croquetas de quinoa con dip de palta',rendimiento:10,desc:'Croquetas doradas de quinoa con interior cremoso y queso parmesano. Acompanadas de dip de palta fresco con limon.',steps:'Quinoa: Lava y cocina la quinoa en agua con sal 15 min. Escurre y enfria completamente. Masa: Mezcla la quinoa fria con parmesano rallado, sal y pimienta. Forma cilindros. Pasalos por harina, luego por huevo batido y finalmente por pan rallado. Fritura: Frie en aceite a 170C por 3-4 min hasta dorar. Escurre sobre papel. Dip de palta: Pisa la palta con tenedor, agrega limon, cilantro picado, ajo rallado y sal. Presenta las croquetas calientes con el dip al costado.',ingredients:[
+ {name:'Quinoa blanca',qty:0.3,unit:'Kg',cost:5500},
+ {name:'Queso Parmesano rallado',qty:0.1,unit:'Kg',cost:22000},
+ {name:'Huevo',qty:3,unit:'Unidad',cost:600},
+ {name:'Harina 000',qty:0.1,unit:'Kg',cost:2200},
+ {name:'Pan rallado',qty:0.15,unit:'Kg',cost:3000},
+ {name:'Palta (para dip)',qty:3,unit:'Unidad',cost:2500},
+ {name:'Limón',qty:0.1,unit:'Kg',cost:2500},
+ {name:'Cilantro fresco',qty:0.03,unit:'Kg',cost:3000},
+ {name:'Ajo',qty:0.01,unit:'Kg',cost:4000},
+ {name:'Aceite de girasol (para freír)',qty:0.3,unit:'Litro',cost:3500},
+ {name:'Sal y pimienta',qty:0.01,unit:'Kg',cost:1000},
+ ]},
 
-  {id:'e009',category:'entrada',name:'Sopa crema de zapallo criollo',rendimiento:10,desc:"Crema aterciopelada de zapallo criollo con un toque de jengibre y nuez moscada. Terminada con crema y semillas de zapallo tostadas. Ideal para eventos de otoño e invierno.",steps:"Base: Sofreí la cebolla y el ajo en manteca a fuego medio. Agregá el zapallo y la papa en cubos. Cocinás 5 min revolviendo. Cocción: Incorporá el caldo caliente, el jengibre rallado y la nuez moscada. Cocinás tapado 20 min hasta que el zapallo esté muy tierno. Procesado: Licuá en tandas hasta obtener una crema muy lisa. Volvé a la olla, agregá la crema de leche y calentá sin hervir. Corregí sal y pimienta. Terminación: Tostá las semillas de zapallo en sartén seca con sal gruesa. Serví la crema en tazones con un hilo de crema, las semillas tostadas encima y pimienta negra recién molida.",ingredients:[
-    {name:'Zapallo criollo',qty:1.5,unit:'Kg',cost:1500},
-    {name:'Cebolla',qty:0.3,unit:'Kg',cost:1400},
-    {name:'Ajo',qty:0.02,unit:'Kg',cost:4000},
-    {name:'Papa',qty:0.3,unit:'Kg',cost:1500},
-    {name:'Caldo de verduras casero',qty:1.0,unit:'Litro',cost:1500},
-    {name:'Crema de leche',qty:0.2,unit:'Litro',cost:4200},
-    {name:'Manteca',qty:0.05,unit:'Kg',cost:5800},
-    {name:'Nuez moscada',qty:0.003,unit:'Kg',cost:20000},
-    {name:'Jengibre fresco',qty:0.01,unit:'Kg',cost:8000},
-    {name:'Semillas de zapallo (tostadas)',qty:0.05,unit:'Kg',cost:9000},
-    {name:'Sal y pimienta',qty:0.01,unit:'Kg',cost:1000},
-  ]},
+ {id:'e009',category:'entrada',name:'Sopa crema de zapallo criollo',rendimiento:10,desc:'Crema aterciopelada de zapallo criollo con toque de jengibre y nuez moscada. Con crema y semillas tostadas.',steps:'Base: Sofrie la cebolla y el ajo en manteca a fuego medio. Agrega el zapallo y la papa en cubos. Cocina 5 min. Coccion: Incorpora el caldo caliente, el jengibre rallado y la nuez moscada. Cocina tapado 20 min hasta que el zapallo este muy tierno. Procesado: Licua en tandas hasta obtener una crema muy lisa. Vuelve a la olla, agrega la crema de leche y calienta sin hervir. Corrige sal y pimienta. Terminacion: Sirve en tazones con un hilo de crema y las semillas de zapallo tostadas encima.',ingredients:[
+ {name:'Zapallo criollo',qty:1.5,unit:'Kg',cost:1500},
+ {name:'Cebolla',qty:0.3,unit:'Kg',cost:1400},
+ {name:'Ajo',qty:0.02,unit:'Kg',cost:4000},
+ {name:'Papa',qty:0.3,unit:'Kg',cost:1500},
+ {name:'Caldo de verduras casero',qty:1.0,unit:'Litro',cost:1500},
+ {name:'Crema de leche',qty:0.2,unit:'Litro',cost:4200},
+ {name:'Manteca',qty:0.05,unit:'Kg',cost:5800},
+ {name:'Nuez moscada',qty:0.003,unit:'Kg',cost:20000},
+ {name:'Jengibre fresco',qty:0.01,unit:'Kg',cost:8000},
+ {name:'Semillas de zapallo (tostadas)',qty:0.05,unit:'Kg',cost:9000},
+ {name:'Sal y pimienta',qty:0.01,unit:'Kg',cost:1000},
+ ]},
 
-  {id:'e010',category:'entrada',name:'Tartar de tomate y mozzarella ahumada',rendimiento:10,desc:"Tartar de tomate perita con mozzarella ahumada, reducción de balsámico y miel. Los piñones aportan textura. Presentación elegante sobre pan crocante.",steps:"Tomate: Pelá los tomates (escaldalos 30 seg en agua hirviendo). Cortá en cubos pequeños y precisos, sin semillas. Escurrí bien. Mozzarella: Cortá la mozzarella ahumada en cubos del mismo tamaño que el tomate. Aderezo: Mezclá el aceite de oliva con el vinagre balsámico y la miel. Emulsioná con tenedor. Montaje: Combiná el tomate y la mozzarella con el aderezo y la albahaca en chiffonade. Salpimentá. Tostá los piñones en sartén seca. Presentá sobre rodajas de pan crocante y terminá con los piñones y una reducción de balsámico.",ingredients:[
-    {name:'Tomate perita maduro',qty:0.8,unit:'Kg',cost:1800},
-    {name:'Mozzarella ahumada',qty:0.4,unit:'Kg',cost:11000},
-    {name:'Albahaca fresca',qty:0.05,unit:'Kg',cost:3500},
-    {name:'Aceite de oliva extra virgen',qty:0.08,unit:'Litro',cost:12000},
-    {name:'Vinagre balsámico',qty:0.04,unit:'Litro',cost:7000},
-    {name:'Miel',qty:0.02,unit:'Kg',cost:6500},
-    {name:'Piñones',qty:0.04,unit:'Kg',cost:22000},
-    {name:'Sal gruesa y pimienta',qty:0.005,unit:'Kg',cost:800},
-    {name:'Pan crocante (base)',qty:0.2,unit:'Kg',cost:4200},
-  ]},
+ {id:'e010',category:'entrada',name:'Tartar de tomate y mozzarella ahumada',rendimiento:10,desc:'Tartar de tomate perita con mozzarella ahumada, reduccion de balsamico y miel. Los pinones aportan textura.',steps:'Tomate: Pela los tomates escaldandolos 30 seg. Corta en cubos pequenos sin semillas. Escurre bien. Mozzarella: Corta la mozzarella ahumada en cubos del mismo tamano. Aderezo: Mezcla el aceite de oliva con el vinagre balsamico y la miel. Emulsiona. Montaje: Combina el tomate y la mozzarella con el aderezo y la albahaca. Salpimenta. Tuesta los pinones en sarten seca. Presenta sobre rodajas de pan crocante y termina con los pinones y una reduccion de balsamico.',ingredients:[
+ {name:'Tomate perita maduro',qty:0.8,unit:'Kg',cost:1800},
+ {name:'Mozzarella ahumada',qty:0.4,unit:'Kg',cost:11000},
+ {name:'Albahaca fresca',qty:0.05,unit:'Kg',cost:3500},
+ {name:'Aceite de oliva extra virgen',qty:0.08,unit:'Litro',cost:12000},
+ {name:'Vinagre balsámico',qty:0.04,unit:'Litro',cost:7000},
+ {name:'Miel',qty:0.02,unit:'Kg',cost:6500},
+ {name:'Piñones',qty:0.04,unit:'Kg',cost:22000},
+ {name:'Sal gruesa y pimienta',qty:0.005,unit:'Kg',cost:800},
+ {name:'Pan crocante (base)',qty:0.2,unit:'Kg',cost:4200},
+ ]},
 
-  {id:'e011',category:'entrada',name:'Arrollado de verduras al vapor con salsa criolla',rendimiento:10,desc:"Arrollado de verduras de estación al vapor con queso Sardo y huevo duro. Acompañado de salsa criolla fresca. Entrada liviana, vistosa y sin fritura.",steps:"Relleno: Blanqueá la acelga 2 min en agua hirviendo. Escurrí y exprimí bien. Picá fino. Rallá la zanahoria. Cortá el zapallito en juliana fina y saltealo 3 min. Armado del arrollado: Extendé las hojas de acelga grandes superpuestas formando un rectángulo. Distribuí encima el queso Sardo rallado, la zanahoria, el zapallito y los huevos duros cortados. Enrollá bien apretado y atá con hilo de cocina. Cocción: Cocinás al vapor 25 min. Dejá enfriar antes de cortar en rodajas de 2 cm. Salsa criolla: Picá el tomate, la cebolla y el morrón en brunoise. Aderezá con aceite de oliva, orégano y sal. Servís las rodajas sobre la salsa.",ingredients:[
-    {name:'Acelga',qty:0.5,unit:'Kg',cost:1500},
-    {name:'Zanahoria',qty:0.3,unit:'Kg',cost:1200},
-    {name:'Zapallito verde',qty:0.3,unit:'Kg',cost:2000},
-    {name:'Queso Sardo',qty:0.2,unit:'Kg',cost:13000},
-    {name:'Huevo duro',qty:4,unit:'Unidad',cost:600},
-    {name:'Tomate perita (salsa)',qty:0.4,unit:'Kg',cost:1800},
-    {name:'Cebolla (salsa)',qty:0.15,unit:'Kg',cost:1400},
-    {name:'Morrón rojo (salsa)',qty:0.1,unit:'Kg',cost:2800},
-    {name:'Aceite de oliva',qty:0.05,unit:'Litro',cost:12000},
-    {name:'Orégano y perejil',qty:0.01,unit:'Kg',cost:8000},
-    {name:'Sal y pimienta',qty:0.01,unit:'Kg',cost:1000},
-  ]},
+ {id:'e011',category:'entrada',name:'Arrollado de verduras al vapor con salsa criolla',rendimiento:10,desc:'Arrollado de verduras de estacion al vapor con queso Sardo y huevo duro. Con salsa criolla fresca.',steps:'Relleno: Blanquea la acelga 2 min en agua hirviendo. Escurre y exprime bien. Pica fino. Ralla la zanahoria. Corta el zapallito en juliana fina y saltea 3 min. Armado: Extiende las hojas de acelga superpuestas formando un rectangulo. Distribuye encima el queso Sardo rallado, la zanahoria, el zapallito y los huevos duros cortados. Enrolla bien apretado y ata con hilo. Coccion: Cocina al vapor 25 min. Deja enfriar antes de cortar en rodajas de 2 cm. Sirve sobre la salsa criolla.',ingredients:[
+ {name:'Acelga',qty:0.5,unit:'Kg',cost:1500},
+ {name:'Zanahoria',qty:0.3,unit:'Kg',cost:1200},
+ {name:'Zapallito verde',qty:0.3,unit:'Kg',cost:2000},
+ {name:'Queso Sardo',qty:0.2,unit:'Kg',cost:13000},
+ {name:'Huevo duro',qty:4,unit:'Unidad',cost:600},
+ {name:'Tomate perita (salsa)',qty:0.4,unit:'Kg',cost:1800},
+ {name:'Cebolla (salsa)',qty:0.15,unit:'Kg',cost:1400},
+ {name:'Morrón rojo (salsa)',qty:0.1,unit:'Kg',cost:2800},
+ {name:'Aceite de oliva',qty:0.05,unit:'Litro',cost:12000},
+ {name:'Orégano y perejil',qty:0.01,unit:'Kg',cost:8000},
+ {name:'Sal y pimienta',qty:0.01,unit:'Kg',cost:1000},
+ ]},
 
-  // ── PLATOS PRINCIPALES NUEVOS (2) ──────────────────────────────────────────
+ // ── PLATOS PRINCIPALES NUEVOS (2) ──────────────────────────────────────────
 
-  {id:'p004',category:'principal',name:'Cordero a la cordobesa con papas rústicas',rendimiento:10,desc:"Pierna de cordero marinada en Malbec de la región con romero, tomillo y ajo. Asada lentamente hasta quedar tierna. Acompañada de papas rústicas al horno.",steps:"Marinada (noche anterior): Mezclá el Malbec con aceite de oliva, ajo aplastado, romero, tomillo, pimentón ahumado y jugo de limón. Cubrí la pierna de cordero y dejá marinar en frío 12 horas mínimo. Papas: Cortá las papas en cuartos con piel. Condimentá con aceite de oliva, ajo, sal gruesa y romero. Cocción: Poné el cordero en fuente para horno con la marinada colada. Rodeá con las papas. Cocinás tapado con papel aluminio a 160°C por 2 horas. Destapá los últimos 30 min a 200°C para que dore. Servicio: Dejá reposar 15 min antes de deshuesar. Servís el cordero desmenuzado o en trozos con las papas rústicas y el jugo de cocción colado.",ingredients:[
-    {name:'Pierna de cordero',qty:2.5,unit:'Kg',cost:22000},
-    {name:'Papa',qty:1.2,unit:'Kg',cost:1500},
-    {name:'Ajo',qty:0.05,unit:'Kg',cost:4000},
-    {name:'Romero fresco',qty:0.02,unit:'Kg',cost:3000},
-    {name:'Tomillo fresco',qty:0.01,unit:'Kg',cost:3500},
-    {name:'Vino tinto Malbec (Córdoba)',qty:0.3,unit:'Litro',cost:6000},
-    {name:'Aceite de oliva',qty:0.08,unit:'Litro',cost:12000},
-    {name:'Cebolla',qty:0.3,unit:'Kg',cost:1400},
-    {name:'Zanahoria',qty:0.2,unit:'Kg',cost:1200},
-    {name:'Limón',qty:0.1,unit:'Kg',cost:2500},
-    {name:'Pimentón ahumado',qty:0.01,unit:'Kg',cost:14000},
-    {name:'Sal gruesa y pimienta',qty:0.01,unit:'Kg',cost:800},
-  ]},
+ {id:'p004',category:'principal',name:'Cordero a la cordobesa con papas rústicas',rendimiento:10,desc:'Pierna de cordero marinada en Malbec de la region con romero, tomillo y ajo. Acompanada de papas rusticas al horno.',steps:'Marinada noche anterior: Mezcla el Malbec con aceite de oliva, ajo aplastado, romero, tomillo, pimenton ahumado y jugo de limon. Cubre la pierna de cordero y deja marinar en frio 12 horas minimo. Papas: Corta las papas en cuartos con piel. Condimenta con aceite de oliva, ajo, sal gruesa y romero. Coccion: Pon el cordero en fuente para horno con la marinada colada. Rodea con las papas. Cocina tapado con papel aluminio a 160C por 2 horas. Destapa los ultimos 30 min a 200C para que dore. Deja reposar 15 min antes de servir.',ingredients:[
+ {name:'Pierna de cordero',qty:2.5,unit:'Kg',cost:22000},
+ {name:'Papa',qty:1.2,unit:'Kg',cost:1500},
+ {name:'Ajo',qty:0.05,unit:'Kg',cost:4000},
+ {name:'Romero fresco',qty:0.02,unit:'Kg',cost:3000},
+ {name:'Tomillo fresco',qty:0.01,unit:'Kg',cost:3500},
+ {name:'Vino tinto Malbec (Córdoba)',qty:0.3,unit:'Litro',cost:6000},
+ {name:'Aceite de oliva',qty:0.08,unit:'Litro',cost:12000},
+ {name:'Cebolla',qty:0.3,unit:'Kg',cost:1400},
+ {name:'Zanahoria',qty:0.2,unit:'Kg',cost:1200},
+ {name:'Limón',qty:0.1,unit:'Kg',cost:2500},
+ {name:'Pimentón ahumado',qty:0.01,unit:'Kg',cost:14000},
+ {name:'Sal gruesa y pimienta',qty:0.01,unit:'Kg',cost:800},
+ ]},
 
-  {id:'p005',category:'principal',name:'Trucha del río en costra de almendras',rendimiento:10,desc:"Trucha fresca de río con costra crocante de almendras laminadas. Terminada con manteca, alcaparras y limón. Un guiño a las sierras de Córdoba.",steps:"Preparación: Limpiá las truchas, retirá espinas y cortá en porciones. Salpimentá con pimienta blanca y sal. Costra: Mezclá las almendras laminadas con perejil picado fino. Pasá cada porción de trucha primero por harina, luego por huevo batido y finalmente presioná la mezcla de almendras de un solo lado (el que va a quedar hacia arriba). Cocción: Cocinás en sartén con manteca y aceite de oliva. Empezá por el lado sin almendras 3 min, luego girá con cuidado y cocinás del lado de la costra 4 min a fuego medio. Salsa: En la misma sartén, tostá las alcaparras en manteca, agregá jugo de limón y perejil picado. Servís la trucha con las papas al vapor y la salsa encima.",ingredients:[
-    {name:'Trucha fresca entera',qty:3.0,unit:'Kg',cost:9500},
-    {name:'Almendras laminadas',qty:0.2,unit:'Kg',cost:18000},
-    {name:'Manteca',qty:0.1,unit:'Kg',cost:5800},
-    {name:'Limón',qty:0.2,unit:'Kg',cost:2500},
-    {name:'Alcaparras',qty:0.04,unit:'Kg',cost:16000},
-    {name:'Perejil fresco',qty:0.05,unit:'Kg',cost:2500},
-    {name:'Ajo',qty:0.02,unit:'Kg',cost:4000},
-    {name:'Harina 000 (para costra)',qty:0.08,unit:'Kg',cost:2200},
-    {name:'Huevo (para rebozar)',qty:2,unit:'Unidad',cost:600},
-    {name:'Aceite de oliva',qty:0.06,unit:'Litro',cost:12000},
-    {name:'Papa vapor (guarnición)',qty:0.8,unit:'Kg',cost:1500},
-    {name:'Sal y pimienta blanca',qty:0.01,unit:'Kg',cost:1000},
-  ]},
+ {id:'p005',category:'principal',name:'Trucha del río en costra de almendras',rendimiento:10,desc:'Trucha fresca de rio con costra crocante de almendras laminadas. Con manteca, alcaparras y limon. Guino a las sierras.',steps:'Preparacion: Limpia las truchas, retira espinas y corta en porciones. Salpimenta con pimienta blanca y sal. Costra: Mezcla las almendras laminadas con perejil picado fino. Pasa cada porcion de trucha primero por harina, luego por huevo batido y finalmente presiona la mezcla de almendras de un solo lado. Coccion: Cocina en sarten con manteca y aceite de oliva. Empieza por el lado sin almendras 3 min, luego gira con cuidado y cocina del lado de la costra 4 min a fuego medio. Salsa: En la misma sarten tuesta las alcaparras en manteca, agrega jugo de limon y perejil picado.',ingredients:[
+ {name:'Trucha fresca entera',qty:3.0,unit:'Kg',cost:9500},
+ {name:'Almendras laminadas',qty:0.2,unit:'Kg',cost:18000},
+ {name:'Manteca',qty:0.1,unit:'Kg',cost:5800},
+ {name:'Limón',qty:0.2,unit:'Kg',cost:2500},
+ {name:'Alcaparras',qty:0.04,unit:'Kg',cost:16000},
+ {name:'Perejil fresco',qty:0.05,unit:'Kg',cost:2500},
+ {name:'Ajo',qty:0.02,unit:'Kg',cost:4000},
+ {name:'Harina 000 (para costra)',qty:0.08,unit:'Kg',cost:2200},
+ {name:'Huevo (para rebozar)',qty:2,unit:'Unidad',cost:600},
+ {name:'Aceite de oliva',qty:0.06,unit:'Litro',cost:12000},
+ {name:'Papa vapor (guarnición)',qty:0.8,unit:'Kg',cost:1500},
+ {name:'Sal y pimienta blanca',qty:0.01,unit:'Kg',cost:1000},
+ ]},
 
-  // ── POSTRES NUEVOS (2) ─────────────────────────────────────────────────────
+ // ── POSTRES NUEVOS (2) ─────────────────────────────────────────────────────
 
-  {id:'d004',category:'postre',name:'Alfajores de maicena artesanales',rendimiento:10,desc:"Los alfajores de maicena son el postre cordobés por excelencia. Masa que se deshace en la boca, dulce de leche generoso y coco rallado. Hechos a mano, uno por uno.",steps:"Masa: Batí la manteca con el azúcar impalpable hasta obtener una crema blanca. Incorporá los huevos de a uno y la vainilla. Agregá la maicena, la harina y el polvo de hornear tamizados junto con la ralladura de limón. Formá una masa tierna, sin amasar. Descansá en frío 30 min. Medallones: Estirá la masa a 5 mm de espesor. Cortá discos de 5 cm. Colocá en placa enmantecada y cocinás a 160°C por 12-14 min. Tienen que quedar blancos, sin dorarse. Armado: Dejá enfriar completamente. Untá la base con dulce de leche repostero bien cargado y tapá con otro medallón. Pasá los bordes por coco rallado presionando suavemente. Reposo: Dejá reposar 2 horas antes de servir para que el alfajor se integre.",ingredients:[
-    {name:'Maicena',qty:0.35,unit:'Kg',cost:3800},
-    {name:'Harina 0000',qty:0.15,unit:'Kg',cost:2500},
-    {name:'Manteca',qty:0.18,unit:'Kg',cost:5800},
-    {name:'Azúcar impalpable',qty:0.12,unit:'Kg',cost:3200},
-    {name:'Huevo',qty:3,unit:'Unidad',cost:600},
-    {name:'Esencia de vainilla',qty:0.005,unit:'Litro',cost:8000},
-    {name:'Ralladura de limón',qty:0.005,unit:'Kg',cost:2500},
-    {name:'Polvo de hornear',qty:0.005,unit:'Kg',cost:10000},
-    {name:'Dulce de leche repostero',qty:0.5,unit:'Kg',cost:5500},
-    {name:'Coco rallado (para cubrir)',qty:0.1,unit:'Kg',cost:6000},
-  ]},
+ {id:'d004',category:'postre',name:'Alfajores de maicena artesanales',rendimiento:10,desc:'Los alfajores de maicena son el postre cordobes por excelencia. Masa que se deshace, dulce de leche generoso y coco rallado.',steps:'Masa: Bate la manteca con el azucar impalpable hasta obtener una crema blanca. Incorpora los huevos de a uno y la vainilla. Agrega la maicena, la harina y el polvo de hornear tamizados junto con la ralladura de limon. Forma una masa tierna sin amasar. Descansa en frio 30 min. Medallones: Estira la masa a 5 mm de espesor. Corta discos de 5 cm. Coloca en placa enmantecada y cocina a 160C por 12-14 min. Tienen que quedar blancos sin dorarse. Armado: Deja enfriar completamente. Unta la base con dulce de leche repostero bien cargado y tapa con otro medallon. Pasa los bordes por coco rallado. Reposa 2 horas antes de servir.',ingredients:[
+ {name:'Maicena',qty:0.35,unit:'Kg',cost:3800},
+ {name:'Harina 0000',qty:0.15,unit:'Kg',cost:2500},
+ {name:'Manteca',qty:0.18,unit:'Kg',cost:5800},
+ {name:'Azúcar impalpable',qty:0.12,unit:'Kg',cost:3200},
+ {name:'Huevo',qty:3,unit:'Unidad',cost:600},
+ {name:'Esencia de vainilla',qty:0.005,unit:'Litro',cost:8000},
+ {name:'Ralladura de limón',qty:0.005,unit:'Kg',cost:2500},
+ {name:'Polvo de hornear',qty:0.005,unit:'Kg',cost:10000},
+ {name:'Dulce de leche repostero',qty:0.5,unit:'Kg',cost:5500},
+ {name:'Coco rallado (para cubrir)',qty:0.1,unit:'Kg',cost:6000},
+ ]},
 
-  {id:'d005',category:'postre',name:'Volcán de chocolate con helado de crema',rendimiento:10,desc:"Bizcochuelo de chocolate 70% con centro líquido caliente. Se sirve al momento, roto en la mesa, con helado de crema que se funde al contacto. Siempre sorprende.",steps:"Preparación: Enmantecá y enharinás moldes individuales de muffin. Llevá al frío. Mezcla: Derretí el chocolate con la manteca a baño María. Dejá entibiar. Batí los huevos enteros con el azúcar hasta triplicar el volumen. Incorporá el chocolate templado en hilo, luego la harina y el cacao tamizados con movimientos envolventes. Preparación anticipada: Llenás los moldes hasta 3/4. Podés guardarlos en el freezer hasta el momento de servir. Cocción al momento: Horno precalentado a 200°C por exactamente 10-11 min (12 min si vienen del freezer). El borde tiene que estar cocido y el centro moverse al sacudir. Servicio: Desmoldá inmediatamente sobre el plato. Colocá una bocha de helado al costado y decorá con frambuesas y azúcar impalpable.",ingredients:[
-    {name:'Chocolate negro 70%',qty:0.3,unit:'Kg',cost:14000},
-    {name:'Manteca',qty:0.15,unit:'Kg',cost:5800},
-    {name:'Huevo',qty:6,unit:'Unidad',cost:600},
-    {name:'Azúcar',qty:0.15,unit:'Kg',cost:2800},
-    {name:'Harina 0000',qty:0.05,unit:'Kg',cost:2500},
-    {name:'Cacao amargo',qty:0.03,unit:'Kg',cost:15000},
-    {name:'Helado de crema americana',qty:0.8,unit:'Litro',cost:7500},
-    {name:'Frambuesas frescas (decoración)',qty:0.1,unit:'Kg',cost:12000},
-    {name:'Azúcar impalpable (decoración)',qty:0.02,unit:'Kg',cost:3200},
-    {name:'Esencia de vainilla',qty:0.005,unit:'Litro',cost:8000},
-  ]},
+ {id:'d005',category:'postre',name:'Volcán de chocolate con helado de crema',rendimiento:10,desc:'Bizcochuelo de chocolate 70% con centro liquido caliente. Se sirve al momento con helado de crema. Siempre sorprende.',steps:'Preparacion: Enmanteca y enharina moldes individuales de muffin. Lleva al frio. Mezcla: Derrite el chocolate con la manteca a bano Maria. Deja entibiar. Bate los huevos enteros con el azucar hasta triplicar el volumen. Incorpora el chocolate templado en hilo, luego la harina y el cacao tamizados con movimientos envolventes. Preparacion anticipada: Llena los moldes hasta 3 cuartos. Puedes guardarlos en el freezer hasta el momento de servir. Coccion al momento: Horno precalentado a 200C por exactamente 10-11 min. El borde tiene que estar cocido y el centro moverse al sacudir. Desmolda inmediatamente sobre el plato.',ingredients:[
+ {name:'Chocolate negro 70%',qty:0.3,unit:'Kg',cost:14000},
+ {name:'Manteca',qty:0.15,unit:'Kg',cost:5800},
+ {name:'Huevo',qty:6,unit:'Unidad',cost:600},
+ {name:'Azúcar',qty:0.15,unit:'Kg',cost:2800},
+ {name:'Harina 0000',qty:0.05,unit:'Kg',cost:2500},
+ {name:'Cacao amargo',qty:0.03,unit:'Kg',cost:15000},
+ {name:'Helado de crema americana',qty:0.8,unit:'Litro',cost:7500},
+ {name:'Frambuesas frescas (decoración)',qty:0.1,unit:'Kg',cost:12000},
+ {name:'Azúcar impalpable (decoración)',qty:0.02,unit:'Kg',cost:3200},
+ {name:'Esencia de vainilla',qty:0.005,unit:'Litro',cost:8000},
+ ]},
 
-  // ── AFTER NUEVO (1) ────────────────────────────────────────────────────────
+ // ── AFTER NUEVO (1) ────────────────────────────────────────────────────────
 
-  {id:'a002',category:'after',name:'Tabla de frituras crocantes (after show)',rendimiento:10,desc:"Tabla generosa para el after: papas crocantes, calamaretes rebozados, berenjenas fritas y provolone dorado. Con salsa golf casera y criolla. Para compartir sin cubiertos.",steps:"Preparación de rebozados: Preparás tres estaciones: harina saborizada con sal y pimienta, huevo batido con sal, pan rallado grueso. Pasás cada elemento por las tres estaciones en ese orden. Calamaretes: Limpialos y secalos muy bien. Rebozalos y freílos en aceite a 180°C por 2-3 min hasta dorar. Salí inmediatamente al salir del aceite. Berenjenas: Cortá en rodajas de 1 cm, salá y dejá reposar 20 min. Secá, rebozá y freí 3 min de cada lado. Provolone frito: Cortá en bastones de 2 cm. Pasá por harina, huevo y pan rallado dos veces para asegurar la costra. Freí a 180°C muy rápido, 2 min, hasta que dore antes de que el queso escape. Papas: Freí las papas bastón a 160°C primero (pre-cocción), luego a 190°C para que queden crocantes. Armado: Distribuí todo en tabla o fuente grande. Servís con la salsa golf y la criolla en bols separados. Se sirve al momento, bien caliente.",ingredients:[
-    {name:'Papas bastón (prefritas)',qty:1.0,unit:'Kg',cost:2800},
-    {name:'Calamaretes frescos',qty:0.5,unit:'Kg',cost:12000},
-    {name:'Berenjenas en rodajas',qty:0.4,unit:'Kg',cost:2200},
-    {name:'Queso Provolone (para freír)',qty:0.3,unit:'Kg',cost:12500},
-    {name:'Harina 000 (rebozado)',qty:0.2,unit:'Kg',cost:2200},
-    {name:'Huevo (rebozado)',qty:4,unit:'Unidad',cost:600},
-    {name:'Pan rallado grueso',qty:0.2,unit:'Kg',cost:3000},
-    {name:'Aceite de girasol (para freír)',qty:1.0,unit:'Litro',cost:3500},
-    {name:'Limón',qty:0.15,unit:'Kg',cost:2500},
-    {name:'Salsa golf casera',qty:0.15,unit:'Litro',cost:3000},
-    {name:'Salsa criolla (acompañamiento)',qty:0.15,unit:'Litro',cost:2000},
-    {name:'Sal y especias',qty:0.01,unit:'Kg',cost:1000},
-  ]},
+ {id:'a002',category:'after',name:'Tabla de frituras crocantes (after show)',rendimiento:10,desc:'Tabla generosa: papas crocantes, calamaretes rebozados, berenjenas fritas y provolone dorado. Con salsa golf y criolla.',steps:'Preparacion: Prepara tres estaciones: harina sazonada, huevo batido, pan rallado grueso. Pasa cada elemento por las tres estaciones en ese orden. Calamaretes: Limpia y seca muy bien. Reboza y frie en aceite a 180C por 2-3 min hasta dorar. Berenjenas: Corta en rodajas de 1 cm, sala y deja reposar 20 min. Seca, reboza y frie 3 min de cada lado. Provolone frito: Corta en bastones de 2 cm. Pasa por harina, huevo y pan rallado dos veces para asegurar la costra. Frie a 180C muy rapido 2 min. Papas: Frie las papas primero a 160C, luego a 190C para que queden crocantes. Sirve todo caliente en tabla con las salsas en bols separados.',ingredients:[
+ {name:'Papas bastón (prefritas)',qty:1.0,unit:'Kg',cost:2800},
+ {name:'Calamaretes frescos',qty:0.5,unit:'Kg',cost:12000},
+ {name:'Berenjenas en rodajas',qty:0.4,unit:'Kg',cost:2200},
+ {name:'Queso Provolone (para freír)',qty:0.3,unit:'Kg',cost:12500},
+ {name:'Harina 000 (rebozado)',qty:0.2,unit:'Kg',cost:2200},
+ {name:'Huevo (rebozado)',qty:4,unit:'Unidad',cost:600},
+ {name:'Pan rallado grueso',qty:0.2,unit:'Kg',cost:3000},
+ {name:'Aceite de girasol (para freír)',qty:1.0,unit:'Litro',cost:3500},
+ {name:'Limón',qty:0.15,unit:'Kg',cost:2500},
+ {name:'Salsa golf casera',qty:0.15,unit:'Litro',cost:3000},
+ {name:'Salsa criolla (acompañamiento)',qty:0.15,unit:'Litro',cost:2000},
+ {name:'Sal y especias',qty:0.01,unit:'Kg',cost:1000},
+ ]},
 ];
 
-const SK = 'cotizador_cba_v4';
-let S = {recipes:[], quotes:[], packages:[], priceLog:{}};
+var SK='cotizador_v6';
+var S={recipes:[],quotes:[],packages:[],priceLog:{}};
+var CAT={entrada:{l:'Entrada',c:'be'},principal:{l:'Principal',c:'bp'},postre:{l:'Postre',c:'bd2'},after:{l:'After',c:'ba'}};
+var CATS=['entrada','principal','postre','after'];
 
-// ══ STORAGE ═══════════════════════════════════════════════════
-function lsGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
-function lsSet(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
+function lsGet(k){try{return localStorage.getItem(k);}catch(e){return null;}}
+function lsSet(k,v){try{localStorage.setItem(k,v);}catch(e){}}
 
-function loadLocal(){
-  try{
-    var r = lsGet(SK);
-    if(r){ var p=JSON.parse(r); S.recipes=p.recipes||[]; S.quotes=p.quotes||[]; S.packages=p.packages||[]; S.priceLog=p.priceLog||{}; }
-  }catch(e){}
+function load(){
+  var r=lsGet(SK);if(!r)return;
+  try{var p=JSON.parse(r);S.recipes=p.recipes||[];S.quotes=p.quotes||[];S.packages=p.packages||[];S.priceLog=p.priceLog||{};}catch(e){}
 }
 
-function persist(){
-  lsSet(SK, JSON.stringify(S));
-  
-  toast('Guardado ✓');
-  syncStatus();
-}
+function save(){lsSet(SK,JSON.stringify(S));toast('Guardado');sSt();}
 
-function initDefaults(){
-  if(S.recipes.length===0){
-    S.recipes = DEFAULTS.map(function(r){ return Object.assign({},r,{createdAt:new Date().toISOString()}); });
-    lsSet(SK, JSON.stringify(S));
+function initDef(){
+  if(S.recipes.length>0)return;
+  var defs=DEFAULTS;
+  S.recipes=[];
+  for(var i=0;i<defs.length;i++){
+    var r={};
+    for(var k in defs[i])r[k]=defs[i][k];
+    r.createdAt=new Date().toISOString();
+    S.recipes.push(r);
   }
+  lsSet(SK,JSON.stringify(S));
 }
 
-function fbSync(){}
-
-function syncStatus(){
-  var el = document.getElementById('sync-status'); if(!el) return;
-  el.innerHTML = 'Firebase: <strong style="color:var(--gold)">' + ('💾 localStorage') + '</strong><br>' +
-    'Recetas: <strong style="color:var(--tx)">' + S.recipes.length + '</strong><br>' +
-    'Cotizaciones: <strong style="color:var(--tx)">' + S.quotes.length + '</strong><br>' +
-    'Paquetes: <strong style="color:var(--tx)">' + (S.packages||[]).length + '</strong>';
-}
-
-// ══ TOAST ══════════════════════════════════════════════════════
-var _tt;
+var _tt=null;
 function toast(m){
   clearTimeout(_tt);
-  var t=document.querySelector('.tst');
-  if(!t){t=document.createElement('div');t.className='tst';document.body.appendChild(t);}
-  t.textContent=m; t.style.display='block';
+  var t=document.getElementById('toast');
+  t.textContent=m;t.style.display='block';
   _tt=setTimeout(function(){t.style.display='none';},2000);
 }
 
-// ══ TABS ═══════════════════════════════════════════════════════
-function showTab(n, btn){
-  document.querySelectorAll('.tp').forEach(function(p){ p.classList.remove('on'); });
-  document.querySelectorAll('.tb').forEach(function(b){ b.classList.remove('on'); });
-  var panel = document.getElementById('tab-'+n);
-  if(panel) panel.classList.add('on');
-  if(btn)   btn.classList.add('on');
-  if(n==='recetas')   renderRecipes();
-  if(n==='guardadas') renderQuotes();
-  if(n==='paquetes')  renderPkgGrid();
-  if(n==='precios')   renderPricePanel();
-  if(n==='sync')      syncStatus();
+function switchTab(n,btn){
+  var pnls=document.querySelectorAll('.tab-pnl');
+  for(var i=0;i<pnls.length;i++)pnls[i].classList.remove('on');
+  var btns=document.querySelectorAll('.tab-btn');
+  for(var i=0;i<btns.length;i++)btns[i].classList.remove('on');
+  var p=document.getElementById('tab-'+n);
+  if(p)p.classList.add('on');
+  if(btn)btn.classList.add('on');
+  if(n==='recetas')renderRec();
+  if(n==='guardadas')renderQ();
+  if(n==='paquetes')renderPkgs();
+  if(n==='precios')renderPrices();
+  if(n==='sync')sSt();
+  window.scrollTo(0,0);
 }
 
-// ══ HELPERS ════════════════════════════════════════════════════
-function fmt(n){ return '$'+Number(n||0).toLocaleString('es-AR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
-function gn(id){ return parseFloat(document.getElementById(id)&&document.getElementById(id).value)||0; }
-function bCost(r){ return (r.ingredients||[]).reduce(function(s,i){ return s+(+i.qty||0)*(+i.cost||0); },0); }
-function cFor(r,p){ return (bCost(r)/(+r.rendimiento||1))*p; }
+function fmt(n){return '$'+Number(n||0).toLocaleString('es-AR',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function gn(id){var e=document.getElementById(id);return e?parseFloat(e.value)||0:0;}
+function bCost(r){var s=0,ing=r.ingredients||[];for(var i=0;i<ing.length;i++)s+=(parseFloat(ing[i].qty)||0)*(parseFloat(ing[i].cost)||0);return s;}
+function cFor(r,p){return(bCost(r)/(parseFloat(r.rendimiento)||1))*p;}
+function getR(id){for(var i=0;i<S.recipes.length;i++)if(S.recipes[i].id===id)return S.recipes[i];return null;}
+function getQ(id){for(var i=0;i<S.quotes.length;i++)if(S.quotes[i].id===id)return S.quotes[i];return null;}
+function getPkg(id){var p=S.packages||[];for(var i=0;i<p.length;i++)if(p[i].id===id)return p[i];return null;}
 
-var CAT = {
-  entrada:   {label:'Entrada',   cls:'be', icon:'🥗'},
-  principal: {label:'Principal', cls:'bp', icon:'🍽️'},
-  postre:    {label:'Postre',    cls:'bd', icon:'🍮'},
-  after:     {label:'After',     cls:'ba', icon:'🥂'}
-};
-var CATS = ['entrada','principal','postre','after'];
-
-// ══ MENU SELECTOR ══════════════════════════════════════════════
 function buildMenu(){
-  var c = document.getElementById('menu-sel'); if(!c) return;
-  c.innerHTML = '';
-  CATS.forEach(function(k){
-    var cat = CAT[k];
-    var recs = S.recipes.filter(function(r){ return r.category===k; });
-    var d = document.createElement('div');
-    d.className = 'mc'; d.id = 'mc-'+k;
-    var opts = recs.length===0
-      ? '<div style="font-size:12px;color:var(--tx3);padding:8px;">Sin recetas · <button class="bsm" style="margin-left:4px;" onclick="showTab('recetas',null)">Agregar</button></div>'
-      : recs.map(function(r){
-          var pp = r.rendimiento>0 ? bCost(r)/r.rendimiento : 0;
-          return '<label class="mopt"><input type="checkbox" class="mcb" data-id="'+r.id+'" data-cat="'+k+'" onchange="onMenu()"><span class="mon">'+r.name+'</span><span class="moc" id="oc-'+r.id+'">'+fmt(pp)+'/p.</span></label>';
-        }).join('');
-    d.innerHTML = '<div class="mch" onclick="toggleCat(''+k+'')"><span class="mcl">'+cat.icon+' '+cat.label+'s<span class="mcc" id="cc-'+k+'">0</span></span><span style="color:var(--tx3);font-size:12px;" id="arr-'+k+'">▾</span></div><div class="mo" id="mo-'+k+'">'+opts+'</div>';
+  var c=document.getElementById('menu-sel');if(!c)return;
+  c.innerHTML='';
+  for(var ci=0;ci<CATS.length;ci++){
+    var k=CATS[ci],cat=CAT[k];
+    var recs=[];for(var ri=0;ri<S.recipes.length;ri++)if(S.recipes[ri].category===k)recs.push(S.recipes[ri]);
+    var d=document.createElement('div');d.className='mc';
+    var hdr=document.createElement('div');hdr.className='mch';hdr.setAttribute('data-cat',k);
+    hdr.innerHTML='<span class="mcl">'+cat.l+'s<span class="mcc" id="cc-'+k+'"></span></span><span id="arr-'+k+'" style="color:var(--tx3);font-size:12px;">v</span>';
+    hdr.addEventListener('click',function(){tCat(this.getAttribute('data-cat'));});
+    var opts=document.createElement('div');opts.className='mopts';opts.id='mo-'+k;
+    if(!recs.length){
+      opts.innerHTML='<div style="font-size:12px;color:var(--tx3);padding:8px;">Sin recetas</div>';
+    } else {
+      for(var ri=0;ri<recs.length;ri++){
+        var r=recs[ri],pp=r.rendimiento>0?bCost(r)/r.rendimiento:0;
+        var lbl=document.createElement('label');lbl.className='mopt';
+        var cb=document.createElement('input');cb.type='checkbox';cb.className='mcb';
+        cb.setAttribute('data-id',r.id);cb.setAttribute('data-cat',k);
+        cb.addEventListener('change',onMenu);
+        var span1=document.createElement('span');span1.className='mon';span1.textContent=r.name;
+        var span2=document.createElement('span');span2.className='moc';span2.id='oc-'+r.id;span2.textContent=fmt(pp)+'/p.';
+        lbl.appendChild(cb);lbl.appendChild(span1);lbl.appendChild(span2);
+        opts.appendChild(lbl);
+      }
+    }
+    d.appendChild(hdr);d.appendChild(opts);
     c.appendChild(d);
-  });
+  }
   updCnt();
 }
 
-function toggleCat(k){
-  var o=document.getElementById('mo-'+k), a=document.getElementById('arr-'+k);
-  o.classList.toggle('on'); a.textContent=o.classList.contains('on')?'▴':'▾';
-}
-
-function selIds(){ return Array.from(document.querySelectorAll('.mcb:checked')).map(function(c){ return c.dataset.id; }); }
-
-function updCnt(){
-  CATS.forEach(function(k){
-    var n=document.querySelectorAll('.mcb[data-cat="'+k+'"]:checked').length;
-    var b=document.getElementById('cc-'+k);
-    if(b){ b.textContent=n; b.style.display=n>0?'inline-block':'none'; }
-  });
-}
-
-function onMenu(){ updCnt(); calc(); refCosts(); }
-
+function tCat(k){var o=document.getElementById('mo-'+k),a=document.getElementById('arr-'+k);o.classList.toggle('on');a.textContent=o.classList.contains('on')?'^':'v';}
+function selIds(){var cbs=document.querySelectorAll('.mcb:checked'),ids=[];for(var i=0;i<cbs.length;i++)ids.push(cbs[i].getAttribute('data-id'));return ids;}
+function updCnt(){for(var ci=0;ci<CATS.length;ci++){var k=CATS[ci],n=document.querySelectorAll('.mcb[data-cat="'+k+'"]:checked').length,b=document.getElementById('cc-'+k);if(b){b.textContent=n;b.style.display=n>0?'inline-block':'none';}}}
+function onMenu(){updCnt();calc();refCosts();}
 function refCosts(){
   var p=gn('c-pe');
-  document.querySelectorAll('.mcb').forEach(function(cb){
-    var r=S.recipes.find(function(x){ return x.id===cb.dataset.id; }); if(!r) return;
-    var el=document.getElementById('oc-'+r.id); if(!el) return;
-    el.textContent = p>0 ? fmt(cFor(r,p))+' tot.' : fmt(r.rendimiento>0?bCost(r)/r.rendimiento:0)+'/p.';
-  });
+  var cbs=document.querySelectorAll('.mcb');
+  for(var i=0;i<cbs.length;i++){var r=getR(cbs[i].getAttribute('data-id'));if(!r)continue;var el=document.getElementById('oc-'+r.id);if(el)el.textContent=p>0?fmt(cFor(r,p))+' tot.':fmt(r.rendimiento>0?bCost(r)/r.rendimiento:0)+'/p.';}
 }
 
-// ══ CALCULATE ══════════════════════════════════════════════════
 function calc(){
-  var p=gn('c-pe'), mg=gn('c-mg')/100, ids=selIds();
-  var mp=0, items=[];
-  ids.forEach(function(id){
-    var r=S.recipes.find(function(x){ return x.id===id; }); if(!r) return;
-    var cost=p>0?cFor(r,p):0; mp+=cost; items.push({name:r.name,c:cost});
-  });
-  var sv=['pe','li','sa','dj','be','va'].reduce(function(s,k){ return s+gn('g-'+k); },0);
-  var ct=mp+sv, f=mg>=1?1:(1-mg), pt=f>0?ct/f:ct, pp=p>0?pt/p:0, gn2=pt-ct;
+  var p=gn('c-pe'),mg=gn('c-mg')/100,ids=selIds();
+  var mp=0,items=[];
+  for(var i=0;i<ids.length;i++){var r=getR(ids[i]);if(!r)continue;var cost=p>0?cFor(r,p):0;mp+=cost;items.push({name:r.name,c:cost});}
+  var sv=gn('g-pe')+gn('g-li')+gn('g-sa')+gn('g-dj')+gn('g-be')+gn('g-va');
+  var ct=mp+sv,f=mg>=1?1:(1-mg),pt=f>0?ct/f:ct,pp=p>0?pt/p:0,gn2=pt-ct;
   document.getElementById('r-mp').textContent=fmt(mp);
   document.getElementById('r-mpp').textContent=fmt(p>0?mp/p:0);
   document.getElementById('r-sv').textContent=fmt(sv);
@@ -879,490 +766,401 @@ function calc(){
   document.getElementById('r-pt').textContent=fmt(pt);
   document.getElementById('r-pp').textContent=fmt(pp);
   document.getElementById('r-gn').textContent=fmt(gn2);
-  document.getElementById('r-mg').textContent=(gn('c-mg')||0)+'%';
+  document.getElementById('r-mg2').textContent=(gn('c-mg')||0)+'%';
   var cl=document.getElementById('c-cl').value;
-  document.getElementById('r-cn').textContent=cl?cl+' · '+(p||0)+' personas':p>0?p+' personas':'—';
-  var sd=document.getElementById('menu-sum'), si=document.getElementById('menu-sum-items');
+  document.getElementById('r-cn').textContent=cl?cl+' - '+(p||0)+' pers.':(p>0?p+' personas':'—');
+  var sd=document.getElementById('menu-sum'),si=document.getElementById('menu-sum-i');
   if(items.length>0&&p>0){
     sd.style.display='block';
-    si.innerHTML=items.map(function(it){ return '<div style="display:flex;justify-content:space-between;padding:6px 10px;background:var(--sf3);border-radius:5px;"><span style="font-size:12px;color:var(--tx2);">'+it.name+'</span><span style="font-size:12px;font-weight:500;color:var(--tx);">'+fmt(it.c)+'</span></div>'; }).join('');
-  } else { sd.style.display='none'; }
+    var h='';for(var i=0;i<items.length;i++)h+='<div style="display:flex;justify-content:space-between;padding:5px 10px;background:var(--sf3);border-radius:5px;margin-bottom:4px;"><span style="font-size:12px;color:var(--tx2);">'+items[i].name+'</span><span style="font-size:12px;font-weight:500;">'+fmt(items[i].c)+'</span></div>';
+    si.innerHTML=h;
+  }else{sd.style.display='none';}
 }
 
-// ══ QUOTES ══════════════════════════════════════════════════════
 function saveQuote(){
-  var cl=document.getElementById('c-cl').value.trim(), p=gn('c-pe');
-  if(!cl){ toast('⚠️ Ingresá el nombre del cliente'); return; }
-  if(!p){  toast('⚠️ Ingresá la cantidad de personas'); return; }
-  var mi=selIds().map(function(id){ var r=S.recipes.find(function(x){ return x.id===id; }); return r?{id:r.id,name:r.name,category:r.category}:null; }).filter(Boolean);
-  var sv={}; ['pe','li','sa','dj','be','va'].forEach(function(k){ sv[k]=gn('g-'+k); });
-  S.quotes.unshift({id:'q'+Date.now(),createdAt:new Date().toISOString(),cliente:cl,personas:p,menuItems:mi,servicios:sv,margen:gn('c-mg'),
-    results:{mp:document.getElementById('r-mp').textContent,sv:document.getElementById('r-sv').textContent,ct:document.getElementById('r-ct').textContent,pt:document.getElementById('r-pt').textContent,pp:document.getElementById('r-pp').textContent,gn:document.getElementById('r-gn').textContent}});
-  persist(); toast('Cotización guardada ✓');
+  var cl=document.getElementById('c-cl').value.trim(),p=gn('c-pe');
+  if(!cl){toast('Ingresa el nombre del cliente');return;}if(!p){toast('Ingresa la cantidad de personas');return;}
+  var ids=selIds(),mi=[];
+  for(var i=0;i<ids.length;i++){var r=getR(ids[i]);if(r)mi.push({id:r.id,name:r.name,category:r.category});}
+  var sv={pe:gn('g-pe'),li:gn('g-li'),sa:gn('g-sa'),dj:gn('g-dj'),be:gn('g-be'),va:gn('g-va')};
+  S.quotes.unshift({id:'q'+Date.now(),createdAt:new Date().toISOString(),cliente:cl,personas:p,menuItems:mi,servicios:sv,margen:gn('c-mg'),results:{mp:document.getElementById('r-mp').textContent,sv:document.getElementById('r-sv').textContent,ct:document.getElementById('r-ct').textContent,pt:document.getElementById('r-pt').textContent,pp:document.getElementById('r-pp').textContent,gn:document.getElementById('r-gn').textContent}});
+  save();toast('Cotizacion guardada');
 }
 
-function renderQuotes(){
-  var l=document.getElementById('quotes-list'); if(!l) return;
-  if(!S.quotes.length){ l.innerHTML='<div class="emp"><div class="ic">📄</div><p>Sin cotizaciones guardadas.</p></div>'; return; }
-  l.innerHTML=S.quotes.map(function(q){
+function renderQ(){
+  var l=document.getElementById('quotes-list');if(!l)return;
+  if(!S.quotes.length){l.innerHTML='<div class="emp"><p>Sin cotizaciones guardadas.</p></div>';return;}
+  l.innerHTML='';
+  for(var i=0;i<S.quotes.length;i++){
+    var q=S.quotes[i];
     var d=new Date(q.createdAt).toLocaleDateString('es-AR',{day:'2-digit',month:'short',year:'numeric'});
-    return '<div class="qc"><div style="display:flex;justify-content:space-between;gap:10px;"><div><div style="font-family:Fraunces,serif;font-size:16px;font-weight:400;">'+q.cliente+'</div><div style="font-size:12px;color:var(--tx3);margin-top:2px;">'+d+' · '+q.personas+' personas</div><div style="font-size:12px;color:var(--tx2);margin-top:5px;">'+q.menuItems.map(function(m){ return m.name; }).join(' · ')+'</div></div><div style="text-align:right;flex-shrink:0;"><div style="font-family:Fraunces,serif;font-size:18px;color:var(--gold);">'+q.results.pt+'</div><div style="font-size:11px;color:var(--tx3);">'+q.results.pp+'/persona</div></div></div><div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;"><button class="bsm" onclick="viewQuote(''+q.id+'')">Ver detalle</button><button class="bgh" style="font-size:11px;" onclick="loadQuote(''+q.id+'')">Cargar</button><button class="bdn" onclick="delQuote(''+q.id+'')">Eliminar</button></div></div>';
-  }).join('');
+    var mn='';for(var j=0;j<q.menuItems.length;j++)mn+=(j>0?' - ':'')+q.menuItems[j].name;
+    var div=document.createElement('div');div.className='qc';
+    div.innerHTML='<div style="display:flex;justify-content:space-between;gap:10px;"><div><strong style="font-size:16px;">'+q.cliente+'</strong><br><span style="font-size:12px;color:var(--tx3);">'+d+' - '+q.personas+' pers.</span><br><span style="font-size:12px;color:var(--tx2);">'+mn+'</span></div><div style="text-align:right;flex-shrink:0;"><span style="font-family:Fraunces,serif;font-size:18px;color:var(--gold);">'+q.results.pt+'</span><br><span style="font-size:11px;color:var(--tx3);">'+q.results.pp+'/pers.</span></div></div><div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;"></div>';
+    var bv=document.createElement('button');bv.className='bsm';bv.textContent='Ver';
+    (function(qid){bv.addEventListener('click',function(){viewQ(qid);});})(q.id);
+    var bl=document.createElement('button');bl.className='bgh';bl.style.fontSize='11px';bl.textContent='Cargar';
+    (function(qid){bl.addEventListener('click',function(){loadQ(qid);});})(q.id);
+    var bd=document.createElement('button');bd.className='bdn';bd.textContent='Eliminar';
+    (function(qid){bd.addEventListener('click',function(){delQ(qid);});})(q.id);
+    var btns=div.querySelector('div:last-child');btns.appendChild(bv);btns.appendChild(bl);btns.appendChild(bd);
+    l.appendChild(div);
+  }
 }
 
-function viewQuote(id){
-  var q=S.quotes.find(function(x){ return x.id===id; }); if(!q) return;
+function viewQ(id){
+  var q=getQ(id);if(!q)return;
   var d=new Date(q.createdAt).toLocaleDateString('es-AR',{day:'2-digit',month:'long',year:'numeric'});
-  document.getElementById('mq-tit').textContent=q.cliente;
-  document.getElementById('mq-body').innerHTML='<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;margin-bottom:14px;"><div><span style="color:var(--tx3);">Fecha:</span> '+d+'</div><div><span style="color:var(--tx3);">Personas:</span> '+q.personas+'</div><div><span style="color:var(--tx3);">Margen:</span> '+q.margen+'%</div></div><div class="sh" style="margin-bottom:8px;">Menú</div><div style="margin-bottom:12px;">'+q.menuItems.map(function(m){ return '<span class="bdg '+(CAT[m.category]&&CAT[m.category].cls||'')+'" style="margin-right:4px;margin-bottom:4px;">'+m.name+'</span>'; }).join('')+'</div><div class="sh" style="margin-bottom:8px;">Financiero</div><div style="background:var(--sf2);border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:6px;"><div style="display:flex;justify-content:space-between;"><span>Materia prima</span><span>'+q.results.mp+'</span></div><div style="display:flex;justify-content:space-between;"><span>Servicios</span><span>'+q.results.sv+'</span></div><div style="display:flex;justify-content:space-between;border-top:1px solid var(--bd);padding-top:6px;margin-top:2px;"><span style="color:var(--tx);font-weight:600;">Precio total</span><span style="color:var(--gold);font-weight:600;">'+q.results.pt+'</span></div><div style="display:flex;justify-content:space-between;"><span>Por persona</span><span>'+q.results.pp+'</span></div><div style="display:flex;justify-content:space-between;"><span style="color:#6BBD88;">Ganancia</span><span style="color:#6BBD88;">'+q.results.gn+'</span></div></div>';
-  document.getElementById('mq-load').onclick=function(){ loadQuote(id); document.getElementById('mod-quote').style.display='none'; };
-  document.getElementById('mod-quote').style.display='flex';
+  document.getElementById('mq-t').textContent=q.cliente;
+  var mn='';for(var i=0;i<q.menuItems.length;i++){var cat=CAT[q.menuItems[i].category];mn+='<span class="bdg '+(cat?cat.c:'')+'" style="margin-right:4px;">'+q.menuItems[i].name+'</span>';}
+  document.getElementById('mq-b').innerHTML='<p style="margin-bottom:10px;">Fecha: '+d+' &nbsp; Personas: '+q.personas+' &nbsp; Margen: '+q.margen+'%</p><p style="margin-bottom:12px;">'+mn+'</p><div style="background:var(--sf2);border-radius:8px;padding:12px;"><div style="display:flex;justify-content:space-between;padding:4px 0;"><span>Materia prima</span><span>'+q.results.mp+'</span></div><div style="display:flex;justify-content:space-between;padding:4px 0;"><span>Servicios</span><span>'+q.results.sv+'</span></div><div style="display:flex;justify-content:space-between;padding:8px 0 4px;border-top:1px solid var(--bd);margin-top:4px;"><strong>Precio total</strong><strong style="color:var(--gold);">'+q.results.pt+'</strong></div><div style="display:flex;justify-content:space-between;padding:4px 0;"><span>Por persona</span><span>'+q.results.pp+'</span></div><div style="display:flex;justify-content:space-between;padding:4px 0;"><span style="color:#6BBD88;">Ganancia</span><span style="color:#6BBD88;">'+q.results.gn+'</span></div></div>';
+  document.getElementById('mq-load').onclick=function(){loadQ(id);document.getElementById('mod-q').style.display='none';};
+  document.getElementById('mod-q').style.display='flex';
 }
 
-function loadQuote(id){
-  var q=S.quotes.find(function(x){ return x.id===id; }); if(!q) return;
+function loadQ(id){
+  var q=getQ(id);if(!q)return;
   document.getElementById('c-cl').value=q.cliente;
   document.getElementById('c-pe').value=q.personas;
   document.getElementById('c-mg').value=q.margen;
-  ['pe','li','sa','dj','be','va'].forEach(function(k,i){
-    var keys=['pe','li','sa','dj','be','va'];
-    var old=['pe','li','sa','dj','be','va'];
-    document.getElementById('g-'+keys[i]).value=q.servicios[old[i]]||'';
-  });
-  document.querySelectorAll('.mcb').forEach(function(cb){ cb.checked=false; });
-  q.menuItems.forEach(function(m){
-    var cb=document.querySelector('.mcb[data-id="'+m.id+'"]');
-    if(cb){ cb.checked=true; var o=document.getElementById('mo-'+m.category); if(o) o.classList.add('on'); }
-  });
-  onMenu();
-  showTab('cotizador', document.querySelector('.tb'));
-  toast('Cotización cargada ✓');
+  var ks=['pe','li','sa','dj','be','va'];for(var i=0;i<ks.length;i++)document.getElementById('g-'+ks[i]).value=q.servicios[ks[i]]||'';
+  var cbs=document.querySelectorAll('.mcb');for(var i=0;i<cbs.length;i++)cbs[i].checked=false;
+  for(var i=0;i<q.menuItems.length;i++){var cb=document.querySelector('.mcb[data-id="'+q.menuItems[i].id+'"]');if(cb){cb.checked=true;var o=document.getElementById('mo-'+q.menuItems[i].category);if(o)o.classList.add('on');}}
+  onMenu();switchTab('cotizador',document.getElementById('tb-cotizador'));toast('Cotizacion cargada');
 }
 
-function delQuote(id){
-  if(!confirm('¿Eliminar?')) return;
-  S.quotes=S.quotes.filter(function(q){ return q.id!==id; });
-  persist(); renderQuotes();
+function delQ(id){
+  if(!confirm('Eliminar esta cotizacion?'))return;
+  var nq=[];for(var i=0;i<S.quotes.length;i++)if(S.quotes[i].id!==id)nq.push(S.quotes[i]);
+  S.quotes=nq;save();renderQ();
 }
 
-// ══ RECIPES ════════════════════════════════════════════════════
-function renderRecipes(){
-  var f=document.getElementById('filt-cat')&&document.getElementById('filt-cat').value||'';
-  var g=document.getElementById('rec-grid'); if(!g) return;
-  var order={entrada:0,principal:1,postre:2,after:3};
-  var list=S.recipes.filter(function(r){ return !f||r.category===f; }).slice().sort(function(a,b){ return (order[a.category]||0)-(order[b.category]||0); });
-  if(!list.length){ g.innerHTML='<div class="emp" style="grid-column:1/-1"><div class="ic">🍽️</div><p>Sin recetas.</p></div>'; return; }
-  g.innerHTML=list.map(function(r){
-    var t=bCost(r),pp=r.rendimiento>0?t/r.rendimiento:0,cat=CAT[r.category]||{label:r.category,cls:'',icon:''};
-    return '<div class="rc" onclick="openView(''+r.id+'')">' +
-      '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">' +
-        '<span class="bdg '+cat.cls+'">'+cat.icon+' '+cat.label+'</span>' +
-        '<button class="bdn" style="padding:3px 8px;" onclick="event.stopPropagation();delRec(''+r.id+'')">✕</button>' +
-      '</div>' +
-      '<div style="font-family:Fraunces,serif;font-size:16px;font-weight:400;margin-bottom:5px;">'+r.name+'</div>' +
-      (r.desc?'<div style="font-size:12px;color:var(--tx2);line-height:1.5;margin-bottom:8px;font-style:italic;">'+r.desc+'</div>':'')+
-      '<div style="font-size:11px;color:var(--tx3);margin-bottom:12px;">Rinde '+r.rendimiento+' pers. · '+(r.ingredients||[]).length+' ingredientes</div>' +
-      '<div style="display:flex;justify-content:space-between;padding-top:10px;border-top:1px solid var(--bd);">' +
-        '<div><div style="font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;">Costo base</div><div style="font-weight:600;">'+fmt(t)+'</div></div>' +
-        '<div style="text-align:right;"><div style="font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;">Por persona</div><div style="font-weight:600;color:var(--gold);">'+fmt(pp)+'</div></div>' +
-      '</div></div>';
-  }).join('');
+function renderRec(){
+  var f=document.getElementById('filt')?document.getElementById('filt').value:'';
+  var g=document.getElementById('rec-grid');if(!g)return;
+  var order={entrada:0,principal:1,postre:2,after:3},list=[];
+  for(var i=0;i<S.recipes.length;i++)if(!f||S.recipes[i].category===f)list.push(S.recipes[i]);
+  list.sort(function(a,b){return(order[a.category]||0)-(order[b.category]||0);});
+  if(!list.length){g.innerHTML='<div class="emp" style="grid-column:1/-1;"><p>Sin recetas.</p></div>';return;}
+  g.innerHTML='';
+  for(var i=0;i<list.length;i++){
+    var r=list[i],t=bCost(r),pp=r.rendimiento>0?t/r.rendimiento:0,cat=CAT[r.category]||{l:r.category,c:''};
+    var div=document.createElement('div');div.className='rc';div.setAttribute('data-id',r.id);
+    div.innerHTML='<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;"><span class="bdg '+cat.c+'">'+cat.l+'</span><button class="bdn" style="padding:3px 8px;" data-del="'+r.id+'">x</button></div><strong style="font-size:15px;">'+r.name+'</strong>'+(r.desc?'<p style="font-size:12px;color:var(--tx2);margin-top:4px;font-style:italic;">'+r.desc+'</p>':'')+'<p style="font-size:11px;color:var(--tx3);margin-top:6px;margin-bottom:10px;">Rinde '+r.rendimiento+' pers. - '+(r.ingredients||[]).length+' ingredientes</p><div style="display:flex;justify-content:space-between;padding-top:8px;border-top:1px solid var(--bd);"><div><div style="font-size:10px;color:var(--tx3);text-transform:uppercase;margin-bottom:2px;">Costo base</div><strong>'+fmt(t)+'</strong></div><div style="text-align:right;"><div style="font-size:10px;color:var(--tx3);text-transform:uppercase;margin-bottom:2px;">Por persona</div><strong style="color:var(--gold);">'+fmt(pp)+'</strong></div></div>';
+    div.addEventListener('click',function(e){
+      var del=e.target.closest('[data-del]');
+      if(del){e.stopPropagation();delRec(del.getAttribute('data-del'));return;}
+      openView(this.getAttribute('data-id'));
+    });
+    g.appendChild(div);
+  }
 }
 
 function delRec(id){
-  if(!confirm('¿Eliminar esta receta?')) return;
-  S.recipes=S.recipes.filter(function(r){ return r.id!==id; });
-  persist(); buildMenu(); renderRecipes();
+  if(!confirm('Eliminar esta receta?'))return;
+  var nr=[];for(var i=0;i<S.recipes.length;i++)if(S.recipes[i].id!==id)nr.push(S.recipes[i]);
+  S.recipes=nr;save();buildMenu();renderRec();
 }
 
-// ══ VIEW MODAL ══════════════════════════════════════════════════
 function openView(id){
-  var r=S.recipes.find(function(x){ return x.id===id; }); if(!r) return;
-  var cat=CAT[r.category]||{label:r.category,cls:'',icon:''};
-  document.getElementById('vw-bdg').textContent=cat.icon+' '+cat.label;
-  document.getElementById('vw-bdg').className='bdg '+cat.cls;
+  var r=getR(id);if(!r)return;
+  var cat=CAT[r.category]||{l:r.category,c:''};
+  document.getElementById('vw-bdg').textContent=cat.l;
+  document.getElementById('vw-bdg').className='bdg '+cat.c;
   document.getElementById('vw-nom').textContent=r.name;
-  document.getElementById('vw-inf').textContent='Rendimiento base: '+r.rendimiento+' personas';
-  renderViewTable(id);
-  var sd=document.getElementById('vw-steps'), sb=document.getElementById('vw-steps-body');
-  if(r.steps){ sd.style.display='block'; sb.innerHTML=r.steps; } else { sd.style.display='none'; }
-  document.getElementById('vw-edit-btn').onclick=function(){ openEdit(id); };
+  document.getElementById('vw-inf').textContent='Rinde '+r.rendimiento+' personas';
+  rvwT(id);
+  var sd=document.getElementById('vw-stp'),sb=document.getElementById('vw-stp-b');
+  if(r.steps){sd.style.display='block';sb.textContent=r.steps;}else{sd.style.display='none';}
+  document.getElementById('vw-edit').onclick=function(){openEdit(id);};
   document.getElementById('mod-view').style.display='flex';
 }
 
-function renderViewTable(id){
-  var r=S.recipes.find(function(x){ return x.id===id; }); if(!r) return;
-  var total=0;
-  document.getElementById('vw-body').innerHTML=(r.ingredients||[]).map(function(ing,i){
-    var sub=(+ing.qty||0)*(+ing.cost||0); total+=sub;
-    return '<tr><td><input class="ci" value="'+ing.name+'" onchange="updField(''+id+'','+i+','name',this.value)"></td>' +
-      '<td><input class="ci" type="number" value="'+ing.qty+'" min="0" step="any" inputmode="decimal" style="width:65px;" onchange="updField(''+id+'','+i+','qty',this.value)"></td>' +
-      '<td><select class="ci" onchange="updField(''+id+'','+i+','unit',this.value)">'+['Kg','Litro','Unidad','g','ml','Porción'].map(function(u){ return '<option'+(ing.unit===u?' selected':'')+'>'+u+'</option>'; }).join('')+'</select></td>' +
-      '<td><input class="ci cig" type="number" value="'+ing.cost+'" min="0" step="any" inputmode="decimal" style="width:100px;" onchange="updField(''+id+'','+i+','cost',this.value)" title="Editar precio"></td>' +
-      '<td style="color:var(--tx);font-weight:500;">'+fmt(sub)+'</td></tr>';
-  }).join('');
+function rvwT(id){
+  var r=getR(id);if(!r)return;
+  var ing=r.ingredients||[],total=0;
+  var tbody=document.getElementById('vw-body');
+  tbody.innerHTML='';
+  for(var i=0;i<ing.length;i++){
+    var sub=(parseFloat(ing[i].qty)||0)*(parseFloat(ing[i].cost)||0);total+=sub;
+    var tr=document.createElement('tr');
+    var td1=document.createElement('td');
+    var inpN=document.createElement('input');inpN.className='ci';inpN.value=ing[i].name;
+    (function(rid,ii){inpN.addEventListener('change',function(){updF(rid,ii,'name',this.value);});})(id,i);
+    td1.appendChild(inpN);
+    var td2=document.createElement('td');
+    var inpQ=document.createElement('input');inpQ.className='ci';inpQ.type='number';inpQ.value=ing[i].qty;inpQ.min='0';inpQ.step='any';inpQ.setAttribute('inputmode','decimal');inpQ.style.width='60px';
+    (function(rid,ii){inpQ.addEventListener('change',function(){updF(rid,ii,'qty',this.value);});})(id,i);
+    td2.appendChild(inpQ);
+    var td3=document.createElement('td');
+    var sel=document.createElement('select');sel.className='ci';
+    var units=['Kg','Litro','Unidad','g','ml','Porcion'];
+    for(var u=0;u<units.length;u++){var opt=document.createElement('option');opt.textContent=units[u];if(ing[i].unit===units[u])opt.selected=true;sel.appendChild(opt);}
+    (function(rid,ii){sel.addEventListener('change',function(){updF(rid,ii,'unit',this.value);});})(id,i);
+    td3.appendChild(sel);
+    var td4=document.createElement('td');
+    var inpC=document.createElement('input');inpC.className='ci cig';inpC.type='number';inpC.value=ing[i].cost;inpC.min='0';inpC.step='any';inpC.setAttribute('inputmode','decimal');inpC.style.width='90px';
+    (function(rid,ii){inpC.addEventListener('change',function(){updF(rid,ii,'cost',this.value);});})(id,i);
+    td4.appendChild(inpC);
+    var td5=document.createElement('td');td5.style.fontWeight='500';td5.textContent=fmt(sub);
+    tr.appendChild(td1);tr.appendChild(td2);tr.appendChild(td3);tr.appendChild(td4);tr.appendChild(td5);
+    tbody.appendChild(tr);
+    total+=0;
+  }
   document.getElementById('vw-tot').textContent=fmt(total);
-  document.getElementById('vw-pp').textContent=fmt(r.rendimiento>0?total/r.rendimiento:0);
+  document.getElementById('vw-ppa').textContent=fmt(r.rendimiento>0?total/r.rendimiento:0);
 }
 
-function updField(id,idx,field,val){
-  var r=S.recipes.find(function(x){ return x.id===id; }); if(!r||!r.ingredients[idx]) return;
+function updF(id,idx,field,val){
+  var r=getR(id);if(!r||!r.ingredients[idx])return;
   r.ingredients[idx][field]=(field==='name'||field==='unit')?val:(parseFloat(val)||0);
-  if(field==='cost'){ if(!S.priceLog)S.priceLog={}; S.priceLog[id+'__'+r.ingredients[idx].name]=new Date().toISOString(); }
-  persist(); renderViewTable(id); calc(); refCosts(); renderRecipes();
+  if(field==='cost'){if(!S.priceLog)S.priceLog={};S.priceLog[id+'__'+r.ingredients[idx].name]=new Date().toISOString();}
+  save();rvwT(id);calc();refCosts();
 }
 
-// ══ EDIT MODAL ══════════════════════════════════════════════════
-function openNewModal(){
-  document.getElementById('mod-edit-tit').textContent='Nueva receta';
-  document.getElementById('edit-id').value='';
+function openNew(){
+  document.getElementById('mrec-t').textContent='Nueva receta';
+  document.getElementById('eid').value='';
   document.getElementById('r-nom').value='';
   document.getElementById('r-cat').value='entrada';
   document.getElementById('r-rin').value='';
   document.getElementById('r-dsc').value='';
   document.getElementById('r-stp').value='';
   document.getElementById('ing-body').innerHTML='';
-  document.getElementById('edit-tot').textContent='$0';
-  addRow(); addRow();
-  document.getElementById('mod-edit').style.display='flex';
+  document.getElementById('ing-tot').textContent='$0';
+  addRow();addRow();
+  document.getElementById('mod-rec').style.display='flex';
 }
 
 function openEdit(id){
-  var r=S.recipes.find(function(x){ return x.id===id; }); if(!r) return;
+  var r=getR(id);if(!r)return;
   document.getElementById('mod-view').style.display='none';
-  document.getElementById('mod-edit-tit').textContent='Editar receta';
-  document.getElementById('edit-id').value=id;
+  document.getElementById('mrec-t').textContent='Editar receta';
+  document.getElementById('eid').value=id;
   document.getElementById('r-nom').value=r.name;
   document.getElementById('r-cat').value=r.category;
   document.getElementById('r-rin').value=r.rendimiento;
   document.getElementById('r-dsc').value=r.desc||'';
   document.getElementById('r-stp').value=r.steps||'';
   document.getElementById('ing-body').innerHTML='';
-  (r.ingredients||[]).forEach(function(ing){ addRow(ing); });
-  calcEditTot();
-  document.getElementById('mod-edit').style.display='flex';
+  var ing=r.ingredients||[];for(var i=0;i<ing.length;i++)addRow(ing[i]);
+  cIT();
+  document.getElementById('mod-rec').style.display='flex';
 }
 
 function addRow(ing){
   ing=ing||{};
-  var tb=document.getElementById('ing-body'), tr=document.createElement('tr');
-  tr.innerHTML='<td><input class="ci ing-n" placeholder="Ingrediente" value="'+(ing.name||'')+'" oninput="calcEditTot()"></td>' +
-    '<td><input class="ci ing-q" type="number" placeholder="0" value="'+(ing.qty||'')+'" min="0" step="any" inputmode="decimal" style="width:65px;" oninput="calcEditTot()"></td>' +
-    '<td><select class="ci ing-u" onchange="calcEditTot()">'+['Kg','Litro','Unidad','g','ml','Porción'].map(function(u){ return '<option'+(ing.unit===u?' selected':'')+'>'+u+'</option>'; }).join('')+'</select></td>' +
-    '<td><input class="ci cig ing-c" type="number" placeholder="0.00" value="'+(ing.cost||'')+'" min="0" step="any" inputmode="decimal" style="width:100px;" oninput="calcEditTot()"></td>' +
-    '<td class="ing-s" style="color:var(--tx);font-size:13px;">'+fmt((+ing.qty||0)*(+ing.cost||0))+'</td>' +
-    '<td><button onclick="this.closest('tr').remove();calcEditTot()" class="bdn" style="padding:3px 8px;">✕</button></td>';
+  var tb=document.getElementById('ing-body');
+  var tr=document.createElement('tr');
+  var units=['Kg','Litro','Unidad','g','ml','Porcion'];
+  var td1=document.createElement('td');
+  var inpN=document.createElement('input');inpN.className='ci ing-n';inpN.placeholder='Ingrediente';inpN.value=ing.name||'';inpN.addEventListener('input',cIT);td1.appendChild(inpN);
+  var td2=document.createElement('td');
+  var inpQ=document.createElement('input');inpQ.className='ci ing-q';inpQ.type='number';inpQ.placeholder='0';inpQ.value=ing.qty||'';inpQ.min='0';inpQ.step='any';inpQ.setAttribute('inputmode','decimal');inpQ.style.width='60px';inpQ.addEventListener('input',cIT);td2.appendChild(inpQ);
+  var td3=document.createElement('td');
+  var sel=document.createElement('select');sel.className='ci ing-u';
+  for(var u=0;u<units.length;u++){var opt=document.createElement('option');opt.textContent=units[u];if(ing.unit===units[u])opt.selected=true;sel.appendChild(opt);}
+  sel.addEventListener('change',cIT);td3.appendChild(sel);
+  var td4=document.createElement('td');
+  var inpC=document.createElement('input');inpC.className='ci cig ing-c';inpC.type='number';inpC.placeholder='0';inpC.value=ing.cost||'';inpC.min='0';inpC.step='any';inpC.setAttribute('inputmode','decimal');inpC.style.width='90px';inpC.addEventListener('input',cIT);td4.appendChild(inpC);
+  var td5=document.createElement('td');td5.className='ing-s';td5.style.fontSize='13px';td5.textContent=fmt((parseFloat(ing.qty)||0)*(parseFloat(ing.cost)||0));
+  var td6=document.createElement('td');
+  var bDel=document.createElement('button');bDel.className='bdn';bDel.style.padding='3px 8px';bDel.textContent='x';
+  bDel.addEventListener('click',function(){tr.remove();cIT();});
+  td6.appendChild(bDel);
+  tr.appendChild(td1);tr.appendChild(td2);tr.appendChild(td3);tr.appendChild(td4);tr.appendChild(td5);tr.appendChild(td6);
   tb.appendChild(tr);
 }
 
-function calcEditTot(){
-  var t=0;
-  document.querySelectorAll('#ing-body tr').forEach(function(row){
-    var q=parseFloat(row.querySelector('.ing-q').value)||0;
-    var c=parseFloat(row.querySelector('.ing-c').value)||0;
-    var s=q*c; t+=s;
-    var sub=row.querySelector('.ing-s'); if(sub) sub.textContent=fmt(s);
-  });
-  document.getElementById('edit-tot').textContent=fmt(t);
+function cIT(){
+  var rows=document.querySelectorAll('#ing-body tr'),t=0;
+  for(var i=0;i<rows.length;i++){var q=parseFloat(rows[i].querySelector('.ing-q').value)||0,c=parseFloat(rows[i].querySelector('.ing-c').value)||0,s=q*c;t+=s;var sub=rows[i].querySelector('.ing-s');if(sub)sub.textContent=fmt(s);}
+  document.getElementById('ing-tot').textContent=fmt(t);
 }
 
-function saveRecipe(){
+function saveRec(){
   var name=document.getElementById('r-nom').value.trim();
-  if(!name){ toast('⚠️ El nombre es obligatorio'); return; }
-  var category=document.getElementById('r-cat').value;
-  var rendimiento=parseFloat(document.getElementById('r-rin').value)||1;
-  var desc=document.getElementById('r-dsc').value.trim();
-  var steps=document.getElementById('r-stp').value.trim();
-  var ingredients=Array.from(document.querySelectorAll('#ing-body tr')).map(function(row){
-    var n=row.querySelector('.ing-n').value.trim();
-    return n?{name:n,qty:parseFloat(row.querySelector('.ing-q').value)||0,unit:row.querySelector('.ing-u').value,cost:parseFloat(row.querySelector('.ing-c').value)||0}:null;
-  }).filter(Boolean);
-  var eid=document.getElementById('edit-id').value;
-  if(eid){ var i=S.recipes.findIndex(function(r){ return r.id===eid; }); if(i>=0) S.recipes[i]=Object.assign({},S.recipes[i],{name,category,rendimiento,desc,steps,ingredients}); }
-  else{ S.recipes.push({id:'r'+Date.now(),name,category,rendimiento,desc,steps,ingredients,createdAt:new Date().toISOString()}); }
-  persist(); buildMenu(); renderRecipes();
-  document.getElementById('mod-edit').style.display='none';
+  if(!name){toast('Nombre obligatorio');return;}
+  var cat=document.getElementById('r-cat').value,rin=parseFloat(document.getElementById('r-rin').value)||1;
+  var desc=document.getElementById('r-dsc').value.trim(),steps=document.getElementById('r-stp').value.trim();
+  var rows=document.querySelectorAll('#ing-body tr'),ings=[];
+  for(var i=0;i<rows.length;i++){var n=rows[i].querySelector('.ing-n').value.trim();if(n)ings.push({name:n,qty:parseFloat(rows[i].querySelector('.ing-q').value)||0,unit:rows[i].querySelector('.ing-u').value,cost:parseFloat(rows[i].querySelector('.ing-c').value)||0});}
+  var eid=document.getElementById('eid').value;
+  if(eid){var r=getR(eid);if(r){r.name=name;r.category=cat;r.rendimiento=rin;r.desc=desc;r.steps=steps;r.ingredients=ings;}}
+  else{S.recipes.push({id:'r'+Date.now(),name:name,category:cat,rendimiento:rin,desc:desc,steps:steps,ingredients:ings,createdAt:new Date().toISOString()});}
+  save();buildMenu();renderRec();
+  document.getElementById('mod-rec').style.display='none';
 }
 
-// ══ PACKAGES ════════════════════════════════════════════════════
-function renderPkgGrid(){
-  var g=document.getElementById('pkg-grid'); if(!g) return;
+function renderPkgs(){
+  var l=document.getElementById('pkg-list');if(!l)return;
   var pkgs=S.packages||[];
-  if(!pkgs.length){ g.innerHTML='<div class="emp" style="grid-column:1/-1"><div class="ic">📦</div><p>Sin paquetes.</p></div>'; return; }
-  g.innerHTML=pkgs.map(function(pkg){
-    var items=(pkg.recipeIds||[]).map(function(id){ return S.recipes.find(function(x){ return x.id===id; }); }).filter(Boolean);
-    return '<div class="pkg-card"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;"><div style="font-family:Fraunces,serif;font-size:16px;font-weight:400;">'+pkg.name+'</div><button class="bdn" style="padding:3px 8px;" onclick="delPkg(''+pkg.id+'')">✕</button></div>'+(pkg.desc?'<div style="font-size:12px;color:var(--tx3);margin-bottom:8px;">'+pkg.desc+'</div>':'')+'<div style="font-size:12px;color:var(--tx2);margin-bottom:12px;">'+items.map(function(r){ return r.name; }).join(' · ')+'</div><div style="display:flex;gap:8px;flex-wrap:wrap;padding-top:10px;border-top:1px solid var(--bd);"><button class="bg" style="flex:1;" onclick="loadPkg(''+pkg.id+'')">⚡ Cargar</button><button class="bsm" onclick="editPkg(''+pkg.id+'')">Editar</button></div></div>';
-  }).join('');
+  if(!pkgs.length){l.innerHTML='<div class="emp" style="grid-column:1/-1;"><p>Sin paquetes.</p></div>';return;}
+  l.innerHTML='';
+  for(var i=0;i<pkgs.length;i++){
+    var pkg=pkgs[i],names=[];
+    for(var j=0;j<(pkg.recipeIds||[]).length;j++){var r=getR(pkg.recipeIds[j]);if(r)names.push(r.name);}
+    var div=document.createElement('div');div.className='pkc';
+    var header=document.createElement('div');header.style.cssText='display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;';
+    var title=document.createElement('strong');title.style.fontSize='15px';title.textContent=pkg.name;
+    var bDel=document.createElement('button');bDel.className='bdn';bDel.style.padding='3px 8px';bDel.textContent='x';
+    (function(pid){bDel.addEventListener('click',function(e){e.stopPropagation();delPkg(pid);});})(pkg.id);
+    header.appendChild(title);header.appendChild(bDel);div.appendChild(header);
+    if(pkg.desc){var pd=document.createElement('p');pd.style.cssText='font-size:12px;color:var(--tx3);margin-bottom:8px;';pd.textContent=pkg.desc;div.appendChild(pd);}
+    var pn=document.createElement('p');pn.style.cssText='font-size:12px;color:var(--tx2);margin-bottom:10px;';pn.textContent=names.join(' - ');div.appendChild(pn);
+    var row=document.createElement('div');row.style.cssText='display:flex;gap:8px;padding-top:10px;border-top:1px solid var(--bd);';
+    var bC=document.createElement('button');bC.className='bg';bC.style.flex='1';bC.textContent='Cargar en cotizador';
+    (function(pid){bC.addEventListener('click',function(){loadPkg(pid);});})(pkg.id);
+    var bE=document.createElement('button');bE.className='bsm';bE.textContent='Editar';
+    (function(pid){bE.addEventListener('click',function(){editPkg(pid);});})(pkg.id);
+    row.appendChild(bC);row.appendChild(bE);div.appendChild(row);
+    l.appendChild(div);
+  }
 }
 
-function openNewPkg(){
-  document.getElementById('pkg-tit').textContent='Nuevo paquete';
-  document.getElementById('pkg-id').value='';
+function openPkg(){
+  document.getElementById('mpkg-t').textContent='Nuevo paquete';
+  document.getElementById('pkg-eid').value='';
   document.getElementById('pkg-nom').value='';
   document.getElementById('pkg-dsc').value='';
-  buildPkgSel([]);
+  bPkgSel([]);
   document.getElementById('mod-pkg').style.display='flex';
 }
 
 function editPkg(id){
-  var pkg=(S.packages||[]).find(function(p){ return p.id===id; }); if(!pkg) return;
-  document.getElementById('pkg-tit').textContent='Editar paquete';
-  document.getElementById('pkg-id').value=id;
+  var pkg=getPkg(id);if(!pkg)return;
+  document.getElementById('mpkg-t').textContent='Editar paquete';
+  document.getElementById('pkg-eid').value=id;
   document.getElementById('pkg-nom').value=pkg.name;
   document.getElementById('pkg-dsc').value=pkg.desc||'';
-  buildPkgSel(pkg.recipeIds||[]);
+  bPkgSel(pkg.recipeIds||[]);
   document.getElementById('mod-pkg').style.display='flex';
 }
 
-function buildPkgSel(sel){
-  var c=document.getElementById('pkg-sel'); c.innerHTML='';
-  CATS.forEach(function(k){
-    var recs=S.recipes.filter(function(r){ return r.category===k; }); if(!recs.length) return;
-    var cat=CAT[k];
+function bPkgSel(sel){
+  var c=document.getElementById('pkg-sel');c.innerHTML='';
+  for(var ci=0;ci<CATS.length;ci++){
+    var k=CATS[ci],cat=CAT[k],recs=[];
+    for(var ri=0;ri<S.recipes.length;ri++)if(S.recipes[ri].category===k)recs.push(S.recipes[ri]);
+    if(!recs.length)continue;
     var sec=document.createElement('div');
-    sec.innerHTML='<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--tx3);padding:8px 0 4px;">'+cat.icon+' '+cat.label+'s</div>'+
-      recs.map(function(r){ return '<label class="mopt"><input type="checkbox" class="pcb" data-id="'+r.id+'" '+(sel.indexOf(r.id)>=0?'checked':'')+'>'+r.name+'</label>'; }).join('');
-    c.appendChild(sec);
-  });
+    var h='<p style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--tx3);padding:8px 0 4px;">'+cat.l+'s</p>';
+    for(var ri=0;ri<recs.length;ri++){var checked=sel.indexOf(recs[ri].id)>=0;h+='<label class="mopt"><input type="checkbox" class="pcb" data-id="'+recs[ri].id+'" '+(checked?'checked':'')+'>'+recs[ri].name+'</label>';}
+    sec.innerHTML=h;c.appendChild(sec);
+  }
 }
 
 function savePkg(){
   var name=document.getElementById('pkg-nom').value.trim();
-  if(!name){ toast('⚠️ Nombre obligatorio'); return; }
+  if(!name){toast('Nombre obligatorio');return;}
   var desc=document.getElementById('pkg-dsc').value.trim();
-  var recipeIds=Array.from(document.querySelectorAll('.pcb:checked')).map(function(c){ return c.dataset.id; });
-  if(!recipeIds.length){ toast('⚠️ Seleccioná al menos una receta'); return; }
-  if(!S.packages) S.packages=[];
-  var eid=document.getElementById('pkg-id').value;
-  if(eid){ var i=S.packages.findIndex(function(p){ return p.id===eid; }); if(i>=0) S.packages[i]=Object.assign({},S.packages[i],{name,desc,recipeIds}); }
-  else{ S.packages.push({id:'pk'+Date.now(),name,desc,recipeIds,createdAt:new Date().toISOString()}); }
-  persist(); renderPkgGrid();
+  var cbs=document.querySelectorAll('.pcb:checked'),ids=[];for(var i=0;i<cbs.length;i++)ids.push(cbs[i].getAttribute('data-id'));
+  if(!ids.length){toast('Selecciona al menos una receta');return;}
+  if(!S.packages)S.packages=[];
+  var eid=document.getElementById('pkg-eid').value;
+  if(eid){var pkg=getPkg(eid);if(pkg){pkg.name=name;pkg.desc=desc;pkg.recipeIds=ids;}}
+  else{S.packages.push({id:'pk'+Date.now(),name:name,desc:desc,recipeIds:ids,createdAt:new Date().toISOString()});}
+  save();renderPkgs();
   document.getElementById('mod-pkg').style.display='none';
-  toast('Paquete guardado ✓');
+  toast('Paquete guardado');
 }
 
 function loadPkg(id){
-  var pkg=(S.packages||[]).find(function(p){ return p.id===id; }); if(!pkg) return;
-  document.querySelectorAll('.mcb').forEach(function(cb){ cb.checked=false; });
-  (pkg.recipeIds||[]).forEach(function(rid){
-    var cb=document.querySelector('.mcb[data-id="'+rid+'"]');
-    if(cb){ cb.checked=true; var o=document.getElementById('mo-'+cb.dataset.cat); if(o) o.classList.add('on'); }
-  });
-  onMenu();
-  showTab('cotizador', document.querySelector('.tb'));
-  toast('📦 "'+pkg.name+'" cargado ✓');
+  var pkg=getPkg(id);if(!pkg)return;
+  var cbs=document.querySelectorAll('.mcb');for(var i=0;i<cbs.length;i++)cbs[i].checked=false;
+  for(var i=0;i<(pkg.recipeIds||[]).length;i++){var cb=document.querySelector('.mcb[data-id="'+pkg.recipeIds[i]+'"]');if(cb){cb.checked=true;var o=document.getElementById('mo-'+cb.getAttribute('data-cat'));if(o)o.classList.add('on');}}
+  onMenu();switchTab('cotizador',document.getElementById('tb-cotizador'));toast('Paquete cargado');
 }
 
 function delPkg(id){
-  if(!confirm('¿Eliminar?')) return;
-  S.packages=S.packages.filter(function(p){ return p.id!==id; });
-  persist(); renderPkgGrid();
+  if(!confirm('Eliminar este paquete?'))return;
+  var np=[];var pkgs=S.packages||[];for(var i=0;i<pkgs.length;i++)if(pkgs[i].id!==id)np.push(pkgs[i]);
+  S.packages=np;save();renderPkgs();
 }
 
-// ══ PRICE PANEL ═════════════════════════════════════════════════
-function priceAge(rid,name){
-  if(!S.priceLog) return 9999;
-  var k=rid+'__'+name, v=S.priceLog[k];
-  return v?Math.floor((Date.now()-new Date(v).getTime())/86400000):9999;
-}
+function priceAge(rid,name){if(!S.priceLog)return 9999;var v=S.priceLog[rid+'__'+name];return v?Math.floor((Date.now()-new Date(v).getTime())/86400000):9999;}
 
-function ageBadge(d){
-  if(d<7)   return {cls:'aok',dot:'🟢',lbl:d===9999?'Nunca':d===0?'Hoy':d+'d'};
-  if(d<30)  return {cls:'awk',dot:'🟡',lbl:d+'d'};
-  return            {cls:'aol',dot:'🔴',lbl:d===9999?'Nunca':d+'d'};
-}
-
-function renderPricePanel(){
-  var ok=0,aw=0,ol=0, rows=[];
-  S.recipes.forEach(function(r){
-    (r.ingredients||[]).forEach(function(ing){
-      var d=priceAge(r.id,ing.name), b=ageBadge(d);
-      if(d<7) ok++; else if(d<30) aw++; else ol++;
-      rows.push({r,ing,d,b});
-    });
-  });
-  var pb=document.getElementById('price-badges');
-  if(pb) pb.innerHTML='<span class="bdg aok">✓ '+ok+' al día</span><span class="bdg awk" style="margin-left:6px;">⚠ '+aw+' a revisar</span><span class="bdg aol" style="margin-left:6px;">✕ '+ol+' desact.</span>';
-  rows.sort(function(a,b){ return b.d-a.d; });
-  var body=document.getElementById('price-body'); if(!body) return;
-  body.innerHTML=rows.map(function(row){
-    return '<tr><td style="font-size:12px;color:var(--tx2);max-width:100px;">'+row.r.name+'</td>' +
-      '<td style="color:var(--tx);">'+row.ing.name+'</td>' +
-      '<td style="color:var(--gold);font-weight:500;">'+fmt(row.ing.cost)+'<span style="font-size:10px;color:var(--tx3);">/'+row.ing.unit+'</span></td>' +
-      '<td><span class="bdg '+row.b.cls+'">'+row.b.dot+' '+row.b.lbl+'</span></td>' +
-      '<td><div style="display:flex;align-items:center;gap:4px;"><input type="number" value="'+row.ing.cost+'" min="0" step="any" inputmode="decimal" style="background:var(--sf3);border:1px solid transparent;border-radius:4px;padding:5px 8px;color:var(--gold);font-family:Inter,sans-serif;font-size:13px;outline:none;width:100px;" onchange="updPricePanel(''+row.r.id+'',''+row.ing.name+'',this.value)" onfocus="this.style.borderColor='var(--gdim)'" onblur="this.style.borderColor='transparent'"><span style="font-size:10px;color:var(--tx3);">/'+row.ing.unit+'</span></div></td></tr>';
-  }).join('');
-}
-
-function updPricePanel(rid,name,val){
-  var r=S.recipes.find(function(x){ return x.id===rid; }); if(!r) return;
-  var ing=r.ingredients.find(function(i){ return i.name===name; }); if(!ing) return;
-  ing.cost=parseFloat(val)||0;
-  if(!S.priceLog) S.priceLog={};
-  S.priceLog[rid+'__'+name]=new Date().toISOString();
-  persist(); calc(); refCosts(); renderPricePanel(); renderRecipes();
-  toast('Precio actualizado ✓');
-}
-
-function infPreview(){
-  var pct=parseFloat(document.getElementById('inf-sl').value)/100;
-  var cat=document.getElementById('inf-cat').value;
-  var prev=document.getElementById('inf-prev');
-  var ex=S.recipes.filter(function(r){ return cat==='all'||r.category===cat; }).slice(0,3).map(function(r){
-    return '<span style="color:var(--tx)">'+r.name+'</span>: '+fmt(bCost(r))+' → <span style="color:var(--gold)">'+fmt(Math.round(bCost(r)*(1+pct)))+'</span>';
-  });
-  if(ex.length){ prev.style.display='block'; prev.innerHTML='<strong style="color:var(--tx2);font-size:11px;">PREVIEW:</strong><br>'+ex.join('<br>'); }
-}
-
-function applyInflation(){
-  var cat=document.getElementById('inf-cat').value;
-  var pct=parseFloat(document.getElementById('inf-sl').value)/100;
-  if(!confirm('¿Aplicar +'+Math.round(pct*100)+'% a '+(cat==='all'?'todas las recetas':'recetas de '+cat)+'?')) return;
-  var n=0;
-  S.recipes.forEach(function(r){
-    if(cat!=='all'&&r.category!==cat) return;
-    (r.ingredients||[]).forEach(function(ing){
-      ing.cost=Math.round(ing.cost*(1+pct));
-      if(!S.priceLog) S.priceLog={};
-      S.priceLog[r.id+'__'+ing.name]=new Date().toISOString();
-      n++;
-    });
-  });
-  persist(); calc(); refCosts(); renderPricePanel(); renderRecipes();
-  toast('✓ '+n+' precios actualizados (+'+Math.round(pct*100)+'%)');
-}
-
-// ══ EXPORT ══════════════════════════════════════════════════════
-function exportPDF(){ toast("PDF disponible solo en GitHub Pages"); return; if(false){
-  if(!window.jspdf){ toast('⚠️ Cargando PDF, reintentá'); return; }
-  var jsPDF=window.jspdf.jsPDF;
-  var cl=document.getElementById('c-cl').value||'Sin nombre';
-  var p=gn('c-pe'), mg=gn('c-mg');
-  var fecha=new Date().toLocaleDateString('es-AR',{day:'2-digit',month:'long',year:'numeric'});
-  var ids=selIds();
-  var bycat={};
-  ids.forEach(function(id){
-    var r=S.recipes.find(function(x){ return x.id===id; }); if(!r) return;
-    if(!bycat[r.category]) bycat[r.category]=[];
-    bycat[r.category].push(r.name);
-  });
-  var doc=new jsPDF({unit:'mm',format:'a4'});
-  var W=210,M=18,CW=W-M*2;
-  var GOLD=[180,140,60],DARK=[20,20,20],GRAY=[90,90,90],LGRAY=[200,200,200],BG=[15,15,15],BG2=[30,30,30];
-  // Header
-  doc.setFillColor.apply(doc,BG); doc.rect(0,0,W,52,'F');
-  doc.setTextColor.apply(doc,GOLD); doc.setFont('helvetica','bolditalic'); doc.setFontSize(26); doc.text('Cotización',M,22);
-  doc.setFont('helvetica','normal'); doc.setFontSize(12); doc.setTextColor.apply(doc,LGRAY); doc.text('Gastronómica · Córdoba',M,31);
-  doc.setDrawColor.apply(doc,GOLD); doc.setLineWidth(0.8); doc.line(M,36,W-M,36);
-  doc.setFontSize(9); doc.text(fecha,W-M,43,{align:'right'});
-  var y=62;
-  // Cliente
-  doc.setFillColor.apply(doc,BG2); doc.roundedRect(M,y,CW,24,3,3,'F');
-  doc.setTextColor.apply(doc,GOLD); doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.text('CLIENTE',M+6,y+8);
-  doc.setTextColor(240,237,232); doc.setFontSize(14); doc.text(cl,M+6,y+17);
-  doc.setTextColor.apply(doc,GOLD); doc.setFontSize(9); doc.text('PERSONAS',W-M-6,y+8,{align:'right'});
-  doc.setTextColor(240,237,232); doc.setFont('helvetica','bold'); doc.setFontSize(20); doc.text(String(p||0),W-M-6,y+18,{align:'right'});
-  y+=34;
-  // Menu
-  if(ids.length>0){
-    doc.setTextColor.apply(doc,GOLD); doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.text('MENÚ',M,y);
-    doc.setDrawColor.apply(doc,GOLD); doc.setLineWidth(0.3); doc.line(M+13,y-1,W-M,y-1);
-    y+=7;
-    var catNames={entrada:'Entradas',principal:'Principales',postre:'Postres',after:'After'};
-    ['entrada','principal','postre','after'].forEach(function(cat){
-      if(!bycat[cat]) return;
-      doc.setFillColor.apply(doc,GOLD); doc.roundedRect(M,y,32,5.5,1.5,1.5,'F');
-      doc.setTextColor.apply(doc,DARK); doc.setFont('helvetica','bold'); doc.setFontSize(7); doc.text(catNames[cat].toUpperCase(),M+16,y+3.8,{align:'center'});
-      doc.setTextColor(50,50,50); doc.setFont('helvetica','normal'); doc.setFontSize(10);
-      var lines=doc.splitTextToSize(bycat[cat].join('  ·  '),CW-38); doc.text(lines,M+36,y+3.8);
-      y+=Math.max(8,lines.length*5.5)+2;
-    });
-    y+=4;
+function renderPrices(){
+  var ok=0,aw=0,ol=0,rows=[];
+  for(var ri=0;ri<S.recipes.length;ri++){var r=S.recipes[ri],ing=r.ingredients||[];for(var i=0;i<ing.length;i++){var d=priceAge(r.id,ing[i].name);if(d<7)ok++;else if(d<30)aw++;else ol++;rows.push({r:r,ing:ing[i],d:d});}}
+  rows.sort(function(a,b){return b.d-a.d;});
+  var pb=document.getElementById('pbadges');
+  if(pb)pb.innerHTML='<span class="bdg aok">OK '+ok+'</span><span class="bdg awk" style="margin-left:4px;">Revisar '+aw+'</span><span class="bdg aol" style="margin-left:4px;">Desact. '+ol+'</span>';
+  var body=document.getElementById('price-body');if(!body)return;
+  body.innerHTML='';
+  for(var i=0;i<rows.length;i++){
+    var row=rows[i],d=row.d,cls=d<7?'aok':d<30?'awk':'aol',lbl=d===9999?'Nunca':d===0?'Hoy':d+'d';
+    var tr=document.createElement('tr');
+    var td1=document.createElement('td');td1.style.cssText='font-size:12px;color:var(--tx2);max-width:90px;';td1.textContent=row.r.name;
+    var td2=document.createElement('td');td2.style.color='var(--tx)';td2.textContent=row.ing.name;
+    var td3=document.createElement('td');td3.style.cssText='color:var(--gold);font-weight:500;';td3.textContent=fmt(row.ing.cost);
+    var td4=document.createElement('td');td4.innerHTML='<span class="bdg '+cls+'">'+lbl+'</span>';
+    var td5=document.createElement('td');
+    var inp=document.createElement('input');
+    inp.type='number';inp.value=row.ing.cost;inp.min='0';inp.step='any';inp.setAttribute('inputmode','decimal');
+    inp.style.cssText='background:var(--sf3);border:1px solid transparent;border-radius:4px;padding:5px 8px;color:var(--gold);font-family:Inter,sans-serif;font-size:13px;outline:none;width:90px;';
+    (function(rid,name){inp.addEventListener('change',function(){updPrice(rid,name,this.value);});})(row.r.id,row.ing.name);
+    td5.appendChild(inp);
+    tr.appendChild(td1);tr.appendChild(td2);tr.appendChild(td3);tr.appendChild(td4);tr.appendChild(td5);
+    body.appendChild(tr);
   }
-  // Financiero
-  doc.setTextColor.apply(doc,GOLD); doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.text('RESUMEN',M,y);
-  doc.setDrawColor.apply(doc,GOLD); doc.setLineWidth(0.3); doc.line(M+19,y-1,W-M,y-1); y+=7;
-  [{l:'Materia prima',v:'r-mp'},{l:'Servicios',v:'r-sv'},{l:'Costo base',v:'r-ct'}].forEach(function(f){
-    doc.setFillColor(245,244,242); doc.rect(M,y-4,CW,8,'F');
-    doc.setTextColor.apply(doc,GRAY); doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.text(f.l,M+4,y+0.5);
-    doc.setTextColor.apply(doc,DARK); doc.setFont('helvetica','bold'); doc.text(document.getElementById(f.v).textContent,W-M-4,y+0.5,{align:'right'});
-    y+=9;
-  });
-  // Precio final
-  y+=4;
-  doc.setFillColor.apply(doc,BG); doc.roundedRect(M,y,CW,26,3,3,'F');
-  doc.setDrawColor.apply(doc,GOLD); doc.setLineWidth(0.5); doc.roundedRect(M,y,CW,26,3,3,'S');
-  doc.setTextColor.apply(doc,LGRAY); doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.text('VALOR POR TARJETA',M+6,y+8);
-  doc.setTextColor.apply(doc,GOLD); doc.setFont('helvetica','bold'); doc.setFontSize(22); doc.text(document.getElementById('r-pt').textContent,M+6,y+20);
-  doc.setTextColor.apply(doc,LGRAY); doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.text('por persona:',W-M-40,y+10);
-  doc.setTextColor(240,237,232); doc.setFont('helvetica','bold'); doc.setFontSize(13); doc.text(document.getElementById('r-pp').textContent,W-M-6,y+20,{align:'right'});
-  y+=34;
-  doc.setTextColor.apply(doc,LGRAY); doc.setFont('helvetica','normal'); doc.setFontSize(8);
-  doc.text('Margen: '+mg+'%   ·   Ganancia: '+document.getElementById('r-gn').textContent,M,y);
-  // Footer
-  doc.setFillColor.apply(doc,BG); doc.rect(0,277,W,20,'F');
-  doc.setTextColor.apply(doc,GOLD); doc.setFont('helvetica','bolditalic'); doc.setFontSize(9); doc.text('Cocina cordobesa con alma',W/2,285,{align:'center'});
-  doc.setTextColor.apply(doc,GRAY); doc.setFont('helvetica','normal'); doc.setFontSize(7); doc.text('Cotización válida por 48 horas. Precios sujetos a variación de materia prima.',W/2,290,{align:'center'});
-  } doc.save('cotizacion-'+cl.replace(/\s+/g,'-').toLowerCase()+'-'+new Date().toISOString().slice(0,10)+'.pdf');
-  toast('📄 PDF generado ✓');
+}
+
+function updPrice(rid,name,val){
+  var r=getR(rid);if(!r)return;
+  for(var i=0;i<r.ingredients.length;i++){if(r.ingredients[i].name===name){r.ingredients[i].cost=parseFloat(val)||0;if(!S.priceLog)S.priceLog={};S.priceLog[rid+'__'+name]=new Date().toISOString();break;}}
+  save();calc();refCosts();toast('Precio actualizado');
+}
+
+function applyInf(){
+  var cat=document.getElementById('inf-cat').value,pct=parseFloat(document.getElementById('inf-sl').value)/100;
+  if(!confirm('Aplicar +'+Math.round(pct*100)+'%?'))return;
+  var n=0;
+  for(var ri=0;ri<S.recipes.length;ri++){var r=S.recipes[ri];if(cat!=='all'&&r.category!==cat)continue;var ing=r.ingredients||[];for(var i=0;i<ing.length;i++){ing[i].cost=Math.round(ing[i].cost*(1+pct));if(!S.priceLog)S.priceLog={};S.priceLog[r.id+'__'+ing[i].name]=new Date().toISOString();n++;}}
+  save();calc();refCosts();renderPrices();toast(n+' precios actualizados');
+}
+
+function sSt(){
+  var el=document.getElementById('sync-st');if(!el)return;
+  el.innerHTML='Almacenamiento: localStorage<br>Recetas: '+S.recipes.length+'<br>Cotizaciones: '+S.quotes.length+'<br>Paquetes: '+(S.packages||[]).length;
 }
 
 function exportTXT(){
-  var cl=document.getElementById('c-cl').value||'Sin nombre', p=gn('c-pe'), mg=gn('c-mg');
+  var cl=document.getElementById('c-cl').value||'Sin nombre',p=gn('c-pe'),mg=gn('c-mg');
   var d=new Date().toLocaleDateString('es-AR',{day:'2-digit',month:'long',year:'numeric'});
-  var ml=selIds().map(function(id){ var r=S.recipes.find(function(x){ return x.id===id; }); return r?'  · '+r.name:''; }).filter(Boolean).join('\n');
-  var txt='COTIZACION GASTRONOMICA\n'+'='.repeat(38)+'\nCliente:  '+cl+'\nFecha:    '+d+'\nPersonas: '+p+'\n\nMENU:\n'+(ml||'  (ninguno)')+'\n\nFINANCIERO:\n  Materia prima:  '+document.getElementById('r-mp').textContent+'\n  Servicios:      '+document.getElementById('r-sv').textContent+'\n  Costo base:     '+document.getElementById('r-ct').textContent+'\n  Margen:         '+mg+'%\n  '+'-'.repeat(28)+'\n  PRECIO TOTAL:   '+document.getElementById('r-pt').textContent+'\n  Por persona:    '+document.getElementById('r-pp').textContent+'\n  Ganancia:       '+document.getElementById('r-gn').textContent+'\n'+'='.repeat(38);
-  var a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([txt],{type:'text/plain;charset=utf-8'}));
-  a.download='cotizacion-'+cl.replace(/\s+/g,'-').toLowerCase()+'.txt'; a.click();
+  var ids=selIds(),ml='';for(var i=0;i<ids.length;i++){var r=getR(ids[i]);if(r)ml+='- '+r.name+'\n';}
+  var txt='COTIZACION GASTRONOMICA\nCliente: '+cl+'\nFecha: '+d+'\nPersonas: '+p+'\n\nMENU:\n'+(ml||'(ninguno)')+'\nMateria prima: '+document.getElementById('r-mp').textContent+'\nServicios: '+document.getElementById('r-sv').textContent+'\nCosto base: '+document.getElementById('r-ct').textContent+'\nMargen: '+mg+'%\nPRECIO TOTAL: '+document.getElementById('r-pt').textContent+'\nPor persona: '+document.getElementById('r-pp').textContent+'\nGanancia: '+document.getElementById('r-gn').textContent;
+  var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type:'text/plain;charset=utf-8'}));a.download='cotizacion.txt';a.click();
 }
 
 function exportBackup(){
-  var a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(S,null,2)],{type:'application/json'}));
-  a.download='backup-'+new Date().toISOString().slice(0,10)+'.json'; a.click(); toast('Backup exportado ✓');
+  var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(S,null,2)],{type:'application/json'}));a.download='backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();toast('Backup exportado');
 }
 
 function importBackup(e){
-  var f=e.target.files[0]; if(!f) return;
+  var f=e.target.files[0];if(!f)return;
   var rd=new FileReader();
   rd.onload=function(ev){
     try{
-      var p=JSON.parse(ev.target.result); if(!p.recipes){ toast('⚠️ Archivo inválido'); return; }
-      var merge=confirm('¿Combinar?
-OK = combinar  ·  Cancelar = reemplazar');
-      if(merge){
-        var ei=new Set(S.recipes.map(function(r){ return r.id; }));
-        p.recipes.forEach(function(r){ if(!ei.has(r.id)) S.recipes.push(r); });
-        var eq=new Set(S.quotes.map(function(q){ return q.id; }));
-        (p.quotes||[]).forEach(function(q){ if(!eq.has(q.id)) S.quotes.unshift(q); });
-      } else { S.recipes=p.recipes||[]; S.quotes=p.quotes||[]; S.packages=p.packages||[]; S.priceLog=p.priceLog||{}; }
-      persist(); buildMenu(); renderRecipes(); renderQuotes(); renderPkgGrid();
-      toast('Importado ✓');
-    }catch(err){ toast('⚠️ Error al leer'); }
+      var p=JSON.parse(ev.target.result);if(!p.recipes){toast('Archivo invalido');return;}
+      if(confirm('Combinar? OK=combinar Cancelar=reemplazar')){
+        var ei={};for(var i=0;i<S.recipes.length;i++)ei[S.recipes[i].id]=true;
+        for(var i=0;i<(p.recipes||[]).length;i++)if(!ei[p.recipes[i].id])S.recipes.push(p.recipes[i]);
+      }else{S.recipes=p.recipes||[];S.quotes=p.quotes||[];S.packages=p.packages||[];S.priceLog=p.priceLog||{};}
+      save();buildMenu();renderRec();renderQ();renderPkgs();toast('Importado correctamente');
+    }catch(err){toast('Error al leer el archivo');}
   };
-  rd.readAsText(f); e.target.value='';
+  rd.readAsText(f);e.target.value='';
 }
 
-// ══ INIT ════════════════════════════════════════════════════════
-loadLocal();
-initDefaults();
+load();
+initDef();
 buildMenu();
-renderRecipes();
-renderQuotes();
-renderPkgGrid();
 calc();
-syncStatus();
-// Firebase en segundo plano
-
+sSt();
 </script>
-
-<!-- BOTTOM NAV -->
-<nav class="bnav">
-  <button class="nb on" id="nb-cotizador" onclick="go('cotizador',this)"><span class="ni">⚡</span><span>Cotizador</span></button>
-  <button class="nb" id="nb-guardadas" onclick="go('guardadas',this)"><span class="ni">📁</span><span>Guardadas</span></button>
-  <button class="nb" id="nb-recetas" onclick="go('recetas',this)"><span class="ni">📋</span><span>Recetas</span></button>
-  <button class="nb" id="nb-paquetes" onclick="go('paquetes',this)"><span class="ni">📦</span><span>Paquetes</span></button>
-  <button class="nb" id="nb-precios" onclick="go('precios',this)"><span class="ni">📈</span><span>Precios</span></button>
-  <button class="nb" id="nb-sync" onclick="go('sync',this)"><span class="ni">☁️</span><span>iCloud</span></button>
-</nav>
+</body>
+</html>
+</script>
 </body>
 </html>
